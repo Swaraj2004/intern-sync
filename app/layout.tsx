@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@/context/ThemeProvider';
 import { cn } from '@/lib/utils';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
@@ -10,7 +11,7 @@ const fontSans = FontSans({
 
 export const metadata: Metadata = {
   title: 'InternSync',
-  description: '',
+  description: 'Academic Activity Monitoring Portal',
 };
 
 export default function RootLayout({
@@ -26,7 +27,14 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
