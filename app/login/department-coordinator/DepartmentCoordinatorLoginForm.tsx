@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
-const CompanyMentorLoginForm = () => {
+const DepartmentCoordinatorLoginForm = () => {
   const supabase = supabaseClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -80,4 +80,4 @@ const CompanyMentorLoginForm = () => {
   );
 };
 
-export default CompanyMentorLoginForm;
+export default DepartmentCoordinatorLoginForm;

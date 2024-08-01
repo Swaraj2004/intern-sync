@@ -48,6 +48,8 @@ const CollegeMentorLoginForm = () => {
       return;
     }
 
+    toast.success('Login successfull. Redirecting to dashboard...');
+
     router.push('/dashboard');
   }
 

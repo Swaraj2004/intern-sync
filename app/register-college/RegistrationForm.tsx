@@ -18,9 +18,11 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import registrationFormSchema from '@/formSchemas/registerCollege';
+import { useRouter } from 'next/navigation';
 
 const RegistrationForm = () => {
   const supabase = supabaseClient();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const registerForm = useForm<z.infer<typeof registrationFormSchema>>({
@@ -41,7 +43,7 @@ const RegistrationForm = () => {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/login`,
       },
     });
 
@@ -77,8 +79,8 @@ const RegistrationForm = () => {
 
       toast.success('Registration successfull! Redirecting to login...');
       setTimeout(() => {
-        window.location.href = `${window.location.origin}/login`;
-      }, 3000);
+        router.push('/login');
+      }, 2000);
     }
   }
 

@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
-const CollegeAdminLoginForm = () => {
+const InstituteCoordinatorLoginForm = () => {
   const supabase = supabaseClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,8 @@ const CollegeAdminLoginForm = () => {
       setLoading(false);
       return;
     }
+
+    toast.success('Login successfull. Redirecting to dashboard...');
 
     router.push('/dashboard');
   }
@@ -78,4 +80,4 @@ const CollegeAdminLoginForm = () => {
   );
 };
 
-export default CollegeAdminLoginForm;
+export default InstituteCoordinatorLoginForm;
