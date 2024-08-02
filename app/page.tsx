@@ -56,8 +56,8 @@ export default function Home() {
           </div>
         </div>
       </nav>
-      <div className="py-14">
-        <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8">
+      <div className="py-14 lg:py-0 snap-y snap-mandatory overflow-y-scroll lg:h-screen">
+        <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8 snap-start lg:h-screen">
           <div className="flex flex-col justify-center text-center md:text-left">
             <h1 className="text-4xl lg:text-6xl xl:text-7xl leading-snug text-primary font-semibold pb-6">
               InternSync: Academic Activity Monitoring Portal
@@ -82,7 +82,7 @@ export default function Home() {
             />
           </div>
         </div>
-        <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8">
+        <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8 snap-start lg:h-screen">
           <div className="grid">
             <Image
               src="/site-stats.svg"
@@ -108,7 +108,7 @@ export default function Home() {
             </p>
           </div>
         </div>
-        <div className="px-4 lg:container py-14 md:py-20 lg:py-28">
+        <div className="px-4 lg:container py-14 md:py-20 lg:py-28 snap-start lg:h-screen lg:flex flex-col justify-center">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl text-primary text-center font-semibold pb-6 md:pb-10">
             Key Features
           </h1>
@@ -128,7 +128,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-        <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8">
+        <div className="relative px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8 snap-start lg:h-screen">
           <div className="flex flex-col justify-center text-center md:text-left">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl text-primary font-semibold pb-6">
               How it works
@@ -170,7 +170,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <div className="row-start-1 md:row-auto">
+          <div className="grid row-start-1 md:row-auto">
             <Image
               src="/timeline.svg"
               width={500}
@@ -179,13 +179,13 @@ export default function Home() {
               className="h-fit md:h-[500px] sm:w-3/4 md:w-auto m-auto md:mr-0"
             />
           </div>
+          <footer className="absolute -bottom-14 lg:bottom-0 left-0 right-0 px-4 lg:container text-slate-800 dark:text-slate-300 py-3">
+            <p className="text-center">
+              &copy; 2024 InternSync. All rights reserved.
+            </p>
+          </footer>
         </div>
       </div>
-      <footer className="px-4 lg:container text-slate-800 dark:text-slate-300 py-4">
-        <p className="text-center">
-          &copy; 2024 InternSync. All rights reserved.
-        </p>
-      </footer>
     </>
   );
 }
