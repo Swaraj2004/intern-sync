@@ -20,7 +20,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 
-const CompanyMentorLoginForm = () => {
+const StudentLoginForm = () => {
   const supabase = supabaseClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -37,6 +37,43 @@ const CompanyMentorLoginForm = () => {
     const { email, password } = values;
     setLoading(true);
 
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select()
+      .eq('email', email)
+      .single();
+
+    if (userError) {
+      toast.error('Email does not exist.');
+      setLoading(false);
+      return;
+    }
+
+    const { data: roleData, error: rolesError } = await supabase
+      .from('roles')
+      .select('id')
+      .eq('name', 'student')
+      .single();
+
+    if (rolesError && !roleData) {
+      toast.error(rolesError.message);
+      setLoading(false);
+      return;
+    }
+
+    const { data: userRoleData, error: userRoleError } = await supabase
+      .from('user_roles')
+      .select('uid')
+      .eq('uid', user.id)
+      .eq('role_id', roleData.id)
+      .single();
+
+    if (userRoleError && !userRoleData) {
+      toast.error('User is not an student.');
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -50,7 +87,7 @@ const CompanyMentorLoginForm = () => {
 
     toast.success('Login successfull. Redirecting to dashboard...');
 
-    router.push('/dashboard');
+    router.push('/dashboard/student');
   }
 
   return (
@@ -80,4 +117,4 @@ const CompanyMentorLoginForm = () => {
   );
 };
 
-export default CompanyMentorLoginForm;
+export default StudentLoginForm;

@@ -1,4 +1,4 @@
-import RegistrationForm from '@/app/register-college/RegistrationForm';
+import RegistrationForm from '@/app/(auth)/register/institute/RegistrationForm';
 import {
   Card,
   CardContent,
@@ -12,8 +12,8 @@ import Link from 'next/link';
 const RegisterCollegePage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card className="p-3 m-4 w-full max-w-md">
-        <CardHeader className="justify-center items-center">
+      <Card className="p-6 md:p-10 m-4 w-full max-w-md md:max-w-[900px] my-16">
+        <CardHeader className="justify-center items-center p-0 pb-6">
           <div className="flex items-center pb-4">
             <Link href="/">
               <Logo />
@@ -27,7 +27,7 @@ const RegisterCollegePage = () => {
             management.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <RegistrationForm />
           <div className="text-center pt-6">
             Already have an account?{' '}

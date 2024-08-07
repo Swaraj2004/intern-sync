@@ -1,4 +1,4 @@
-import DepartmentCoordinatorLoginForm from '@/app/login/department-coordinator/DepartmentCoordinatorLoginForm';
+import DepartmentCoordinatorLoginForm from '@/app/(auth)/login/department-coordinator/DepartmentCoordinatorLoginForm';
 import LoginCard from '@/components/ui/LoginCard';
 
 const DepartmentCoordinatorLoginPage = () => {

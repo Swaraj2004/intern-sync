@@ -1,4 +1,4 @@
-import StudentLoginForm from '@/app/login/student/StudentLoginForm';
+import StudentLoginForm from '@/app/(auth)/login/student/StudentLoginForm';
 import LoginCard from '@/components/ui/LoginCard';
 
 const StudentLoginPage = () => {

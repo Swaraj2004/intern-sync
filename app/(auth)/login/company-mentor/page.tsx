@@ -1,14 +1,14 @@
-import CollegeMentorLoginForm from '@/app/login/college-mentor/CollegeMentorLoginForm';
+import CompanyMentorLoginForm from '@/app/(auth)/login/company-mentor/CompanyMentorLoginForm';
 import LoginCard from '@/components/ui/LoginCard';
 
-const CollegeMentorLoginPage = () => {
+const CompanyMentorLoginPage = () => {
   return (
     <div className="flex justify-center items-center h-screen">
       <LoginCard loginType="Company Mentor Login">
-        <CollegeMentorLoginForm />
+        <CompanyMentorLoginForm />
       </LoginCard>
     </div>
   );
 };
 
-export default CollegeMentorLoginPage;
+export default CompanyMentorLoginPage;

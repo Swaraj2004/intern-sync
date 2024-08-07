@@ -1,5 +1,3 @@
-import Logo from '@/components/ui/Logo';
-import ThemeToggle from '@/components/ui/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -37,25 +35,6 @@ const features = [
 export default function Home() {
   return (
     <>
-      <nav className="fixed top-0 right-0 left-0 z-50 bg-background">
-        <div className="px-4 lg:container h-14 flex justify-between items-center">
-          <span className="flex items-center">
-            <Logo className="h-10 w-10" />
-            <div className="hidden min-[400px]:block text-2xl font-bold pl-2 text-primary">
-              InternSync
-            </div>
-          </span>
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
-            <Button variant="outline" asChild className="hidden md:block">
-              <Link href="/register-college">Register College</Link>
-            </Button>
-            <Button>
-              <Link href="/login">Login</Link>
-            </Button>
-          </div>
-        </div>
-      </nav>
       <div className="py-14 lg:py-0 snap-y snap-mandatory overflow-y-scroll lg:h-screen">
         <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8 snap-start lg:h-screen">
           <div className="flex flex-col justify-center text-center md:text-left">

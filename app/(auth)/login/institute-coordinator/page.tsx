@@ -1,4 +1,4 @@
-import InstituteCoordinatorLoginForm from '@/app/login/institute-coordinator/InstituteCoordinatorLoginForm';
+import InstituteCoordinatorLoginForm from '@/app/(auth)/login/institute-coordinator/InstituteCoordinatorLoginForm';
 import LoginCard from '@/components/ui/LoginCard';
 
 const InstituteCoordinatorLoginPage = () => {
