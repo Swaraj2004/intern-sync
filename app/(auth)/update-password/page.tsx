@@ -1,9 +1,4 @@
 import UpdatePasswordForm from '@/app/(auth)/update-password/UpdatePasswordForm';
-import { Card } from '@/components/ui/card';
-import Logo from '@/components/ui/Logo';
-import { getUser } from '@/utils/supabase/auth/server';
-import Link from 'next/link';
-import { redirect } from 'next/navigation';
 
 const UpdatePasswordPage = async ({
   searchParams,
@@ -22,27 +17,9 @@ const UpdatePasswordPage = async ({
     );
   }
 
-  const user = await getUser();
-
-  if (!user) {
-    redirect('/error');
-  }
-
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <Card className="p-8 mx-4 md:p-10 w-full max-w-96 sm:max-w-md">
-        <div className="flex flex-col items-center">
-          <Link
-            href="/"
-            draggable="false"
-            className="flex items-center mb-4 justify-center w-fit"
-          >
-            <Logo className="h-14 w-14" />
-          </Link>
-          <div className="text-2xl font-medium">Update Password</div>
-        </div>
-        <UpdatePasswordForm />
-      </Card>
+      <UpdatePasswordForm />
     </div>
   );
 };
