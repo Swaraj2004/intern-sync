@@ -1,7 +1,14 @@
+import { getUser } from '@/utils/supabase/auth/server';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+let cachedRoles: { id: string; name: string }[] | null = null;
+const rolesCacheExpiration = 7 * 60 * 60 * 1000; // Cache expiration time (10 minutes)
+let lastFetchTime = 0;
+
 export async function updateSession(request: NextRequest) {
+  const currentTime = Date.now();
+
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -37,10 +44,62 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
-    // no user, potentially respond by redirecting the user to the login page
+  const { pathname } = request.nextUrl;
+  if (pathname === '/') {
+    return NextResponse.next();
+  }
+
+  if (!user && pathname.startsWith('/dashboard')) {
     const url = request.nextUrl.clone();
     url.pathname = '/login';
+    return NextResponse.redirect(url);
+  }
+
+  if (pathname === '/dashboard') {
+    return NextResponse.next();
+  }
+
+  const authPages = [
+    '/register/institute',
+    '/login',
+    '/login/student',
+    '/login/institute-coordinator',
+    '/login/department-coordinator',
+    '/login/college-mentor',
+    '/login/company-mentor',
+    '/forgot-password',
+    '/resend-email-verification',
+  ];
+
+  if (authPages.includes(pathname)) {
+    if (user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
+  }
+
+  if (!cachedRoles || currentTime - lastFetchTime > rolesCacheExpiration) {
+    const { data: roles, error } = await supabase.from('roles').select('*');
+    if (error) return NextResponse.error();
+    cachedRoles = roles;
+    lastFetchTime = currentTime;
+  }
+
+  const userRoles = new Set(user?.user_metadata?.role_ids || []);
+  const roleMap = cachedRoles.reduce((acc, { name, id }) => {
+    acc[`/dashboard/${name}`] = id;
+    return acc;
+  }, {} as Record<string, string>);
+
+  const isAuthorized = Object.entries(roleMap).some(
+    ([path, role_id]) => pathname.startsWith(path) && userRoles.has(role_id)
+  );
+
+  if (!isAuthorized) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/error';
     return NextResponse.redirect(url);
   }
 
