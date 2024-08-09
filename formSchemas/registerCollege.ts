@@ -25,14 +25,14 @@ const registrationFormSchema = z
         required_error: 'Password is required.',
       })
       .min(6, { message: 'Atlest 6 characters required.' }),
-    confirm_password: z
+    confirmPassword: z
       .string({
         required_error: 'Confirm Password is required.',
       })
       .min(6, { message: 'Atlest 6 characters required.' }),
   })
-  .superRefine(({ password, confirm_password }, refinementContext) => {
-    if (password !== confirm_password) {
+  .superRefine(({ password, confirmPassword }, refinementContext) => {
+    if (password !== confirmPassword) {
       return refinementContext.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Passwords do not match.',

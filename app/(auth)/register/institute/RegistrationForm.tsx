@@ -33,7 +33,7 @@ const RegistrationForm = () => {
       location: '',
       email: '',
       password: '',
-      confirm_password: '',
+      confirmPassword: '',
     },
   });
 
@@ -77,7 +77,7 @@ const RegistrationForm = () => {
         data: {
           uid: usersData[0].id,
           name: instituteName,
-          roleId: [roleData.id],
+          role_ids: [roleData.id],
         },
       },
     });
@@ -127,10 +127,10 @@ const RegistrationForm = () => {
       return;
     }
 
-    toast.success('Registration successfull! Redirecting to login...');
+    toast.success('Registration successfull! Verification email sent.');
     setTimeout(() => {
       router.push('/login');
-    }, 2000);
+    }, 1000);
   }
 
   return (
@@ -184,7 +184,7 @@ const RegistrationForm = () => {
             />
             <FormField
               control={registerForm.control}
-              name="confirm_password"
+              name="confirmPassword"
               render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Confirm Password</FormLabel>
