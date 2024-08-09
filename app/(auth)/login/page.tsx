@@ -13,43 +13,43 @@ const LoginPage = () => {
         <div className="text-center">
           <div className="text-2xl font-medium">Welcome back</div>
           <div className="text-sm text-muted-foreground pt-1">
-            Glad to see you again. Select an option to login.
+            Glad to see you again. Select your role to login.
           </div>
         </div>
         <div className="flex flex-col items-center gap-5 pt-8">
           <Button
             asChild
-            className="px-6 py-3 h-11 rounded-lg w-[300px] text-lg font-medium dark:text-foreground"
+            className="px-6 py-3 h-11 rounded-lg w-72 text-lg font-medium dark:text-foreground"
           >
             <Link href="/login/institute-coordinator">
-              I am a Institute Coordinator
+              Institute Coordinator
             </Link>
           </Button>
           <Button
             asChild
-            className="px-6 py-3 h-11 rounded-lg w-[300px] text-lg font-medium dark:text-foreground"
+            className="px-6 py-3 h-11 rounded-lg w-72 text-lg font-medium dark:text-foreground"
           >
             <Link href="/login/department-coordinator">
-              I am a Department Coordinator
+              Department Coordinator
             </Link>
           </Button>
           <Button
             asChild
-            className="px-6 py-3 h-11 rounded-lg w-[300px] text-lg font-medium dark:text-foreground"
+            className="px-6 py-3 h-11 rounded-lg w-72 text-lg font-medium dark:text-foreground"
           >
-            <Link href="/login/college-mentor">I am a College Mentor</Link>
+            <Link href="/login/college-mentor">College Mentor</Link>
           </Button>
           <Button
             asChild
-            className="px-6 py-3 h-11 rounded-lg w-[300px] text-lg font-medium dark:text-foreground"
+            className="px-6 py-3 h-11 rounded-lg w-72 text-lg font-medium dark:text-foreground"
           >
-            <Link href="/login/company-mentor">I am a Company Mentor</Link>
+            <Link href="/login/company-mentor">Company Mentor</Link>
           </Button>
           <Button
             asChild
-            className="px-6 py-3 h-11 rounded-lg w-[300px] text-lg font-medium dark:text-foreground"
+            className="px-6 py-3 h-11 rounded-lg w-72 text-lg font-medium dark:text-foreground"
           >
-            <Link href="/login/student">I am a Student</Link>
+            <Link href="/login/student">Student</Link>
           </Button>
         </div>
       </Card>
