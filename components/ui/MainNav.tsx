@@ -1,13 +1,17 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/ui/Logo';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import { supabaseServer } from '@/utils/supabase/server';
+import { useGetUser } from '@/utils/supabase/auth/client';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-const MainNav = async () => {
-  const supabase = supabaseServer();
+const MainNav = () => {
+  const user = useGetUser();
+  const [mounted, setMounted] = useState(false);
 
-  const { data: userData } = await supabase.auth.getUser();
+  useEffect(() => setMounted(true), []);
 
   return (
     <nav className="fixed top-0 right-0 left-0 z-50 bg-background/50 backdrop-blur-md">
@@ -20,20 +24,21 @@ const MainNav = async () => {
         </Link>
         <div className="flex items-center space-x-4">
           <ThemeToggle />
-          {userData.user ? (
-            <Button asChild>
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-          ) : (
-            <>
-              <Button variant="outline" asChild className="hidden md:block">
-                <Link href="/register/institute">Register Institute</Link>
-              </Button>
+          {mounted &&
+            (user ? (
               <Button asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/dashboard">Dashboard</Link>
               </Button>
-            </>
-          )}
+            ) : (
+              <>
+                <Button variant="outline" asChild className="hidden md:block">
+                  <Link href="/register/institute">Register Institute</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/login">Login</Link>
+                </Button>
+              </>
+            ))}
         </div>
       </div>
     </nav>

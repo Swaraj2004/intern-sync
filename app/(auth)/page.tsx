@@ -1,6 +1,5 @@
-import { Button } from '@/components/ui/button';
+import GetStartedButton from '@/app/(auth)/GetStartedButton';
 import Image from 'next/image';
-import Link from 'next/link';
 
 const features = [
   {
@@ -32,7 +31,7 @@ const features = [
   },
 ];
 
-export default function Home() {
+const HomePage = () => {
   return (
     <>
       <div className="py-14 lg:py-0 snap-y snap-mandatory overflow-y-scroll lg:h-screen">
@@ -45,11 +44,7 @@ export default function Home() {
               Your One-Stop Solution for Seamless Communication and Progress
               Tracking of Students in Internships.
             </p>
-            <div className="flex md:hidden justify-center pt-8">
-              <Button variant="outline" asChild>
-                <Link href="/register-college">Get Started</Link>
-              </Button>
-            </div>
+            <GetStartedButton />
           </div>
           <div className="hidden md:grid">
             <Image
@@ -167,4 +162,6 @@ export default function Home() {
       </div>
     </>
   );
-}
+};
+
+export default HomePage;
