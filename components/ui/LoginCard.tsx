@@ -16,8 +16,8 @@ interface LoginCardProps {
 
 const LoginCard = ({ loginType, children }: LoginCardProps) => {
   return (
-    <Card className="max-w-3xl p-8 mx-4 md:p-12 md:w-full">
-      <div className="grid md:grid-cols-2 gap-14">
+    <Card className="max-w-4xl p-8 mx-4 md:p-12 md:w-full">
+      <div className="grid md:grid-cols-2 gap-24">
         <div className="hidden md:grid">
           <Image
             src="/login-asset.svg"
@@ -35,7 +35,14 @@ const LoginCard = ({ loginType, children }: LoginCardProps) => {
             <CardTitle className="leading-8">{loginType}</CardTitle>
             <CardDescription>Login to access your account.</CardDescription>
           </CardHeader>
-          <CardContent className="p-0">{children}</CardContent>
+          <CardContent className="p-0">
+            {children}
+            <div className="flex justify-center pt-4">
+              <Link href="/forgot-password" className="text-primary text-sm">
+                Forgot Password?
+              </Link>
+            </div>
+          </CardContent>
         </div>
       </div>
     </Card>
