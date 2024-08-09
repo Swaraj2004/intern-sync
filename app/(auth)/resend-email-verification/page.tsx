@@ -1,19 +1,9 @@
+import EmailVerificationForm from '@/app/(auth)/resend-email-verification/EmailVerificationForm';
 import { Card } from '@/components/ui/card';
 import Logo from '@/components/ui/Logo';
 import Link from 'next/link';
-import EmailVerificationForm from '@/app/(auth)/resend-email-verification/EmailVerificationForm';
-import { supabaseServer } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
 
-const ResendEmailVerificationPage = async () => {
-  const supabase = supabaseServer();
-
-  const { data: userData } = await supabase.auth.getUser();
-
-  if (userData.user) {
-    redirect('/error');
-  }
-
+const ResendEmailVerificationPage = () => {
   return (
     <div className="flex justify-center items-center min-h-screen">
       <Card className="p-8 mx-4 md:p-10 w-full max-w-96 sm:max-w-md">

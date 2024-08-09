@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { getUser } from '@/utils/supabase/auth/server';
 import { supabaseServer } from '@/utils/supabase/server';
 import Link from 'next/link';
 
@@ -9,7 +10,7 @@ const VerifyEmailPage = async ({
 }) => {
   const supabase = supabaseServer();
   const error = searchParams.error;
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (error) {
     return (
@@ -17,7 +18,7 @@ const VerifyEmailPage = async ({
         <h1 className="text-lg font-medium mb-4">
           Email verification link is invalid or has expired.
         </h1>
-        {!userData && (
+        {!user && (
           <Button variant="link">
             <Link href="/resend-email-verification">
               Resend verification email
@@ -28,7 +29,7 @@ const VerifyEmailPage = async ({
     );
   }
 
-  if (userError) {
+  if (!user) {
     return (
       <div className="h-screen flex flex-col justify-center items-center">
         <h1 className="text-lg font-medium mb-4">
@@ -38,20 +39,39 @@ const VerifyEmailPage = async ({
     );
   }
 
-  if (userData) {
+  const { data: userStatus } = await supabase
+    .from('users')
+    .select('is_verified')
+    .eq('id', user.user_metadata.uid)
+    .single();
+
+  if (userStatus?.is_verified) {
+    return (
+      <div className="h-screen flex flex-col justify-center items-center">
+        <h1 className="text-lg font-medium mb-4">
+          Your email has already been verified.
+        </h1>
+        <Button asChild>
+          <Link href="/dashboard">Go to Dashboard</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  if (user && !userStatus?.is_verified) {
     const { error: updateError } = await supabase
       .from('users')
       .update({
         is_verified: true,
       })
-      .eq('id', userData.user.user_metadata.uid);
+      .eq('id', user.user_metadata.uid);
 
     if (updateError) {
       console.error(updateError);
     }
   }
 
-  if (userData) {
+  if (user) {
     return (
       <div className="h-screen flex flex-col justify-center items-center">
         <h1 className="text-lg font-medium mb-4">
