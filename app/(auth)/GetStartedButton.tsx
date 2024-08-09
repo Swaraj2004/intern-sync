@@ -26,7 +26,7 @@ const GetStartedButton = () => {
     <div className="flex md:hidden justify-center pt-8">
       {mounted && (
         <Button variant="outline" asChild>
-          <Link href={user ? '/dashboard' : '/register-college'}>
+          <Link href={user ? '/dashboard' : '/register/institute'}>
             Get Started
           </Link>
         </Button>
