@@ -1,9 +1,8 @@
-import { getUser } from '@/utils/supabase/auth/server';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 let cachedRoles: { id: string; name: string }[] | null = null;
-const rolesCacheExpiration = 7 * 60 * 60 * 1000; // Cache expiration time (10 minutes)
+const rolesCacheExpiration = 7 * 60 * 60 * 1000;
 let lastFetchTime = 0;
 
 export async function updateSession(request: NextRequest) {
