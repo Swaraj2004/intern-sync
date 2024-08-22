@@ -1,3 +1,6 @@
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { supabaseClient } from '@/utils/supabase/client';
 import { User } from '@supabase/supabase-js';
 import {
   DotIcon,
@@ -8,9 +11,6 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { supabaseClient } from '@/utils/supabase/client';
-import { Button } from './button';
-import { Switch } from './switch';
 import { useEffect, useState } from 'react';
 
 const NavItems = ({
@@ -75,7 +75,7 @@ const NavItems = ({
   ];
 
   return (
-    <div className="lg:mt-7 lg:mb-4 flex flex-col gap-4 flex-grow overflow-auto">
+    <div className="mt-3 lg:mt-7 lg:mb-4 flex flex-col gap-4 flex-grow overflow-auto">
       <div className="flex flex-col gap-3">
         <div className="flex gap-2 text-muted-foreground items-center">
           <LayoutDashboardIcon className="h-5 w-5" />
@@ -133,19 +133,20 @@ const NavItems = ({
           )}
         </ul>
       </div>
-      <hr className="h-0.5 bg-muted" />
+      <hr className="h-0.5 bg-slate-200 lg:bg-muted dark:bg-muted" />
       <div className="flex flex-col gap-1">
         <div className="flex gap-2 text-muted-foreground items-center p-2">
           <SunMoonIcon className="h-5 w-5" />
-          <h4 className="font-medium">Dark Mode</h4>
-          {mounted && (
+          <h4 className="font-medium mr-auto">Dark Mode</h4>
+          {mounted ? (
             <Switch
               checked={theme === 'dark'}
               onClick={() => {
                 setTheme(theme === 'light' ? 'dark' : 'light');
               }}
-              className="ml-auto"
             />
+          ) : (
+            <Skeleton className="h-6 w-11 rounded-full" />
           )}
         </div>
         <div className="p-2">

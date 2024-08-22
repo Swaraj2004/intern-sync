@@ -3,12 +3,12 @@
 import { Button } from '@/components/ui/button';
 import Logo from '@/components/ui/Logo';
 import ThemeToggle from '@/components/ui/ThemeToggle';
-import { useGetUser } from '@/utils/supabase/auth/client';
+import { useUser } from '@/context/UserContext';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const MainNav = () => {
-  const user = useGetUser();
+  const { user, loading } = useUser();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -25,6 +25,7 @@ const MainNav = () => {
         <div className="flex items-center space-x-4">
           <ThemeToggle />
           {mounted &&
+            !loading &&
             (user ? (
               <Button asChild>
                 <Link href="/dashboard">Dashboard</Link>
