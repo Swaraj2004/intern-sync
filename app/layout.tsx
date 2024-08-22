@@ -1,5 +1,6 @@
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/context/ThemeProvider';
+import { UserProvider } from '@/context/UserContext';
 import { cn } from '@/lib/utils';
 import '@/styles/globals.css';
 import type { Metadata } from 'next';
@@ -31,7 +32,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <UserProvider>{children}</UserProvider>
           <Toaster richColors />
         </ThemeProvider>
       </body>
