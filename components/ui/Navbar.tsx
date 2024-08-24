@@ -38,14 +38,23 @@ const Nav = () => {
             className="w-[300px] overflow-y-auto flex flex-col"
           >
             <SheetHeader>
-              <Link href="/" className="flex gap-3 items-center">
+              <Link
+                href="/"
+                onClick={() => setSheetOpen(false)}
+                className="flex gap-3 items-center"
+              >
                 <Logo className="h-8 w-8" />
                 <SheetTitle className="text-left text-xl">
                   InternSync
                 </SheetTitle>
               </Link>
             </SheetHeader>
-            <NavItems user={user || null} pathname={pathname} role={role} />
+            <NavItems
+              user={user || null}
+              pathname={pathname}
+              role={role}
+              setSheetOpen={setSheetOpen}
+            />
           </SheetContent>
         </Sheet>
         <Link href="/" className="flex gap-3 items-center">

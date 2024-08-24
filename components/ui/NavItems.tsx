@@ -17,10 +17,12 @@ const NavItems = ({
   user,
   pathname,
   role,
+  setSheetOpen,
 }: {
   user: User | null;
   pathname: string;
   role: string;
+  setSheetOpen?: (open: boolean) => void;
 }) => {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -85,7 +87,14 @@ const NavItems = ({
           {menuitems.map((item) => {
             if (item.access.includes(role)) {
               return (
-                <li key={item.path}>
+                <li
+                  key={item.path}
+                  onClick={() => {
+                    if (setSheetOpen) {
+                      setSheetOpen(false);
+                    }
+                  }}
+                >
                   <Link
                     href={item.path}
                     className={`flex gap-2 w-full p-2 rounded-lg hover:text-primary ${
@@ -107,7 +116,13 @@ const NavItems = ({
           <h4 className="text-muted-foreground font-medium">OTHER</h4>
         </div>
         <ul className="flex flex-col gap-1">
-          <li>
+          <li
+            onClick={() => {
+              if (setSheetOpen) {
+                setSheetOpen(false);
+              }
+            }}
+          >
             <Link
               href={`/dashboard/${role}/profile`}
               className={`flex gap-2 w-full p-2 rounded-lg hover:text-primary ${
@@ -119,7 +134,13 @@ const NavItems = ({
             </Link>
           </li>
           {user?.user_metadata.role_ids.length > 1 && (
-            <li>
+            <li
+              onClick={() => {
+                if (setSheetOpen) {
+                  setSheetOpen(false);
+                }
+              }}
+            >
               <Link
                 href={`/dashboard`}
                 className={`flex gap-2 w-full p-2 rounded-lg hover:text-primary ${
