@@ -1,3 +1,4 @@
+import { getRoles } from '@/app/helpers';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import MainNav from '@/components/ui/MainNav';
@@ -8,14 +9,6 @@ import { redirect } from 'next/navigation';
 
 type Roles = { id: string; name: string }[];
 type UserRoles = { id: string; path: string; title: string }[];
-
-async function getRoles() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/roles`, {
-    next: { revalidate: 7 * 60 * 60 * 1000 },
-  });
-
-  return res.json();
-}
 
 const DashboardRolesPage = async () => {
   const supabase = supabaseServer();
