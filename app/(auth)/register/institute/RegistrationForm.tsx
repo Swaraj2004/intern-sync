@@ -30,7 +30,7 @@ const RegistrationForm = () => {
     defaultValues: {
       instituteId: '',
       instituteName: '',
-      location: '',
+      fullName: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -38,7 +38,7 @@ const RegistrationForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof registrationFormSchema>) {
-    const { instituteId, instituteName, location, email, password } = values;
+    const { instituteId, instituteName, fullName, email, password } = values;
     setLoading(true);
 
     const { data: roleData, error: rolesError } = await supabase
@@ -57,7 +57,7 @@ const RegistrationForm = () => {
       .from('users')
       .insert([
         {
-          name: instituteName,
+          name: fullName,
           email,
         },
       ])
@@ -76,7 +76,9 @@ const RegistrationForm = () => {
         emailRedirectTo: `${window.location.origin}/verify-email`,
         data: {
           uid: usersData[0].id,
-          name: instituteName,
+          name: fullName,
+          email,
+          institute_id: parseInt(instituteId),
           role_ids: [roleData.id],
         },
       },
@@ -106,7 +108,7 @@ const RegistrationForm = () => {
       .from('institutes')
       .insert({
         institute_id: parseInt(instituteId),
-        location,
+        name: instituteName,
         uid: usersData[0].id,
       });
 
@@ -156,8 +158,8 @@ const RegistrationForm = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <InputBox
-              label="Location"
-              id="location"
+              label="Full Name"
+              id="fullName"
               type="text"
               form={registerForm}
             />

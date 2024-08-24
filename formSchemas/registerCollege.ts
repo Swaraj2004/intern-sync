@@ -12,10 +12,11 @@ const registrationFormSchema = z
         required_error: 'Institute name is required.',
       })
       .min(3, { message: 'Institute name is required.' }),
-    location: z
-      .string()
-      .min(1, { message: 'Location is required.' })
-      .max(50, { message: 'Location is too long.' }),
+    fullName: z
+      .string({
+        required_error: 'User full name is required.',
+      })
+      .min(3, { message: 'User full name is required.' }),
     email: z
       .string()
       .min(1, { message: 'Email address is required.' })
