@@ -22,21 +22,16 @@ import InputBox from '@/components/ui/InputBox';
 import { useRoles } from '@/context/RolesContext';
 import { useUser } from '@/context/UserContext';
 import addDepartmentFormSchema from '@/formSchemas/addDepartment';
-import sendInviteEmail from '@/server/send-invite';
-import updateUserByAuthId from '@/server/update-user';
-import { supabaseClient } from '@/utils/supabase/client';
+import { useAddDepartment } from '@/services/mutations';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useInsertMutation } from '@supabase-cache-helpers/postgrest-swr';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
 import * as z from 'zod';
 
 const AddDepartmentForm = () => {
   const { user } = useUser();
   const { roles } = useRoles();
-  const supabase = supabaseClient();
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const form = useForm<z.infer<typeof addDepartmentFormSchema>>({
@@ -50,126 +45,16 @@ const AddDepartmentForm = () => {
   });
 
   const instituteId: number = user?.user_metadata.institute_id;
+  const roleId: string = roles?.['department-coordinator'] || '';
 
-  const { trigger: insertUser } = useInsertMutation(
-    supabase.from('users'),
-    ['id'],
-    'id',
-    {
-      onError: async (error) => {
-        if (error.code === '23505') {
-          const email = form.getValues('email');
-          if (!email) return;
-          const { data: existingUser, error: fetchUserError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', email)
-            .single();
-
-          if (fetchUserError) {
-            toast.error(fetchUserError.details);
-            return;
-          }
-
-          const userId = existingUser.id;
-
-          const { data: existingRole, error: roleError } = await supabase
-            .from('user_roles')
-            .select('*')
-            .eq('uid', userId)
-            .eq('role_id', roles!['department-coordinator']);
-
-          if (roleError) {
-            toast.error(roleError.details);
-            return;
-          }
-
-          if (existingRole.length === 0) {
-            const departmentName = form.getValues('departmentName');
-            if (instituteId && existingUser.auth_id) {
-              try {
-                const data = await updateUserByAuthId(
-                  existingUser.auth_id,
-                  existingUser.name,
-                  roles!['department-coordinator']
-                );
-
-                if (data) {
-                  await supabase.from('departments').insert({
-                    name: departmentName,
-                    uid: userId,
-                    institute_id: instituteId,
-                  });
-
-                  await supabase.from('user_roles').insert({
-                    uid: userId,
-                    role_id: roles!['department-coordinator'],
-                  });
-                }
-              } catch (error) {
-                if (typeof error === 'string') toast.error(error);
-                else console.error(error);
-              }
-            }
-          } else {
-            toast.error('User is already a department coordinator.');
-            return;
-          }
-
-          toast.success(
-            'User already exists, assigned department coordinator role.'
-          );
-        } else {
-          toast.error(error.message);
-        }
-      },
-      onSuccess: async (data) => {
-        const userId = data![0].id;
-        const departmentName = form.getValues('departmentName');
-        const departmentCoordinatorName = form.getValues(
-          'departmentCoordinatorName'
-        );
-        const email = form.getValues('email');
-        const sendInvite = form.getValues('sendInvite');
-
-        if (instituteId) {
-          await supabase.from('departments').insert({
-            name: departmentName,
-            uid: userId,
-            institute_id: instituteId,
-          });
-
-          await supabase
-            .from('user_roles')
-            .insert({ uid: userId, role_id: roles!['department-coordinator'] });
-        }
-
-        if (sendInvite) {
-          try {
-            const data = await sendInviteEmail(
-              email,
-              userId,
-              departmentCoordinatorName,
-              instituteId,
-              roles!['department-coordinator']
-            );
-
-            if (data) {
-              await supabase
-                .from('users')
-                .update({ is_registered: true, auth_id: data.user.id })
-                .eq('id', userId);
-            }
-          } catch (error) {
-            if (typeof error === 'string') toast.error(error);
-            else console.error(error);
-          }
-        }
-
-        toast.success('Department added successfully.');
-      },
-    }
-  );
+  const { trigger: insertUser } = useAddDepartment({
+    instituteId,
+    departmentName: form.getValues('departmentName'),
+    departmentCoordinatorName: form.getValues('departmentCoordinatorName'),
+    sendInvite: form.getValues('sendInvite'),
+    email: form.getValues('email'),
+    roleId,
+  });
 
   const handleAddRole = async (
     values: z.infer<typeof addDepartmentFormSchema>
