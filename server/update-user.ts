@@ -9,7 +9,8 @@ type Roles = { id: string; name: string }[];
 export default async function updateUserByAuthId(
   authId: string,
   newName?: string,
-  newRoleId?: string
+  roleId?: string,
+  roleAction: 'add' | 'remove' = 'add'
 ) {
   const supabase = supabaseServer();
   const supabaseAdminClient = supabaseAdmin();
@@ -50,13 +51,24 @@ export default async function updateUserByAuthId(
   }
 
   const oldName = existingUser.user.user_metadata.name;
-  const oldRoleIds = existingUser.user.user_metadata.role_ids as string[];
+  const oldRoleIds =
+    (existingUser.user.user_metadata.role_ids as string[]) || [];
+
+  let updatedRoleIds = oldRoleIds;
+
+  if (roleId) {
+    if (roleAction === 'add' && !oldRoleIds.includes(roleId)) {
+      updatedRoleIds = [...oldRoleIds, roleId];
+    } else if (roleAction === 'remove') {
+      updatedRoleIds = oldRoleIds.filter((id) => id !== roleId);
+    }
+  }
 
   const { data: updatedUser, error: updateUserError } =
     await supabaseAdminClient.auth.admin.updateUserById(authId, {
       user_metadata: {
         name: newName || oldName,
-        role_ids: newRoleId ? [...oldRoleIds, newRoleId] : oldRoleIds,
+        role_ids: updatedRoleIds,
       },
     });
 
