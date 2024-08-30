@@ -207,3 +207,46 @@ export const useDeleteDepartment = ({
     error,
   };
 };
+
+export const useSendInvite = ({ instituteId }: { instituteId: number }) => {
+  const { mutate } = useDepartments({
+    instituteId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendInvite = async (
+    email: string,
+    userId: string,
+    name: string,
+    insitituteId: number,
+    roleId: string
+  ) => {
+    setIsLoading(true);
+
+    try {
+      const { user } = await sendInviteEmail(
+        email,
+        userId,
+        name,
+        insitituteId,
+        roleId
+      );
+      await supabase
+        .from('users')
+        .update({ is_registered: true, auth_id: user.id })
+        .eq('id', userId);
+      mutate();
+      setIsLoading(false);
+      toast.success('Invite sent successfully.');
+    } catch (error) {
+      if (typeof error === 'string') toast.error(error);
+      else toast.error('Failed to send invite.');
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    sendInvite,
+    isLoading,
+  };
+};
