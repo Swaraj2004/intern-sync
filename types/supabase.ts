@@ -457,32 +457,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      add_college_mentor: {
-        Args: {
-          college_mentor_name: string
-          email: string
-          institute_name: string
-          contact: number
-          department_id: string
-          institute_id: string
-          role_id: string
-        }
-        Returns: {
-          user_id: string
-          is_new_user: boolean
-        }[]
-      }
       add_department_coordinator: {
         Args: {
           department_coordinator_name: string
           email: string
           department_name: string
-          institute_id: string
+          institute_id: number
           role_id: string
         }
         Returns: {
           user_id: string
+          auth_id: string
           is_new_user: boolean
+          has_role: boolean
         }[]
       }
       delete_department: {
