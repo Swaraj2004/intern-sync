@@ -14,6 +14,13 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
@@ -49,13 +56,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export type Departments = {
   uid: string;
@@ -72,16 +72,14 @@ export type Departments = {
 
 const DepartmentsTable = () => {
   const { user } = useUser();
-  console.log(user);
   const { roles } = useRoles();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [pageSize, setPageSize] = useState(10);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: pageSize,
+    pageSize: 10,
   });
 
   useEffect(() => {
@@ -94,9 +92,6 @@ const DepartmentsTable = () => {
   const { data: departments, isLoading } = useDepartments({
     instituteId,
   });
-
-  console.log(departments);
-
   const { deleteDepartment } = useDeleteDepartment({
     instituteId,
   });
@@ -279,9 +274,11 @@ const DepartmentsTable = () => {
   const tableColumns = useMemo(
     () =>
       isLoading
-        ? departmentColumns.map((column) => ({
+        ? departmentColumns.map((column, index) => ({
             ...column,
-            cell: () => <Skeleton className="h-8 rounded" />,
+            cell: () => (
+              <Skeleton key={`loading-cell-${index}`} className="h-8 rounded" />
+            ),
           }))
         : departmentColumns,
     [isLoading, departmentColumns]
@@ -374,10 +371,10 @@ const DepartmentsTable = () => {
                   )}
               {isLoading &&
                 table.getRowModel().rows?.length &&
-                table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.original.uid}>
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-3">
+                table.getRowModel().rows.map((row, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                    {row.getVisibleCells().map((cell, cellIndex) => (
+                      <TableCell key={cellIndex} className="py-3">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

@@ -1,143 +1,89 @@
+import deleteUserById from '@/server/delete-user';
 import sendInviteEmail from '@/server/send-invite';
 import updateUserByAuthId from '@/server/update-user';
 import { supabaseClient } from '@/utils/supabase/client';
-import { useInsertMutation } from '@supabase-cache-helpers/postgrest-swr';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { useDepartments } from './queries';
-import deleteUserById from '@/server/delete-user';
 
 const supabase = supabaseClient();
 
-export const useAddDepartment = ({
-  instituteId,
-  departmentName,
-  departmentCoordinatorName,
-  sendInvite,
-  email,
-  roleId,
-}: {
-  instituteId: number;
-  departmentName: string;
-  departmentCoordinatorName: string;
-  sendInvite: boolean;
-  email: string;
-  roleId: string;
-}) => {
+export const useAddDepartment = ({ instituteId }: { instituteId: number }) => {
   const { mutate } = useDepartments({
     instituteId,
   });
+  const [isLoading, setIsLoading] = useState(false);
 
-  return useInsertMutation(supabase.from('users'), ['id'], 'id', {
-    onError: async (error) => {
-      if (error.code === '23505') {
-        if (!email) return;
-        const { data: existingUser, error: fetchUserError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', email)
-          .single();
+  const addDepartment = async (
+    departmentName: string,
+    departmentCoordinatorName: string,
+    email: string,
+    sendInvite: boolean,
+    roleId: string
+  ) => {
+    setIsLoading(true);
 
-        if (fetchUserError) {
-          toast.error(fetchUserError.details);
-          return;
-        }
+    const { data, error } = await supabase.rpc('add_department_coordinator', {
+      institute_id: instituteId,
+      department_name: departmentName,
+      department_coordinator_name: departmentCoordinatorName,
+      email,
+      role_id: roleId,
+    });
 
-        const userId = existingUser.id;
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
 
-        const { data: existingRole, error: roleError } = await supabase
-          .from('user_roles')
-          .select('*')
-          .eq('uid', userId)
-          .eq('role_id', roleId);
+    const result = data[0];
 
-        if (roleError) {
-          toast.error(roleError.details);
-          return;
-        }
-
-        if (existingRole.length === 0) {
-          if (instituteId && existingUser.auth_id) {
-            try {
-              const data = await updateUserByAuthId(
-                existingUser.auth_id,
-                existingUser.name,
-                roleId
-              );
-
-              if (data) {
-                await supabase.from('departments').insert({
-                  name: departmentName,
-                  uid: userId,
-                  institute_id: instituteId,
-                });
-
-                await supabase.from('user_roles').insert({
-                  uid: userId,
-                  role_id: roleId,
-                });
-              }
-            } catch (error) {
-              if (typeof error === 'string') toast.error(error);
-              else console.error(error);
-            }
-          }
-        } else {
-          toast.error('User is already a department coordinator.');
-          return;
-        }
-
+    if (result && result.is_new_user === false && result.has_role === false) {
+      try {
+        await updateUserByAuthId(result.auth_id, roleId);
         mutate();
-
         toast.success(
           'User already exists, assigned department coordinator role.'
         );
-      } else {
-        toast.error(error.message);
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        else console.error(error);
       }
-    },
-    onSuccess: async (data) => {
-      const userId = data![0].id;
+      setIsLoading(false);
+      return;
+    }
 
-      if (instituteId) {
-        await supabase.from('departments').insert({
-          name: departmentName,
-          uid: userId,
-          institute_id: instituteId,
-        });
+    if (result && result.is_new_user === true && sendInvite) {
+      try {
+        const data = await sendInviteEmail(
+          email,
+          result.user_id,
+          departmentCoordinatorName,
+          instituteId,
+          roleId
+        );
 
-        await supabase
-          .from('user_roles')
-          .insert({ uid: userId, role_id: roleId });
-      }
-
-      if (sendInvite) {
-        try {
-          const data = await sendInviteEmail(
-            email,
-            userId,
-            departmentCoordinatorName,
-            instituteId,
-            roleId
-          );
-
-          if (data) {
-            await supabase
-              .from('users')
-              .update({ is_registered: true, auth_id: data.user.id })
-              .eq('id', userId);
-          }
-        } catch (error) {
-          if (typeof error === 'string') toast.error(error);
-          else console.error(error);
+        if (data) {
+          await supabase
+            .from('users')
+            .update({ is_registered: true, auth_id: data.user.id })
+            .eq('id', result.user_id);
         }
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        else toast.error('Failed to send invite.');
       }
+    }
 
-      mutate();
+    mutate();
+    toast.success('Department added successfully.');
+    setIsLoading(false);
+  };
 
-      toast.success('Department added successfully.');
-    },
-  });
+  return {
+    addDepartment,
+    isLoading,
+  };
 };
 
 export const useDeleteDepartment = ({
@@ -149,7 +95,6 @@ export const useDeleteDepartment = ({
     instituteId,
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const deleteDepartment = async (
     roleId: string,
@@ -157,7 +102,6 @@ export const useDeleteDepartment = ({
     authId: string | null
   ) => {
     setIsLoading(true);
-    setError(null);
 
     const { data, error } = await supabase.rpc('delete_department', {
       role_id: roleId,
@@ -171,10 +115,10 @@ export const useDeleteDepartment = ({
     if (authId && result && result.is_user_deleted === false) {
       try {
         await updateUserByAuthId(authId, undefined, roleId, 'remove');
-        toast.success('Role deleted successfully.');
+        toast.success('Department role deleted successfully.');
       } catch (error) {
         if (typeof error === 'string') toast.error(error);
-        else console.error(error);
+        else toast.error('Failed to delete department.');
       }
     }
 
@@ -184,18 +128,15 @@ export const useDeleteDepartment = ({
         toast.success('Department deleted successfully.');
       } catch (error) {
         if (typeof error === 'string') toast.error(error);
-        else console.error(error);
+        else toast.error('Failed to delete department.');
       }
     }
 
     if (error) {
-      setError(error.message);
-      toast.error(`Failed to delete department role: ${error.message}`);
+      toast.error(error.message);
       console.error(error);
     } else {
       mutate();
-      toast.success('Department deleted successfully.');
-      console.log(data);
     }
 
     setIsLoading(false);
@@ -204,7 +145,6 @@ export const useDeleteDepartment = ({
   return {
     deleteDepartment,
     isLoading,
-    error,
   };
 };
 

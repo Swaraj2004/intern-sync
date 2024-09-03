@@ -5,7 +5,7 @@ const addDepartmentFormSchema = z.object({
     .string({
       required_error: 'Department name is required.',
     })
-    .min(3, { message: 'Department name is required.' }),
+    .min(2, { message: 'Department name is required.' }),
   departmentCoordinatorName: z
     .string({
       required_error: 'Department coordinator full name is required.',

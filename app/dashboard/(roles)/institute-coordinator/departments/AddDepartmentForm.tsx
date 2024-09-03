@@ -47,26 +47,24 @@ const AddDepartmentForm = () => {
   const instituteId: number = user?.user_metadata.institute_id;
   const roleId: string = roles?.['department-coordinator'] || '';
 
-  const { trigger: insertUser } = useAddDepartment({
+  const { addDepartment } = useAddDepartment({
     instituteId,
-    departmentName: form.getValues('departmentName'),
-    departmentCoordinatorName: form.getValues('departmentCoordinatorName'),
-    sendInvite: form.getValues('sendInvite'),
-    email: form.getValues('email'),
-    roleId,
   });
 
   const handleAddRole = async (
     values: z.infer<typeof addDepartmentFormSchema>
   ) => {
-    const { departmentCoordinatorName, email } = values;
+    const { departmentName, departmentCoordinatorName, email, sendInvite } =
+      values;
     setOpenAddDialog(false);
 
-    try {
-      await insertUser([{ name: departmentCoordinatorName, email }]);
-    } catch (error: any) {
-      if (error.code !== '23505') console.error(error);
-    }
+    await addDepartment(
+      departmentName,
+      departmentCoordinatorName,
+      email,
+      sendInvite,
+      roleId
+    );
   };
 
   return (

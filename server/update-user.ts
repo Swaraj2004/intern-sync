@@ -8,8 +8,8 @@ type Roles = { id: string; name: string }[];
 
 export default async function updateUserByAuthId(
   authId: string,
-  newName?: string,
   roleId?: string,
+  newName?: string,
   roleAction: 'add' | 'remove' = 'add'
 ) {
   const supabase = supabaseServer();
