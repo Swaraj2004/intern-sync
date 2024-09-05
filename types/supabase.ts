@@ -12,6 +12,7 @@ export type Database = {
       college_mentors: {
         Row: {
           contact: number | null
+          created_at: string
           department_id: string
           dob: string | null
           institute_id: number
@@ -19,6 +20,7 @@ export type Database = {
         }
         Insert: {
           contact?: number | null
+          created_at?: string
           department_id: string
           dob?: string | null
           institute_id: number
@@ -26,6 +28,7 @@ export type Database = {
         }
         Update: {
           contact?: number | null
+          created_at?: string
           department_id?: string
           dob?: string | null
           institute_id?: number
@@ -80,18 +83,21 @@ export type Database = {
         Row: {
           company_id: string
           contact: number | null
+          created_at: string
           designation: string | null
           uid: string
         }
         Insert: {
           company_id: string
           contact?: number | null
+          created_at?: string
           designation?: string | null
           uid: string
         }
         Update: {
           company_id?: string
           contact?: number | null
+          created_at?: string
           designation?: string | null
           uid?: string
         }
@@ -114,16 +120,19 @@ export type Database = {
       }
       departments: {
         Row: {
+          created_at: string
           institute_id: number
           name: string
           uid: string
         }
         Insert: {
+          created_at?: string
           institute_id: number
           name: string
           uid: string
         }
         Update: {
+          created_at?: string
           institute_id?: number
           name?: string
           uid?: string
@@ -147,18 +156,21 @@ export type Database = {
       }
       institutes: {
         Row: {
+          created_at: string
           institute_id: number
           location: string | null
           name: string
           uid: string
         }
         Insert: {
+          created_at?: string
           institute_id: number
           location?: string | null
           name: string
           uid: string
         }
         Update: {
+          created_at?: string
           institute_id?: number
           location?: string | null
           name?: string
@@ -308,6 +320,7 @@ export type Database = {
           college_mentor_id: string
           company_mentor_id: string | null
           contact: number | null
+          created_at: string
           department_id: string
           division: string | null
           dob: string | null
@@ -325,6 +338,7 @@ export type Database = {
           college_mentor_id: string
           company_mentor_id?: string | null
           contact?: number | null
+          created_at?: string
           department_id: string
           division?: string | null
           dob?: string | null
@@ -342,6 +356,7 @@ export type Database = {
           college_mentor_id?: string
           company_mentor_id?: string | null
           contact?: number | null
+          created_at?: string
           department_id?: string
           division?: string | null
           dob?: string | null
@@ -428,6 +443,7 @@ export type Database = {
       users: {
         Row: {
           auth_id: string | null
+          created_at: string
           email: string
           id: string
           is_registered: boolean
@@ -436,6 +452,7 @@ export type Database = {
         }
         Insert: {
           auth_id?: string | null
+          created_at?: string
           email: string
           id?: string
           is_registered?: boolean
@@ -444,6 +461,7 @@ export type Database = {
         }
         Update: {
           auth_id?: string | null
+          created_at?: string
           email?: string
           id?: string
           is_registered?: boolean
@@ -457,28 +475,63 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      add_department_coordinator: {
-        Args: {
-          department_coordinator_name: string
-          email: string
-          department_name: string
-          institute_id: number
-          role_id: string
-        }
-        Returns: {
-          user_id: string
-          auth_id: string
-          is_new_user: boolean
-          has_role: boolean
-        }[]
-      }
-      delete_department: {
-        Args: {
-          user_id: string
-          role_id: string
-        }
-        Returns: Json
-      }
+      add_department_coordinator:
+        | {
+            Args: {
+              department_coordinator_name: string
+              email: string
+              department_name: string
+              institute_id: number
+              role_id: string
+            }
+            Returns: {
+              user_id: string
+              auth_id: string
+              is_new_user: boolean
+              has_role: boolean
+            }[]
+          }
+        | {
+            Args: {
+              department_coordinator_name: string
+              email: string
+              department_name: string
+              institute_id: number
+              role_id: string
+              requesting_user_id: string
+            }
+            Returns: {
+              user_id: string
+              auth_id: string
+              is_new_user: boolean
+              has_role: boolean
+            }[]
+          }
+      delete_department:
+        | {
+            Args: {
+              user_id: string
+              role_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              user_id: string
+              role_id: string
+              institute_id: number
+              requesting_user_id: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              user_id: string
+              role_id: string
+              requesting_user_id: string
+            }
+            Returns: Json
+          }
     }
     Enums: {
       [_ in never]: never
