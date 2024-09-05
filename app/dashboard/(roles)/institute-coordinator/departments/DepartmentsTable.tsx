@@ -87,6 +87,7 @@ const DepartmentsTable = () => {
   }, []);
 
   const instituteId: number = user?.user_metadata.institute_id;
+  const userId: string = user?.user_metadata.uid;
   const roleId: string = roles?.['department-coordinator'] || '';
 
   const { data: departments, isLoading } = useDepartments({
@@ -94,6 +95,7 @@ const DepartmentsTable = () => {
   });
   const { deleteDepartment } = useDeleteDepartment({
     instituteId,
+    requestingUserId: userId,
   });
   const { sendInvite } = useSendInvite({
     instituteId,

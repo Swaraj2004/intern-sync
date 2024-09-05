@@ -14,7 +14,7 @@ export const useDepartments = ({ instituteId }: { instituteId: number }) => {
             'uid, name, users (id, auth_id, name, email, is_registered, is_verified)'
           )
           .eq('institute_id', instituteId)
-          .order('name', { ascending: true })
+          .order('created_at', { ascending: false })
       : null
   );
 

@@ -45,10 +45,12 @@ const AddDepartmentForm = () => {
   });
 
   const instituteId: number = user?.user_metadata.institute_id;
+  const userId: string = user?.user_metadata.uid;
   const roleId: string = roles?.['department-coordinator'] || '';
 
   const { addDepartment } = useAddDepartment({
     instituteId,
+    userId,
   });
 
   const handleAddRole = async (
