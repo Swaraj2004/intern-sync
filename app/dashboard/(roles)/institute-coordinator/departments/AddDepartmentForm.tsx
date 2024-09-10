@@ -22,7 +22,7 @@ import InputBox from '@/components/ui/InputBox';
 import { useRoles } from '@/context/RolesContext';
 import { useUser } from '@/context/UserContext';
 import addDepartmentFormSchema from '@/formSchemas/addDepartment';
-import { useAddDepartment } from '@/services/mutations';
+import { useAddDepartment } from '@/services/mutations/departments';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';

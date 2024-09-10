@@ -2,17 +2,12 @@ import deleteUserById from '@/server/delete-user';
 import sendInviteEmail from '@/server/send-invite';
 import updateUserByAuthId from '@/server/update-user';
 import { useDepartments } from '@/services/queries';
-import { Database } from '@/types/supabase';
+import Departments from '@/types/departments';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 const supabase = supabaseClient();
-
-type DepartmentWithUsers =
-  Database['public']['Tables']['departments']['Row'] & {
-    users: Database['public']['Tables']['users']['Row'] | null;
-  };
 
 export const useAddDepartment = ({
   instituteId,
@@ -35,11 +30,9 @@ export const useAddDepartment = ({
   ) => {
     setIsLoading(true);
 
-    const optimisticUpdate: DepartmentWithUsers = {
+    const optimisticUpdate: Departments = {
       uid: crypto.randomUUID(),
       name: departmentName,
-      institute_id: instituteId,
-      created_at: new Date().toISOString(),
       users: {
         id: crypto.randomUUID(),
         auth_id: null,
@@ -47,7 +40,6 @@ export const useAddDepartment = ({
         email,
         is_registered: sendInvite,
         is_verified: false,
-        created_at: new Date().toISOString(),
       },
     };
 
@@ -203,7 +195,11 @@ export const useDeleteDepartment = ({
   };
 };
 
-export const useSendInvite = ({ instituteId }: { instituteId: number }) => {
+export const useSendDepartmentInvite = ({
+  instituteId,
+}: {
+  instituteId: number;
+}) => {
   const { mutate } = useDepartments({
     instituteId,
   });
@@ -213,7 +209,6 @@ export const useSendInvite = ({ instituteId }: { instituteId: number }) => {
     email: string,
     userId: string,
     name: string,
-    insitituteId: number,
     roleId: string
   ) => {
     setIsLoading(true);
@@ -241,7 +236,7 @@ export const useSendInvite = ({ instituteId }: { instituteId: number }) => {
         email,
         userId,
         name,
-        insitituteId,
+        instituteId,
         roleId
       );
 

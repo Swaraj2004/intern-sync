@@ -1,14 +1,19 @@
 'use client';
 
-import { getDepartmentColumns } from '@/app/dashboard/(roles)/institute-coordinator/departments/departmentColumns';
+import getDepartmentColumns from '@/app/dashboard/(roles)/institute-coordinator/departments/departmentColumns';
+import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
 import { useRoles } from '@/context/RolesContext';
 import { useUser } from '@/context/UserContext';
-import { useDeleteDepartment, useSendInvite } from '@/services/mutations';
+import {
+  useDeleteDepartment,
+  useSendDepartmentInvite,
+} from '@/services/mutations/departments';
 import { useDepartments } from '@/services/queries';
+import Departments from '@/types/departments';
 import {
   SortingState,
   getCoreRowModel,
@@ -18,8 +23,6 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { useEffect, useMemo, useState } from 'react';
-import Departments from '@/types/departments';
-import { Loader } from '@/components/ui/Loader';
 
 const DepartmentsTable = () => {
   const { user } = useUser();
@@ -41,7 +44,7 @@ const DepartmentsTable = () => {
     instituteId,
     requestingUserId: userId,
   });
-  const { sendInvite } = useSendInvite({ instituteId });
+  const { sendInvite } = useSendDepartmentInvite({ instituteId });
 
   const departmentColumns = useMemo(
     () =>

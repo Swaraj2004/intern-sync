@@ -9,20 +9,18 @@ type ColumnProps = {
   onDelete: (roleId: string, uid: string, authId: string) => void;
   onSendInvite: (
     email: string,
-    uid: string,
+    userId: string,
     name: string,
-    instituteId: number,
     roleId: string
   ) => void;
   roleId: string;
   instituteId: number;
 };
 
-export const getDepartmentColumns = ({
+const getDepartmentColumns = ({
   onDelete,
   onSendInvite,
   roleId,
-  instituteId,
 }: ColumnProps): ColumnDef<Departments>[] => [
   {
     accessorKey: 'name',
@@ -39,8 +37,8 @@ export const getDepartmentColumns = ({
     cell: ({ row }) => <div>{row.getValue('name')}</div>,
   },
   {
+    id: 'users.name',
     accessorFn: (row) => row.users?.name,
-    accessorKey: 'users.name',
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -54,8 +52,8 @@ export const getDepartmentColumns = ({
     cell: ({ row }) => <div>{row.original.users?.name}</div>,
   },
   {
-    accessorFn: (row) => row.users?.email,
     id: 'users.email',
+    accessorFn: (row) => row.users?.email,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -92,7 +90,6 @@ export const getDepartmentColumns = ({
             row.original.users?.email || '',
             row.original.uid,
             row.original.users?.name || '',
-            instituteId,
             roleId
           )
         }
@@ -101,3 +98,5 @@ export const getDepartmentColumns = ({
     ),
   },
 ];
+
+export default getDepartmentColumns;
