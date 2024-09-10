@@ -8,9 +8,7 @@ const DepartmentsPage = async () => {
         <h1 className="font-semibold text-2xl">Departments</h1>
         <AddDepartmentForm />
       </div>
-      <div className="p-4 bg-card rounded-lg">
-        <DepartmentsTable />
-      </div>
+      <DepartmentsTable />
     </div>
   );
 };
