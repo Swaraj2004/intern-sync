@@ -6,21 +6,14 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
 type ColumnProps = {
-  onDelete: (roleId: string, uid: string, authId: string) => void;
-  onSendInvite: (
-    email: string,
-    userId: string,
-    name: string,
-    roleId: string
-  ) => void;
-  roleId: string;
+  onDelete: (uid: string, authId: string) => void;
+  onSendInvite: (email: string, userId: string, name: string) => void;
   instituteId: number;
 };
 
 const getCollegeMentorColumns = ({
   onDelete,
   onSendInvite,
-  roleId,
 }: ColumnProps): ColumnDef<CollegeMentors>[] => [
   {
     id: 'users.name',
@@ -69,14 +62,13 @@ const getCollegeMentorColumns = ({
     cell: ({ row }) => (
       <CollegeMentorActions
         onDelete={async () =>
-          onDelete(roleId, row.original.uid, row.original.users?.auth_id || '')
+          onDelete(row.original.uid, row.original.users?.auth_id || '')
         }
         onSendInvite={async () =>
           onSendInvite(
             row.original.users?.email || '',
             row.original.uid,
-            row.original.users?.name || '',
-            roleId
+            row.original.users?.name || ''
           )
         }
         isVerified={row.original.users?.is_verified || false}

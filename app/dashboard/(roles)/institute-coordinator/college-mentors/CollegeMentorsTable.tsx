@@ -6,7 +6,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
-import { useRoles } from '@/context/RolesContext';
 import { useUser } from '@/context/UserContext';
 import {
   useDeleteCollegeMentor,
@@ -26,7 +25,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 const CollegeMentorsTable = () => {
   const { user } = useUser();
-  const { roles } = useRoles();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -37,7 +35,6 @@ const CollegeMentorsTable = () => {
 
   const instituteId: number = user?.user_metadata.institute_id;
   const userId: string = user?.user_metadata.uid;
-  const roleId = roles?.['institute-coordinator'] || '';
 
   const { data: collegeMentors, isLoading } = useCollegeMentors({
     instituteId,
@@ -53,10 +50,9 @@ const CollegeMentorsTable = () => {
       getCollegeMentorColumns({
         onDelete: deleteCollegeMentor,
         onSendInvite: sendInvite,
-        roleId,
         instituteId,
       }),
-    [deleteCollegeMentor, sendInvite, roleId, instituteId]
+    [deleteCollegeMentor, sendInvite, instituteId]
   );
 
   const tableData = useMemo(

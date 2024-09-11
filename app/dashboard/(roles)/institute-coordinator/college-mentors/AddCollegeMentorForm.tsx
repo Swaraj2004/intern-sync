@@ -17,45 +17,27 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import InputBox from '@/components/ui/InputBox';
-import { useRoles } from '@/context/RolesContext';
+import SearchInput from '@/components/ui/SearchInput';
 import { useUser } from '@/context/UserContext';
 import addCollegeMentorFormSchema from '@/formSchemas/addCollegeMentor';
 import { useAddCollegeMentor } from '@/services/mutations/college-mentors';
+import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, ChevronsUpDown, PlusIcon } from 'lucide-react';
+import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
+import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
-import { supabaseClient } from '@/utils/supabase/client';
-import { cn } from '@/lib/utils';
-import SearchInput from '@/components/ui/SearchInput';
 
 const supabase = supabaseClient();
 
 const AddCollegeMentorForm = () => {
   const { user } = useUser();
-  const { roles } = useRoles();
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const instituteId: number = user?.user_metadata.institute_id;
   const userId: string = user?.user_metadata.uid;
-  const roleId: string = roles?.['college-mentor'] || '';
 
   const { data } = useQuery(
     instituteId
@@ -104,7 +86,6 @@ const AddCollegeMentorForm = () => {
       email,
       departmentId,
       sendInvite,
-      roleId,
       contact,
       dob
     );
@@ -150,68 +131,6 @@ const AddCollegeMentorForm = () => {
                   form={form}
                 />
               )}
-              {/* {departments && (
-                <FormField
-                  control={form.control}
-                  name="departmentId"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Department</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant="outline"
-                              role="combobox"
-                              className={cn(
-                                'w-[200px] justify-between',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value
-                                ? departments.find(
-                                    (dept) => dept.name === field.value
-                                  )?.name
-                                : 'Select department'}
-                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-[200px] p-0">
-                          <Command>
-                            <CommandInput placeholder="Search department" />
-                            <CommandList>
-                              <CommandEmpty>No department found.</CommandEmpty>
-                              <CommandGroup>
-                                {departments.map((dept) => (
-                                  <CommandItem
-                                    value={dept.uid}
-                                    key={dept.uid}
-                                    onSelect={() => {
-                                      form.setValue('departmentId', dept.uid);
-                                    }}
-                                  >
-                                    <Check
-                                      className={cn(
-                                        'mr-2 h-4 w-4',
-                                        dept.name === field.value
-                                          ? 'opacity-100'
-                                          : 'opacity-0'
-                                      )}
-                                    />
-                                    {dept.name}
-                                  </CommandItem>
-                                ))}
-                              </CommandGroup>
-                            </CommandList>
-                          </Command>
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )} */}
               <FormField
                 control={form.control}
                 name="sendInvite"

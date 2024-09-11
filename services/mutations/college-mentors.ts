@@ -26,7 +26,6 @@ export const useAddCollegeMentor = ({
     email: string,
     departmentId: string,
     sendInvite: boolean,
-    roleId: string,
     contact?: number,
     dob?: string
   ) => {
@@ -118,11 +117,7 @@ export const useDeleteCollegeMentor = ({
   const { mutate } = useCollegeMentors({ instituteId, departmentId });
   const [isLoading, setIsLoading] = useState(false);
 
-  const deleteCollegeMentor = async (
-    roleId: string,
-    userId: string,
-    authId: string | null
-  ) => {
+  const deleteCollegeMentor = async (userId: string, authId: string | null) => {
     setIsLoading(true);
 
     mutate((currentData) => {
@@ -181,12 +176,7 @@ export const useSendCollegeMentorInvite = ({
   const { mutate } = useCollegeMentors({ instituteId, departmentId });
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendInvite = async (
-    email: string,
-    userId: string,
-    name: string,
-    roleId: string
-  ) => {
+  const sendInvite = async (email: string, userId: string, name: string) => {
     setIsLoading(true);
 
     mutate((currentData) => {
