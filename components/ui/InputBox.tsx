@@ -32,7 +32,9 @@ const InputBox = ({
       name={id}
       render={({ field }) => (
         <FormItem className="w-full">
-          {!noLabel && <FormLabel>{label}</FormLabel>}
+          <FormLabel className={`${noLabel ? 'sr-only' : ''}`}>
+            {label}
+          </FormLabel>
           <FormControl>
             <Input
               type={type}
