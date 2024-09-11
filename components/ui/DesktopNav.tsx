@@ -16,7 +16,7 @@ const DesktopNav = () => {
   const role = pathname.split('/')[2];
 
   return (
-    <nav className="flex flex-col h-full">
+    <nav className="hidden lg:flex flex-col h-full">
       <div>
         <Link href="/" className="flex items-center gap-3 rounded-md">
           <Logo className="h-10 w-10" />

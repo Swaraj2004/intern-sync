@@ -26,7 +26,7 @@ const MobileNav = () => {
   const role = pathname.split('/')[2];
 
   return (
-    <nav className="px-3 py-2 h-14 flex items-center gap-3">
+    <nav className="px-3 py-2 h-14 flex items-center gap-3 lg:hidden">
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetTrigger>
           <MenuIcon className="h-8 w-8" />
