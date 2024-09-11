@@ -475,63 +475,58 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      add_department_coordinator:
-        | {
-            Args: {
-              department_coordinator_name: string
-              email: string
-              department_name: string
-              institute_id: number
-              role_id: string
-            }
-            Returns: {
-              user_id: string
-              auth_id: string
-              is_new_user: boolean
-              has_role: boolean
-            }[]
-          }
-        | {
-            Args: {
-              department_coordinator_name: string
-              email: string
-              department_name: string
-              institute_id: number
-              role_id: string
-              requesting_user_id: string
-            }
-            Returns: {
-              user_id: string
-              auth_id: string
-              is_new_user: boolean
-              has_role: boolean
-            }[]
-          }
-      delete_department:
-        | {
-            Args: {
-              user_id: string
-              role_id: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              user_id: string
-              role_id: string
-              institute_id: number
-              requesting_user_id: string
-            }
-            Returns: Json
-          }
-        | {
-            Args: {
-              user_id: string
-              role_id: string
-              requesting_user_id: string
-            }
-            Returns: Json
-          }
+      add_college_mentor: {
+        Args: {
+          mentor_name: string
+          email: string
+          institute_id: number
+          department_id: string
+          requesting_user_id: string
+          contact?: number
+          dob?: string
+        }
+        Returns: {
+          user_id: string
+          auth_id: string
+          is_new_user: boolean
+          has_role: boolean
+          is_verified: boolean
+        }[]
+      }
+      add_department_coordinator: {
+        Args: {
+          department_coordinator_name: string
+          email: string
+          department_name: string
+          institute_id: number
+          role_id: string
+          requesting_user_id: string
+        }
+        Returns: {
+          user_id: string
+          auth_id: string
+          is_new_user: boolean
+          has_role: boolean
+          is_verified: boolean
+        }[]
+      }
+      delete_college_mentor: {
+        Args: {
+          user_id: string
+          institute_id: number
+          requesting_user_id: string
+          department_id?: string
+        }
+        Returns: Json
+      }
+      delete_department: {
+        Args: {
+          user_id: string
+          institute_id: number
+          requesting_user_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

@@ -62,15 +62,18 @@ export const useAddDepartment = ({
         requesting_user_id: userId,
       });
 
-      if (error) throw error;
+      if (error) {
+        toast.error(error.details);
+        return;
+      }
 
       const result = data[0];
 
-      if (result && result.is_new_user === false && result.has_role === false) {
+      if (result && !result.is_new_user && !result.has_role && result.auth_id) {
         try {
           await updateUserByAuthId(
             result.auth_id,
-            roleId,
+            'department-coordinator',
             departmentCoordinatorName
           );
           toast.success(
@@ -80,14 +83,13 @@ export const useAddDepartment = ({
           if (typeof error === 'string') toast.error(error);
           else console.error(error);
         }
-      } else if (result && result.is_new_user === true && sendInvite) {
+      } else if (result && !result.is_verified && sendInvite) {
         try {
           const data = await sendInviteEmail(
             email,
             result.user_id,
             departmentCoordinatorName,
-            instituteId,
-            roleId
+            instituteId
           );
 
           if (data) {
@@ -150,20 +152,27 @@ export const useDeleteDepartment = ({
     try {
       const { data, error } = await supabase.rpc('delete_department', {
         user_id: userId,
-        role_id: roleId,
         institute_id: instituteId,
         requesting_user_id: requestingUserId,
       });
 
-      if (error) throw error;
+      if (error) {
+        toast.error(error.details);
+        return;
+      }
 
       const result = data as {
         is_user_deleted: boolean;
       } | null;
 
-      if (authId && result && result.is_user_deleted === false) {
+      if (authId && result && !result.is_user_deleted) {
         try {
-          await updateUserByAuthId(authId, roleId, undefined, 'remove');
+          await updateUserByAuthId(
+            authId,
+            'department-coordinator',
+            undefined,
+            'remove'
+          );
           toast.success('Department role deleted successfully.');
         } catch (error) {
           if (typeof error === 'string') toast.error(error);
@@ -171,7 +180,7 @@ export const useDeleteDepartment = ({
         }
       }
 
-      if (authId && result && result.is_user_deleted === true) {
+      if (authId && result && result.is_user_deleted) {
         try {
           await deleteUserById(authId);
           toast.success('Department deleted successfully.');
@@ -232,13 +241,7 @@ export const useSendDepartmentInvite = ({
     }, false);
 
     try {
-      const { user } = await sendInviteEmail(
-        email,
-        userId,
-        name,
-        instituteId,
-        roleId
-      );
+      const { user } = await sendInviteEmail(email, userId, name, instituteId);
 
       await supabase
         .from('users')

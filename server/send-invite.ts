@@ -10,12 +10,12 @@ export default async function sendInviteEmail(
   email: string,
   uid: string,
   name: string,
-  insitituteId: number,
-  roleId: string
+  insitituteId: number
 ) {
   const supabase = supabaseServer();
   const supabaseAdminClient = supabaseAdmin();
 
+  // Get the current authenticated user
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -24,6 +24,7 @@ export default async function sendInviteEmail(
     throw new Error('User not authorized.');
   }
 
+  // Fetch all roles from the database
   const { data: rolesData, error: rolesError } = await getRoles();
   if (rolesError) {
     throw new Error(rolesError.details);
@@ -34,17 +35,41 @@ export default async function sendInviteEmail(
     acc[name] = id;
     return acc;
   }, {} as Record<string, string>);
-  const roleIds = user.user_metadata.role_ids as string[];
 
-  const hasRole =
-    roleIds.includes(roleMap['institute-coordinator']) ||
-    roleIds.includes(roleMap['department-coordinator']) ||
-    roleIds.includes(roleMap['college-mentor']);
+  // Fetch the user's roles from user_roles table
+  const { data: userRoles, error: userRolesError } = await supabase
+    .from('user_roles')
+    .select('role_id')
+    .eq('uid', user.user_metadata.uid);
 
-  if (!hasRole) {
+  if (userRolesError) {
+    throw new Error(userRolesError.message);
+  }
+
+  // Get role IDs from user_roles
+  const userRoleIds = userRoles.map((role) => role.role_id);
+
+  // Check if the user has the appropriate role to send an invite
+  const hasRequiredRole =
+    userRoleIds.includes(roleMap['institute-coordinator']) ||
+    userRoleIds.includes(roleMap['department-coordinator']) ||
+    userRoleIds.includes(roleMap['college-mentor']);
+
+  if (!hasRequiredRole) {
     throw new Error('User does not have the required role.');
   }
 
+  // Fetch the roles for the invited user
+  const { data: inviteeRoles, error: inviteeRolesError } = await supabase
+    .from('user_roles')
+    .select('role_id')
+    .eq('uid', uid);
+
+  if (inviteeRolesError) {
+    throw new Error(inviteeRolesError.message);
+  }
+
+  // Send the invite email using Supabase admin client
   const { data, error: inviteError } =
     await supabaseAdminClient.auth.admin.inviteUserByEmail(email, {
       data: {
@@ -52,7 +77,7 @@ export default async function sendInviteEmail(
         name,
         email,
         institute_id: insitituteId,
-        role_ids: [roleId],
+        role_ids: inviteeRoles.map((role) => role.role_id),
       },
       redirectTo: `${process.env.NEXT_PUBLIC_URL}/verify-email`,
     });
