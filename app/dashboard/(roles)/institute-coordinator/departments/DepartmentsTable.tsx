@@ -6,7 +6,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
-import { useRoles } from '@/context/RolesContext';
 import { useUser } from '@/context/UserContext';
 import {
   useDeleteDepartment,
@@ -26,7 +25,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 const DepartmentsTable = () => {
   const { user } = useUser();
-  const { roles } = useRoles();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -37,7 +35,6 @@ const DepartmentsTable = () => {
 
   const instituteId: number = user?.user_metadata.institute_id;
   const userId: string = user?.user_metadata.uid;
-  const roleId = roles?.['department-coordinator'] || '';
 
   const { data: departments, isLoading } = useDepartments({ instituteId });
   const { deleteDepartment } = useDeleteDepartment({
@@ -51,10 +48,9 @@ const DepartmentsTable = () => {
       getDepartmentColumns({
         onDelete: deleteDepartment,
         onSendInvite: sendInvite,
-        roleId,
         instituteId,
       }),
-    [deleteDepartment, sendInvite, roleId, instituteId]
+    [deleteDepartment, sendInvite, instituteId]
   );
 
   const tableData = useMemo(

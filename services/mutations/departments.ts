@@ -25,8 +25,7 @@ export const useAddDepartment = ({
     departmentName: string,
     departmentCoordinatorName: string,
     email: string,
-    sendInvite: boolean,
-    roleId: string
+    sendInvite: boolean
   ) => {
     setIsLoading(true);
 
@@ -58,7 +57,6 @@ export const useAddDepartment = ({
         department_name: departmentName,
         department_coordinator_name: departmentCoordinatorName,
         email,
-        role_id: roleId,
         requesting_user_id: userId,
       });
 
@@ -133,11 +131,7 @@ export const useDeleteDepartment = ({
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const deleteDepartment = async (
-    roleId: string,
-    userId: string,
-    authId: string | null
-  ) => {
+  const deleteDepartment = async (userId: string, authId: string | null) => {
     setIsLoading(true);
 
     mutate((currentData) => {
@@ -214,12 +208,7 @@ export const useSendDepartmentInvite = ({
   });
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendInvite = async (
-    email: string,
-    userId: string,
-    name: string,
-    roleId: string
-  ) => {
+  const sendInvite = async (email: string, userId: string, name: string) => {
     setIsLoading(true);
 
     mutate((currentData) => {

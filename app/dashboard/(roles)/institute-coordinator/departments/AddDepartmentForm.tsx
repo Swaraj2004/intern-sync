@@ -19,7 +19,6 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import InputBox from '@/components/ui/InputBox';
-import { useRoles } from '@/context/RolesContext';
 import { useUser } from '@/context/UserContext';
 import addDepartmentFormSchema from '@/formSchemas/addDepartment';
 import { useAddDepartment } from '@/services/mutations/departments';
@@ -31,7 +30,6 @@ import * as z from 'zod';
 
 const AddDepartmentForm = () => {
   const { user } = useUser();
-  const { roles } = useRoles();
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const form = useForm<z.infer<typeof addDepartmentFormSchema>>({
@@ -46,7 +44,6 @@ const AddDepartmentForm = () => {
 
   const instituteId: number = user?.user_metadata.institute_id;
   const userId: string = user?.user_metadata.uid;
-  const roleId: string = roles?.['department-coordinator'] || '';
 
   const { addDepartment } = useAddDepartment({
     instituteId,
@@ -64,8 +61,7 @@ const AddDepartmentForm = () => {
       departmentName,
       departmentCoordinatorName,
       email,
-      sendInvite,
-      roleId
+      sendInvite
     );
   };
 
