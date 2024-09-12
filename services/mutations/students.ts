@@ -1,15 +1,16 @@
 import deleteUserById from '@/server/delete-user';
 import sendInviteEmail from '@/server/send-invite';
 import updateUserByAuthId from '@/server/update-user';
-import { useCollegeMentors } from '@/services/queries';
-import CollegeMentors from '@/types/college-mentors';
+import { useStudents } from '@/services/queries';
+import Students from '@/types/students';
 import { supabaseClient } from '@/utils/supabase/client';
+import { useUpdateMutation } from '@supabase-cache-helpers/postgrest-swr';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 const supabase = supabaseClient();
 
-export const useAddCollegeMentor = ({
+export const useAddStudent = ({
   userId,
   instituteId,
   departmentId,
@@ -18,28 +19,42 @@ export const useAddCollegeMentor = ({
   instituteId: number;
   departmentId?: string;
 }) => {
-  const { mutate } = useCollegeMentors({ instituteId, departmentId });
+  const { mutate } = useStudents({ instituteId, departmentId });
   const [isLoading, setIsLoading] = useState(false);
 
-  const addCollegeMentor = async (
-    mentorName: string,
+  const addStudent = async (
+    studentName: string,
     email: string,
     departmentId: string,
+    departmentName: string,
     sendInvite: boolean,
+    collegeMentorId?: string,
+    collegeMentorName?: string,
     contact?: number,
     dob?: string
   ) => {
     setIsLoading(true);
 
-    const optimisticUpdate: CollegeMentors = {
+    const optimisticUpdate: Students = {
       uid: crypto.randomUUID(),
+      departments: {
+        uid: departmentId,
+        name: departmentName,
+      },
       users: {
         id: crypto.randomUUID(),
         auth_id: null,
-        name: mentorName,
+        name: studentName,
         email,
         is_registered: sendInvite,
         is_verified: false,
+      },
+      college_mentors: {
+        uid: collegeMentorId || crypto.randomUUID(),
+        users: {
+          id: collegeMentorId || crypto.randomUUID(),
+          name: collegeMentorName || '',
+        },
       },
     };
 
@@ -52,14 +67,15 @@ export const useAddCollegeMentor = ({
     }, false);
 
     try {
-      const { data, error } = await supabase.rpc('add_college_mentor', {
-        mentor_name: mentorName,
+      const { data, error } = await supabase.rpc('add_student', {
+        student_name: studentName,
         email,
         institute_id: instituteId,
         department_id: departmentId,
         requesting_user_id: userId,
-        contact,
-        dob,
+        college_mentor_id: collegeMentorId || undefined,
+        contact: contact || undefined,
+        dob: dob || undefined,
       });
 
       if (error) {
@@ -70,13 +86,13 @@ export const useAddCollegeMentor = ({
       const result = data[0];
 
       if (result && !result.is_new_user && !result.has_role && result.auth_id) {
-        await updateUserByAuthId(result.auth_id, 'college-mentor', mentorName);
-        toast.success('User already exists, assigned mentor role.');
+        await updateUserByAuthId(result.auth_id, 'student', studentName);
+        toast.success('User already exists, assigned student role.');
       } else if (result && !result.is_verified && sendInvite) {
         const inviteData = await sendInviteEmail(
           email,
           result.user_id,
-          mentorName,
+          studentName,
           instituteId
         );
 
@@ -87,12 +103,12 @@ export const useAddCollegeMentor = ({
             .eq('id', result.user_id);
         }
 
-        toast.success('College mentor added and invite sent.');
+        toast.success('Student added and invite sent.');
       } else {
-        toast.success('College mentor added successfully.');
+        toast.success('Student added successfully.');
       }
     } catch (error) {
-      toast.error('Failed to add mentor. Reverting changes...');
+      toast.error('Failed to add student. Reverting changes...');
     } finally {
       mutate();
       setIsLoading(false);
@@ -100,12 +116,12 @@ export const useAddCollegeMentor = ({
   };
 
   return {
-    addCollegeMentor,
+    addStudent,
     isLoading,
   };
 };
 
-export const useDeleteCollegeMentor = ({
+export const useDeleteStudent = ({
   instituteId,
   departmentId,
   requestingUserId,
@@ -114,22 +130,22 @@ export const useDeleteCollegeMentor = ({
   departmentId?: string;
   requestingUserId: string;
 }) => {
-  const { mutate } = useCollegeMentors({ instituteId, departmentId });
+  const { mutate } = useStudents({ instituteId, departmentId });
   const [isLoading, setIsLoading] = useState(false);
 
-  const deleteCollegeMentor = async (userId: string, authId: string | null) => {
+  const deleteStudent = async (userId: string, authId: string | null) => {
     setIsLoading(true);
 
     mutate((currentData) => {
       if (!currentData?.data) return undefined;
       return {
         ...currentData,
-        data: currentData.data.filter((mentor) => mentor.uid !== userId),
+        data: currentData.data.filter((student) => student.uid !== userId),
       };
     }, false);
 
     try {
-      const { data, error } = await supabase.rpc('delete_college_mentor', {
+      const { data, error } = await supabase.rpc('delete_student', {
         user_id: userId,
         institute_id: instituteId,
         requesting_user_id: requestingUserId,
@@ -144,16 +160,16 @@ export const useDeleteCollegeMentor = ({
       const result = data as { is_user_deleted: boolean } | null;
 
       if (authId && result && !result.is_user_deleted) {
-        await updateUserByAuthId(authId, 'college-mentor', undefined, 'remove');
-        toast.success('College mentor role deleted successfully.');
+        await updateUserByAuthId(authId, 'student', undefined, 'remove');
+        toast.success('Student role deleted successfully.');
       } else if (authId && result && result.is_user_deleted) {
         await deleteUserById(authId);
-        toast.success('College mentor deleted successfully.');
+        toast.success('Student deleted successfully.');
       } else {
-        toast.success('College mentor deleted successfully.');
+        toast.success('Student deleted successfully.');
       }
     } catch (error) {
-      toast.error('Failed to delete mentor. Reverting changes...');
+      toast.error('Failed to delete student. Reverting changes...');
     } finally {
       mutate();
       setIsLoading(false);
@@ -161,19 +177,58 @@ export const useDeleteCollegeMentor = ({
   };
 
   return {
-    deleteCollegeMentor,
+    deleteStudent,
     isLoading,
   };
 };
 
-export const useSendCollegeMentorInvite = ({
+export const useChangeCollegeMentor = ({
   instituteId,
   departmentId,
 }: {
   instituteId: number;
   departmentId?: string;
 }) => {
-  const { mutate } = useCollegeMentors({ instituteId, departmentId });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { trigger: updateMentor } = useUpdateMutation(
+    supabase.from('students'),
+    ['uid'],
+    'college_mentor_id',
+    {
+      onSuccess: () => toast.success('College mentor updated successfully.'),
+      onError: (error) => toast.error('Failed to update college mentor.'),
+    }
+  );
+
+  const changeCollegeMentor = async (
+    studentId: string,
+    newMentorId: string,
+    newMentorName: string
+  ) => {
+    setIsLoading(true);
+
+    await updateMentor({
+      uid: studentId,
+      college_mentor_id: newMentorId,
+    });
+    setIsLoading(false);
+  };
+
+  return {
+    changeCollegeMentor,
+    isLoading,
+  };
+};
+
+export const useSendStudentInvite = ({
+  instituteId,
+  departmentId,
+}: {
+  instituteId: number;
+  departmentId?: string;
+}) => {
+  const { mutate } = useStudents({ instituteId, departmentId });
   const [isLoading, setIsLoading] = useState(false);
 
   const sendInvite = async (email: string, userId: string, name: string) => {
@@ -183,15 +238,15 @@ export const useSendCollegeMentorInvite = ({
       if (!currentData?.data) return undefined;
       return {
         ...currentData,
-        data: currentData.data.map((mentor) =>
-          mentor.uid === userId
+        data: currentData.data.map((student) =>
+          student.uid === userId
             ? {
-                ...mentor,
-                users: mentor.users
-                  ? { ...mentor.users, is_registered: true }
-                  : mentor.users,
+                ...student,
+                users: student.users
+                  ? { ...student.users, is_registered: true }
+                  : student.users,
               }
-            : mentor
+            : student
         ),
       };
     }, false);
