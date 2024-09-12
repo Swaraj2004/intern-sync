@@ -19,27 +19,33 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
-import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
 import { CommandList } from 'cmdk';
+import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
 import { useState } from 'react';
 
 type SearchInputProps = {
   label: string;
   noLabel?: boolean;
+  placeholder?: string;
   id: string;
   options: {
     label: string;
     value: string;
   }[];
   form: any;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
 };
 
 const SearchInput = ({
   label,
   noLabel,
+  placeholder,
   id,
   options,
   form,
+  onValueChange,
+  disabled = false,
 }: SearchInputProps) => {
   const [open, setOpen] = useState(false);
 
@@ -64,13 +70,16 @@ const SearchInput = ({
                   role="combobox"
                   className={cn(
                     'px-3 justify-between border-2 focus:outline-none focus:border-primary',
-                    !field.value && 'text-muted-foreground'
+                    !field.value && 'text-muted-foreground',
+                    disabled &&
+                      ' disabled:pointer-events-auto disabled:cursor-not-allowed opacity-50'
                   )}
+                  disabled={disabled}
                 >
                   {field.value
                     ? options.find((option) => option.value === field.value)
                         ?.label
-                    : `${label}`}
+                    : `${placeholder || (noLabel && label)}`}
                   <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
               </FormControl>
@@ -79,6 +88,7 @@ const SearchInput = ({
               <Command>
                 <CommandInput
                   placeholder={`Search ${label.toLowerCase()}...`}
+                  disabled={disabled}
                 />
                 <CommandEmpty>{`No ${label.toLowerCase()} found.`}</CommandEmpty>
                 <CommandList>
@@ -89,8 +99,10 @@ const SearchInput = ({
                         key={option.value}
                         onSelect={() => {
                           form.setValue(id, option.value);
+                          onValueChange?.(option.value);
                           setOpen(false);
                         }}
+                        disabled={disabled}
                       >
                         <CheckIcon
                           className={cn(

@@ -126,6 +126,7 @@ const AddCollegeMentorForm = () => {
               {departments && (
                 <SearchInput
                   label="Department"
+                  placeholder="Select department"
                   id="departmentId"
                   options={departments}
                   form={form}
