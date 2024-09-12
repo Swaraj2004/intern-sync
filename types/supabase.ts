@@ -317,7 +317,7 @@ export type Database = {
           admission_year: number | null
           batch: string | null
           branch: string | null
-          college_mentor_id: string
+          college_mentor_id: string | null
           company_mentor_id: string | null
           contact: number | null
           created_at: string
@@ -335,7 +335,7 @@ export type Database = {
           admission_year?: number | null
           batch?: string | null
           branch?: string | null
-          college_mentor_id: string
+          college_mentor_id?: string | null
           company_mentor_id?: string | null
           contact?: number | null
           created_at?: string
@@ -353,7 +353,7 @@ export type Database = {
           admission_year?: number | null
           batch?: string | null
           branch?: string | null
-          college_mentor_id?: string
+          college_mentor_id?: string | null
           company_mentor_id?: string | null
           contact?: number | null
           created_at?: string
@@ -499,8 +499,26 @@ export type Database = {
           email: string
           department_name: string
           institute_id: number
-          role_id: string
           requesting_user_id: string
+        }
+        Returns: {
+          user_id: string
+          auth_id: string
+          is_new_user: boolean
+          has_role: boolean
+          is_verified: boolean
+        }[]
+      }
+      add_student: {
+        Args: {
+          student_name: string
+          email: string
+          institute_id: number
+          department_id: string
+          requesting_user_id: string
+          college_mentor_id?: string
+          contact?: number
+          dob?: string
         }
         Returns: {
           user_id: string
@@ -524,6 +542,15 @@ export type Database = {
           user_id: string
           institute_id: number
           requesting_user_id: string
+        }
+        Returns: Json
+      }
+      delete_student: {
+        Args: {
+          user_id: string
+          institute_id: number
+          requesting_user_id: string
+          department_id?: string
         }
         Returns: Json
       }
