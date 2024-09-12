@@ -73,6 +73,7 @@ export const useAddStudent = ({
         institute_id: instituteId,
         department_id: departmentId,
         requesting_user_id: userId,
+        academic_year: new Date().getFullYear(),
         college_mentor_id: collegeMentorId || undefined,
         contact: contact || undefined,
         dob: dob || undefined,

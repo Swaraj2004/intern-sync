@@ -314,7 +314,7 @@ export type Database = {
         Row: {
           academic_year: number | null
           address: string | null
-          admission_year: number | null
+          admission_year: number
           batch: string | null
           branch: string | null
           college_mentor_id: string | null
@@ -332,7 +332,7 @@ export type Database = {
         Insert: {
           academic_year?: number | null
           address?: string | null
-          admission_year?: number | null
+          admission_year: number
           batch?: string | null
           branch?: string | null
           college_mentor_id?: string | null
@@ -350,7 +350,7 @@ export type Database = {
         Update: {
           academic_year?: number | null
           address?: string | null
-          admission_year?: number | null
+          admission_year?: number
           batch?: string | null
           branch?: string | null
           college_mentor_id?: string | null
@@ -516,6 +516,7 @@ export type Database = {
           institute_id: number
           department_id: string
           requesting_user_id: string
+          academic_year: number
           college_mentor_id?: string
           contact?: number
           dob?: string
