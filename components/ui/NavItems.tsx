@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import path from 'path';
 import { useEffect, useState } from 'react';
 
 const NavItems = ({
@@ -59,11 +60,7 @@ const NavItems = ({
     {
       path: `/dashboard/${role}/company-mentors`,
       title: 'Company Mentors',
-      access: [
-        'institute-coordinator',
-        'department-coordinator',
-        'college-mentor',
-      ],
+      access: ['department-coordinator', 'college-mentor'],
     },
     {
       path: `/dashboard/${role}/students`,
@@ -72,6 +69,16 @@ const NavItems = ({
         'institute-coordinator',
         'department-coordinator',
         'college-mentor',
+      ],
+    },
+    {
+      path: `/dashboard/${role}/attendance`,
+      title: 'Attendance',
+      access: [
+        'college-mentor',
+        'student',
+        'company-mentor',
+        'department-coordinator',
       ],
     },
   ];
