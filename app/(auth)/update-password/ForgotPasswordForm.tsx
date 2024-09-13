@@ -33,7 +33,6 @@ const ForgotPasswordForm = () => {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log(event);
         if (event === 'SIGNED_IN') {
           setShowForm(true);
         }
@@ -56,7 +55,7 @@ const ForgotPasswordForm = () => {
   const onSubmit = async (values: z.infer<typeof setPasswordFormSchema>) => {
     setLoading(true);
 
-    const { data, error } = await supabase.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({
       password: values.password,
     });
 
@@ -67,6 +66,7 @@ const ForgotPasswordForm = () => {
     }
 
     toast.success('Password changed successfully. Redirecting to login...');
+
     const { error: signOutError } = await supabase.auth.signOut();
     if (signOutError) {
       toast.error(signOutError.message);

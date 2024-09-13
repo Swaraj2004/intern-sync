@@ -1,4 +1,4 @@
-import UpdatePasswordForm from '@/app/(auth)/update-password/UpdatePasswordForm';
+import ForgotPasswordForm from '@/app/(auth)/update-password/ForgotPasswordForm';
 
 const UpdatePasswordPage = async ({
   searchParams,
@@ -19,7 +19,7 @@ const UpdatePasswordPage = async ({
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <UpdatePasswordForm />
+      <ForgotPasswordForm />
     </div>
   );
 };
