@@ -99,3 +99,47 @@ export const useStudents = ({
     ...rest,
   };
 };
+
+export const useAttendanceWithStudents = ({
+  instituteId,
+  departmentId,
+  collegeMentorId,
+  attendanceDate,
+}: {
+  instituteId: number;
+  departmentId?: string;
+  collegeMentorId?: string;
+  attendanceDate: string;
+}) => {
+  const shouldFetch = Boolean(instituteId && attendanceDate);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? (() => {
+          let query = supabase
+            .from('students')
+            .select(
+              'uid, college_mentors (uid, users (id, name)), departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified), attendance(id, status, date)'
+            )
+            .eq('institute_id', instituteId)
+            .eq('attendance.date', attendanceDate)
+            .order('created_at', { ascending: false });
+
+          if (departmentId) {
+            query = query.eq('department_id', departmentId);
+          }
+
+          if (collegeMentorId) {
+            query = query.eq('college_mentor_id', collegeMentorId);
+          }
+
+          return query;
+        })()
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
