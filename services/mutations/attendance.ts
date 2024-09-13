@@ -8,15 +8,18 @@ const supabase = supabaseClient();
 export const useUpdateAttendance = ({
   instituteId,
   departmentId,
+  collegeMentorId,
   attendanceDate,
 }: {
   instituteId: number;
   departmentId?: string;
+  collegeMentorId?: string;
   attendanceDate: string;
 }) => {
   const { mutate } = useAttendanceWithStudents({
     instituteId,
-    departmentId,
+    departmentId: departmentId || undefined,
+    collegeMentorId: collegeMentorId || undefined,
     attendanceDate,
   });
   const [isLoading, setIsLoading] = useState(false);
