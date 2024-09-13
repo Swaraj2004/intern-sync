@@ -9,6 +9,38 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      attendance: {
+        Row: {
+          created_at: string | null
+          date: string
+          id: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          date: string
+          id?: string
+          status: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string | null
+          date?: string
+          id?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["uid"]
+          },
+        ]
+      }
       college_mentors: {
         Row: {
           contact: number | null
@@ -312,9 +344,9 @@ export type Database = {
       }
       students: {
         Row: {
-          academic_year: number | null
+          academic_year: number
           address: string | null
-          admission_year: number
+          admission_year: number | null
           batch: string | null
           branch: string | null
           college_mentor_id: string | null
@@ -330,9 +362,9 @@ export type Database = {
           uid: string
         }
         Insert: {
-          academic_year?: number | null
+          academic_year: number
           address?: string | null
-          admission_year: number
+          admission_year?: number | null
           batch?: string | null
           branch?: string | null
           college_mentor_id?: string | null
@@ -348,9 +380,9 @@ export type Database = {
           uid: string
         }
         Update: {
-          academic_year?: number | null
+          academic_year?: number
           address?: string | null
-          admission_year?: number
+          admission_year?: number | null
           batch?: string | null
           branch?: string | null
           college_mentor_id?: string | null
