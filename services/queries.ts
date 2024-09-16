@@ -39,7 +39,7 @@ export const useCollegeMentors = ({
           let query = supabase
             .from('college_mentors')
             .select(
-              'uid, users (id, auth_id, name, email, is_registered, is_verified)'
+              'uid, departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified)'
             )
             .eq('institute_id', instituteId)
             .order('created_at', { ascending: false });

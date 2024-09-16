@@ -1,5 +1,9 @@
 type CollegeMentors = {
   uid: string;
+  departments: {
+    uid: string;
+    name: string;
+  } | null;
   users: {
     id: string;
     auth_id: string | null;

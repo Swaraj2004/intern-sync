@@ -24,8 +24,9 @@ export const useAddCollegeMentor = ({
   const addCollegeMentor = async (
     mentorName: string,
     email: string,
-    departmentId: string,
     sendInvite: boolean,
+    departmentId: string,
+    departmentName?: string,
     contact?: number,
     dob?: string
   ) => {
@@ -33,6 +34,10 @@ export const useAddCollegeMentor = ({
 
     const optimisticUpdate: CollegeMentors = {
       uid: crypto.randomUUID(),
+      departments: {
+        uid: departmentId,
+        name: departmentName || '',
+      },
       users: {
         id: crypto.randomUUID(),
         auth_id: null,

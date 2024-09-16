@@ -19,55 +19,27 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 import InputBox from '@/components/ui/InputBox';
-import SearchInput from '@/components/ui/SearchInput';
 import { useUser } from '@/context/UserContext';
-import { addCollegeMentorByInstituteFormSchema } from '@/formSchemas/addCollegeMentor';
+import { addCollegeMentorByDepartmentFormSchema } from '@/formSchemas/addCollegeMentor';
 import { useAddCollegeMentor } from '@/services/mutations/college-mentors';
-import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-const supabase = supabaseClient();
-
 const AddCollegeMentorForm = () => {
   const { user } = useUser();
-  const [departmentId, setDepartmentId] = useState<string>('');
-  const [departmentName, setDepartmentName] = useState<string>('');
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const instituteId: number = user?.user_metadata.institute_id;
   const userId: string = user?.user_metadata.uid;
 
-  const { data } = useQuery(
-    instituteId
-      ? supabase
-          .from('departments')
-          .select('uid, name')
-          .eq('institute_id', instituteId)
-          .order('name', { ascending: true })
-      : null,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
-  const departments = data
-    ? data.map(({ uid, name }) => ({
-        value: uid,
-        label: name,
-      }))
-    : null;
-
   const form = useForm({
-    resolver: zodResolver(addCollegeMentorByInstituteFormSchema),
+    resolver: zodResolver(addCollegeMentorByDepartmentFormSchema),
     defaultValues: {
       collegeMentorName: '',
       email: '',
-      departmentId: '',
       sendInvite: true,
     },
   });
@@ -75,21 +47,16 @@ const AddCollegeMentorForm = () => {
   const { addCollegeMentor } = useAddCollegeMentor({
     userId,
     instituteId,
+    departmentId: userId,
   });
 
   const handleAddMentor = async (
-    values: z.infer<typeof addCollegeMentorByInstituteFormSchema>
+    values: z.infer<typeof addCollegeMentorByDepartmentFormSchema>
   ) => {
-    const { collegeMentorName, email, departmentId, sendInvite } = values;
+    const { collegeMentorName, email, sendInvite } = values;
     setOpenAddDialog(false);
 
-    await addCollegeMentor(
-      collegeMentorName,
-      email,
-      sendInvite,
-      departmentId,
-      departmentName
-    );
+    await addCollegeMentor(collegeMentorName, email, sendInvite, userId);
   };
 
   return (
@@ -124,22 +91,6 @@ const AddCollegeMentorForm = () => {
                 type="email"
                 form={form}
               />
-              {departments && (
-                <SearchInput
-                  label="Department"
-                  placeholder="Select department"
-                  id="departmentId"
-                  options={departments}
-                  form={form}
-                  onValueChange={(value) => {
-                    const selectedDept = departments.find(
-                      (dept) => dept.value === value
-                    );
-                    setDepartmentId(value);
-                    setDepartmentName(selectedDept?.label || '');
-                  }}
-                />
-              )}
               <FormField
                 control={form.control}
                 name="sendInvite"

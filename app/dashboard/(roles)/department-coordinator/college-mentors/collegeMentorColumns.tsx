@@ -1,4 +1,4 @@
-import { CollegeMentorActions } from '@/app/dashboard/(roles)/institute-coordinator/college-mentors/CollegeMentorActions';
+import { CollegeMentorActions } from '@/app/dashboard/(roles)/department-coordinator/college-mentors/CollegeMentorActions';
 import { Button } from '@/components/ui/button';
 import UserStatus from '@/components/ui/UserStatus';
 import CollegeMentors from '@/types/college-mentors';
@@ -46,21 +46,6 @@ const getCollegeMentorColumns = ({
     cell: ({ row }) => (
       <div className="lowercase">{row.original.users?.email || '-'}</div>
     ),
-  },
-  {
-    id: 'departments.name',
-    accessorFn: (row) => row.departments?.name,
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="px-0 hover:bg-transparent"
-      >
-        Department
-        <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.original.departments?.name || '-'}</div>,
   },
   {
     id: 'status',
