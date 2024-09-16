@@ -30,6 +30,7 @@ import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import { PlusIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const supabase = supabaseClient();
 
@@ -104,7 +105,9 @@ const AddStudentForm = () => {
     instituteId,
   });
 
-  const handleAddStudent = async (values: any) => {
+  const handleAddStudent = async (
+    values: z.infer<typeof addStudentFormSchema>
+  ) => {
     const { studentName, email, sendInvite } = values;
     setOpenAddDialog(false);
 
