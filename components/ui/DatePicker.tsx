@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CalendarIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const MONTHS = [
   'January',
@@ -37,7 +37,7 @@ const MobileDatePickerCard = ({
   setDate,
 }: {
   date: Date;
-  setDate: React.Dispatch<React.SetStateAction<Date>>;
+  setDate: (date: Date) => void;
 }) => {
   const [displayMonth, setDisplayMonth] = useState(date.getMonth());
   const [displayYear, setDisplayYear] = useState(date.getFullYear());
