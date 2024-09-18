@@ -1,4 +1,5 @@
-import { StudentAttendanceActions } from '@/components/attendance/StudentAttendanceActions';
+import StudentAttendanceActions from '@/components/attendance/StudentAttendanceActions';
+import StudentAttendanceApprovalActions from '@/components/attendance/StudentAttendanceApprovalActions';
 import AttendanceStatus from '@/components/ui/AttendanceStatus';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,11 +8,18 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
 type ColumnProps = {
-  onUpdate: (attendanceId: string, studentId: string, status: string) => void;
+  onUpsert: (
+    actionType: 'insert' | 'update',
+    studentId: string,
+    status: string,
+    attendanceId?: string
+  ) => void;
+  departmentId: string;
 };
 
 const getStudentAttendanceColumns = ({
-  onUpdate,
+  onUpsert,
+  departmentId,
 }: ColumnProps): ColumnDef<StudentAttendance>[] => [
   {
     id: 'users.name',
@@ -50,21 +58,27 @@ const getStudentAttendanceColumns = ({
     ),
   },
   {
-    id: 'actions',
+    id: 'approval',
     header: 'Approval',
     cell: ({ row }) => {
       const attendance = row.original.attendance[0];
       return attendance && attendance.status === 'pending' ? (
-        <StudentAttendanceActions
+        <StudentAttendanceApprovalActions
           onApprove={async () => {
-            onUpdate(
-              row.original.attendance[0].id,
+            onUpsert(
+              'update',
               row.original.uid,
-              'present'
+              'present',
+              row.original.attendance[0].id
             );
           }}
           onReject={async () => {
-            onUpdate(row.original.attendance[0].id, row.original.uid, 'absent');
+            onUpsert(
+              'update',
+              row.original.uid,
+              'absent',
+              row.original.attendance[0].id
+            );
           }}
         />
       ) : !attendance ? (
@@ -75,6 +89,23 @@ const getStudentAttendanceColumns = ({
         <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400">
           Approved
         </Badge>
+      );
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const attendanceStatus = row.original.attendance[0]?.status || '';
+      const attendanceId = row.original.attendance[0]?.id || undefined;
+      const studentId = row.original.uid;
+
+      return (
+        <StudentAttendanceActions
+          studentId={studentId}
+          attendanceStatus={attendanceStatus}
+          attendanceId={attendanceId}
+          departmentId={departmentId}
+        />
       );
     },
   },

@@ -8,7 +8,7 @@ import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
 import { useUser } from '@/context/UserContext';
 import { formatDateForInput } from '@/lib/utils';
-import { useUpdateAttendance } from '@/services/mutations/attendance';
+import { useUpsertAttendance } from '@/services/mutations/attendance';
 import { useAttendanceWithStudents } from '@/services/queries';
 import StudentAttendance from '@/types/students-attendance';
 import {
@@ -42,7 +42,7 @@ const AttendanceTable = ({ date }: { date: Date }) => {
     attendanceDate: dateString,
   });
 
-  const { updateAttendance } = useUpdateAttendance({
+  const { upsertAttendance } = useUpsertAttendance({
     instituteId,
     collegeMentorId: userId,
     attendanceDate: dateString,
@@ -51,9 +51,10 @@ const AttendanceTable = ({ date }: { date: Date }) => {
   const studentAttendanceColumns = useMemo(
     () =>
       getStudentAttendanceColumns({
-        onUpdate: updateAttendance,
+        onUpsert: upsertAttendance,
+        collegeMentorId: userId,
       }),
-    [updateAttendance]
+    [upsertAttendance, userId]
   );
 
   const tableData = useMemo(

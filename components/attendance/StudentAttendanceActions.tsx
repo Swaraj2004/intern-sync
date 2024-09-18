@@ -1,67 +1,120 @@
 'use client';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { CheckIcon, XIcon } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Form } from '@/components/ui/form';
+import SelectInput from '@/components/ui/SelectInput';
+import { useAttendanceDate } from '@/context/AttendanceDateContext';
+import { useUser } from '@/context/UserContext';
+import { formatDateForInput } from '@/lib/utils';
+import { useUpsertAttendance } from '@/services/mutations/attendance';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SquarePenIcon } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 type StudentAttendanceActionsProps = {
-  onApprove: () => Promise<void>;
-  onReject: () => Promise<void>;
+  studentId: string;
+  attendanceStatus: string;
+  attendanceId?: string;
+  departmentId?: string;
+  collegeMentorId?: string;
 };
 
-export const StudentAttendanceActions: React.FC<
-  StudentAttendanceActionsProps
-> = ({ onApprove, onReject }) => {
+const statusOptions = [
+  { label: 'Present', value: 'present' },
+  { label: 'Absent', value: 'absent' },
+  { label: 'Pending', value: 'pending' },
+];
+
+const FormSchema = z.object({
+  attendanceStatus: z.string().min(1, { message: 'Please select a status.' }),
+});
+
+const StudentAttendanceActions = ({
+  studentId,
+  attendanceStatus,
+  attendanceId,
+  departmentId,
+  collegeMentorId,
+}: StudentAttendanceActionsProps) => {
+  const { user } = useUser();
+  const { attendanceDate } = useAttendanceDate();
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const instituteId: number = user?.user_metadata.institute_id;
+
+  const { upsertAttendance } = useUpsertAttendance({
+    instituteId: instituteId,
+    departmentId: departmentId,
+    collegeMentorId: collegeMentorId,
+    attendanceDate: formatDateForInput(attendanceDate),
+  });
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      attendanceStatus: attendanceStatus || '',
+    },
+  });
+
+  const handleUpdateAttendance = async (data: z.infer<typeof FormSchema>) => {
+    setOpenDialog(false);
+    await upsertAttendance(
+      attendanceId ? 'update' : 'insert',
+      studentId,
+      data.attendanceStatus,
+      attendanceId
+    );
+  };
+
   return (
-    <div className="flex gap-3">
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button className="bg-green-500 hover:bg-green-600 h-8 w-8 p-1">
-            <CheckIcon className="h-4 w-4" />
+    <div className="flex gap-3 justify-end">
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogTrigger asChild>
+          <Button size="icon-sm" className="bg-sky-500 hover:bg-sky-600">
+            <SquarePenIcon className="h-4 w-4" />
           </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Approve student attendance?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will mark the student&apos;s attendance as present.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onApprove}>Continue</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button size="icon-sm" variant="destructive">
-            <XIcon className="h-4 w-4 dark:text-black" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Reject student attendance?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will mark the student&apos;s attendance as absent.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onReject}>Continue</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+        </DialogTrigger>
+        <DialogContent
+          aria-describedby={undefined}
+          className="w-[calc(100vw-24px)] min-[450px]:max-w-[425px]"
+        >
+          <DialogHeader>
+            <DialogTitle>Update student attendance</DialogTitle>
+          </DialogHeader>
+          <div>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handleUpdateAttendance)}
+                className="space-y-6 pt-3"
+              >
+                <SelectInput
+                  id="attendanceStatus"
+                  form={form}
+                  label="Status"
+                  noLabel
+                  placeholder="Choose a status"
+                  options={statusOptions}
+                />
+                <DialogFooter>
+                  <Button>Update</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+export default StudentAttendanceActions;
