@@ -1,6 +1,6 @@
 'use client';
 
-import getStudentColumns from '@/app/dashboard/(roles)/institute-coordinator/students/studentColumns';
+import getStudentColumns from '@/app/dashboard/(roles)/department-coordinator/students/studentColumns';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
@@ -39,15 +39,21 @@ const StudentsTable = () => {
 
   const { data: students, isLoading } = useStudents({
     instituteId,
+    departmentId: userId,
   });
 
   const { deleteStudent } = useDeleteStudent({
     instituteId,
+    departmentId: userId,
     requestingUserId: userId,
   });
-  const { sendInvite } = useSendStudentInvite({ instituteId });
+  const { sendInvite } = useSendStudentInvite({
+    instituteId,
+    departmentId: userId,
+  });
   const { changeCollegeMentor } = useChangeCollegeMentor({
     instituteId,
+    departmentId: userId,
   });
 
   const studentColumns = useMemo(

@@ -24,7 +24,6 @@ import { Form } from '@/components/ui/form';
 import { Loader } from '@/components/ui/Loader';
 import SearchInput from '@/components/ui/SearchInput';
 import SelectInputSkeleton from '@/components/ui/SelectInputSkeleton';
-import { useChangeCollegeMentor } from '@/services/mutations/students';
 import { useCollegeMentors } from '@/services/queries';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MailPlusIcon, Trash2, UserRoundPenIcon } from 'lucide-react';
@@ -33,11 +32,16 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 type StudentActionsProps = {
-  onDelete: () => Promise<void>;
-  onSendInvite: () => Promise<void>;
+  deleteStudent: () => Promise<void>;
+  sendInvite: () => Promise<void>;
+  changeCollegeMentor: (
+    studentId: string,
+    mentorId: string,
+    mentorName: string
+  ) => void;
   studentId: string;
-  currentMentorId: string | undefined;
-  departmentId: string | undefined;
+  studentDepartmentId?: string;
+  currentMentorId?: string;
   instituteId: number;
   isVerified: boolean;
 };
@@ -49,11 +53,12 @@ const FormSchema = z.object({
 });
 
 export const StudentActions: React.FC<StudentActionsProps> = ({
-  onDelete,
-  onSendInvite,
+  deleteStudent,
+  sendInvite,
+  changeCollegeMentor,
   studentId,
+  studentDepartmentId,
   currentMentorId,
-  departmentId,
   instituteId,
   isVerified,
 }) => {
@@ -61,10 +66,7 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
   const [selectedMentorName, setSelectedMentorName] = useState<string>('');
   const { data, isLoading: isMentorsLoading } = useCollegeMentors({
     instituteId,
-    departmentId,
-  });
-  const { changeCollegeMentor } = useChangeCollegeMentor({
-    instituteId,
+    departmentId: studentDepartmentId,
   });
 
   const collegeMentors = data
@@ -82,9 +84,9 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
   });
 
   const handleChangeMentor = async (data: z.infer<typeof FormSchema>) => {
-    const selectedMentor = data.collegeMentorId;
+    const selectedMentorId = data.collegeMentorId;
     setOpenDialog(false);
-    await changeCollegeMentor(studentId, selectedMentor, selectedMentorName);
+    changeCollegeMentor(studentId, selectedMentorId, selectedMentorName);
   };
 
   return (
@@ -108,7 +110,7 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={onSendInvite}>
+              <AlertDialogAction onClick={sendInvite}>
                 Continue
               </AlertDialogAction>
             </AlertDialogFooter>
@@ -193,7 +195,9 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onDelete}>Continue</AlertDialogAction>
+            <AlertDialogAction onClick={deleteStudent}>
+              Continue
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

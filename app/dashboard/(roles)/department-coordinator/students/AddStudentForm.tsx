@@ -22,7 +22,7 @@ import InputBox from '@/components/ui/InputBox';
 import SearchInput from '@/components/ui/SearchInput';
 import SelectInputSkeleton from '@/components/ui/SelectInputSkeleton';
 import { useUser } from '@/context/UserContext';
-import { addStudentByInstituteFormSchema } from '@/formSchemas/addStudent';
+import { addStudentByDepartmentFormSchema } from '@/formSchemas/addStudent';
 import { useAddStudent } from '@/services/mutations/students';
 import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,50 +37,33 @@ const supabase = supabaseClient();
 const AddStudentForm = () => {
   const { user } = useUser();
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [collegeMentorId, setCollegeMentorId] = useState<string>('');
   const [collegeMentorName, setCollegeMentorName] = useState<string>('');
-  const [departmentId, setDepartmentId] = useState<string>('');
-  const [departmentName, setDepartmentName] = useState<string>('');
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(
-    null
-  );
 
   const instituteId: number = user?.user_metadata.institute_id;
   const userId: string = user?.user_metadata.uid;
 
   const { data: departmentData } = useQuery(
-    instituteId
-      ? supabase
-          .from('departments')
-          .select('uid, name')
-          .eq('institute_id', instituteId)
-          .order('name', { ascending: true })
+    userId
+      ? supabase.from('departments').select('name').eq('uid', userId).single()
       : null,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     }
   );
+
+  const departmentName = departmentData?.name || '';
 
   const { data: mentorsData, isLoading: isMentorsLoading } = useQuery(
-    selectedDepartment
-      ? supabase
-          .from('college_mentors')
-          .select('uid, users(id, name)')
-          .eq('department_id', selectedDepartment)
-      : null,
+    supabase
+      .from('college_mentors')
+      .select('uid, users(id, name)')
+      .eq('department_id', userId),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
     }
   );
-
-  const departments = departmentData
-    ? departmentData.map(({ uid, name }) => ({
-        value: uid,
-        label: name,
-      }))
-    : [];
 
   const collegeMentors = mentorsData
     ? mentorsData.map(({ uid, users }) => ({
@@ -90,11 +73,10 @@ const AddStudentForm = () => {
     : [];
 
   const form = useForm({
-    resolver: zodResolver(addStudentByInstituteFormSchema),
+    resolver: zodResolver(addStudentByDepartmentFormSchema),
     defaultValues: {
       studentName: '',
       email: '',
-      departmentId: '',
       collegeMentorId: '',
       sendInvite: true,
     },
@@ -103,31 +85,25 @@ const AddStudentForm = () => {
   const { addStudent } = useAddStudent({
     userId,
     instituteId,
+    departmentId: userId,
   });
 
   const handleAddStudent = async (
-    values: z.infer<typeof addStudentByInstituteFormSchema>
+    values: z.infer<typeof addStudentByDepartmentFormSchema>
   ) => {
-    const { studentName, email, sendInvite } = values;
+    const { studentName, email, sendInvite, collegeMentorId } = values;
     setOpenAddDialog(false);
 
     await addStudent(
       studentName,
       email,
-      departmentId,
+      userId,
       departmentName,
       sendInvite,
       collegeMentorId,
       collegeMentorName
     );
   };
-
-  useEffect(() => {
-    form.setValue('collegeMentorId', '');
-    setCollegeMentorId('');
-    setCollegeMentorName('');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedDepartment]);
 
   return (
     <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
@@ -161,56 +137,23 @@ const AddStudentForm = () => {
                 type="email"
                 form={form}
               />
-              {departments.length > 0 && (
-                <SearchInput
-                  label="Department"
-                  placeholder="Select department"
-                  id="departmentId"
-                  options={departments}
-                  form={form}
-                  onValueChange={(value) => {
-                    setSelectedDepartment(value);
-                    const selectedDept = departments.find(
-                      (dept) => dept.value === value
-                    );
-                    setDepartmentId(value);
-                    setDepartmentName(selectedDept?.label || '');
-                  }}
-                />
-              )}
-              {!selectedDepartment && (
+              {collegeMentors.length === 0 && !isMentorsLoading && (
                 <SelectInputSkeleton
                   label="College Mentor"
-                  placeholder="Select department first"
+                  placeholder="No mentors available"
                 />
               )}
-              {!mentorsData && selectedDepartment && (
-                <SelectInputSkeleton
-                  label="College Mentor"
-                  placeholder="Loading..."
-                />
-              )}
-              {selectedDepartment &&
-                collegeMentors.length === 0 &&
-                !isMentorsLoading && (
-                  <SelectInputSkeleton
-                    label="College Mentor"
-                    placeholder="No mentors available"
-                  />
-                )}
-              {selectedDepartment && collegeMentors.length > 0 && (
+              {collegeMentors.length > 0 && (
                 <SearchInput
                   label="College Mentor"
                   placeholder="Select college mentor"
                   id="collegeMentorId"
                   options={collegeMentors}
                   form={form}
-                  disabled={!selectedDepartment}
                   onValueChange={(value) => {
                     const selectedMentor = collegeMentors.find(
                       (mentor) => mentor.value === value
                     );
-                    setCollegeMentorId(value);
                     setCollegeMentorName(selectedMentor?.label || '');
                   }}
                 />

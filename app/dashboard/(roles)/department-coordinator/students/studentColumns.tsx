@@ -38,21 +38,6 @@ const getStudentColumns = ({
     cell: ({ row }) => <div>{row.original.users?.name || '-'}</div>,
   },
   {
-    id: 'departments.name',
-    accessorFn: (row) => row.departments?.name,
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="px-0 hover:bg-transparent"
-      >
-        Department
-        <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.original.departments?.name || '-'}</div>,
-  },
-  {
     id: 'users.email',
     accessorFn: (row) => row.users?.email,
     header: ({ column }) => (

@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-const addStudentFormSchema = z.object({
+const addStudentByInstituteFormSchema = z.object({
   studentName: z
     .string({
       required_error: 'College mentor name is required.',
@@ -17,4 +17,20 @@ const addStudentFormSchema = z.object({
   sendInvite: z.boolean(),
 });
 
-export default addStudentFormSchema;
+const addStudentByDepartmentFormSchema = z.object({
+  studentName: z
+    .string({
+      required_error: 'College mentor name is required.',
+    })
+    .min(2, { message: 'College mentor name is required.' }),
+  email: z
+    .string()
+    .min(1, { message: 'Email address is required.' })
+    .email({ message: 'Invalid email address.' }),
+  collegeMentorId: z.string().optional(),
+  contact: z.bigint().optional(),
+  dob: z.date().optional(),
+  sendInvite: z.boolean(),
+});
+
+export { addStudentByInstituteFormSchema, addStudentByDepartmentFormSchema };
