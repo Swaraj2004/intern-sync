@@ -60,6 +60,7 @@ export async function updateSession(request: NextRequest) {
 
   const authPages = [
     '/register/institute',
+    '/register/company-mentor',
     '/login',
     '/login/student',
     '/login/institute-coordinator',
