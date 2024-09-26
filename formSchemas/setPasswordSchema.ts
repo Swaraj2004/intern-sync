@@ -22,4 +22,5 @@ const setPasswordFormSchema = z
       });
     }
   });
+
 export default setPasswordFormSchema;
