@@ -43,26 +43,20 @@ export type Database = {
       }
       college_mentors: {
         Row: {
-          contact: number | null
           created_at: string
           department_id: string
-          dob: string | null
           institute_id: number
           uid: string
         }
         Insert: {
-          contact?: number | null
           created_at?: string
           department_id: string
-          dob?: string | null
           institute_id: number
           uid: string
         }
         Update: {
-          contact?: number | null
           created_at?: string
           department_id?: string
-          dob?: string | null
           institute_id?: number
           uid?: string
         }
@@ -90,57 +84,29 @@ export type Database = {
           },
         ]
       }
-      companies: {
-        Row: {
-          id: string
-          industry: string
-          location: string
-          name: string
-        }
-        Insert: {
-          id?: string
-          industry: string
-          location: string
-          name: string
-        }
-        Update: {
-          id?: string
-          industry?: string
-          location?: string
-          name?: string
-        }
-        Relationships: []
-      }
       company_mentors: {
         Row: {
-          company_id: string
-          contact: number | null
-          created_at: string
-          designation: string | null
+          company_address: string
+          company_name: string
+          created_at: string | null
+          designation: string
           uid: string
         }
         Insert: {
-          company_id: string
-          contact?: number | null
-          created_at?: string
-          designation?: string | null
+          company_address: string
+          company_name: string
+          created_at?: string | null
+          designation: string
           uid: string
         }
         Update: {
-          company_id?: string
-          contact?: number | null
-          created_at?: string
-          designation?: string | null
+          company_address?: string
+          company_name?: string
+          created_at?: string | null
+          designation?: string
           uid?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "company_mentors_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "company_mentors_uid_fkey"
             columns: ["uid"]
@@ -188,24 +154,30 @@ export type Database = {
       }
       institutes: {
         Row: {
+          address: string | null
           created_at: string
+          institute_email_domain: string | null
           institute_id: number
-          location: string | null
           name: string
+          student_email_domain: string | null
           uid: string
         }
         Insert: {
+          address?: string | null
           created_at?: string
+          institute_email_domain?: string | null
           institute_id: number
-          location?: string | null
           name: string
+          student_email_domain?: string | null
           uid: string
         }
         Update: {
+          address?: string | null
           created_at?: string
+          institute_email_domain?: string | null
           institute_id?: number
-          location?: string | null
           name?: string
+          student_email_domain?: string | null
           uid?: string
         }
         Relationships: [
@@ -214,94 +186,6 @@ export type Database = {
             columns: ["uid"]
             isOneToOne: true
             referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      internship_reports: {
-        Row: {
-          approved: boolean | null
-          college_mentor_id: string
-          company_mentor_id: string
-          id: string
-          internship_id: string
-          report_data: string
-          report_date: string
-          student_id: string
-        }
-        Insert: {
-          approved?: boolean | null
-          college_mentor_id: string
-          company_mentor_id: string
-          id?: string
-          internship_id: string
-          report_data: string
-          report_date: string
-          student_id: string
-        }
-        Update: {
-          approved?: boolean | null
-          college_mentor_id?: string
-          company_mentor_id?: string
-          id?: string
-          internship_id?: string
-          report_data?: string
-          report_date?: string
-          student_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "internship_reports_internship_id_fkey"
-            columns: ["internship_id"]
-            isOneToOne: false
-            referencedRelation: "internships"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      internships: {
-        Row: {
-          company_id: string | null
-          company_mentor_id: string | null
-          description: string | null
-          duration: string | null
-          end_date: string | null
-          id: string
-          location: string | null
-          mode: string | null
-          name: string
-          start_date: string | null
-        }
-        Insert: {
-          company_id?: string | null
-          company_mentor_id?: string | null
-          description?: string | null
-          duration?: string | null
-          end_date?: string | null
-          id?: string
-          location?: string | null
-          mode?: string | null
-          name: string
-          start_date?: string | null
-        }
-        Update: {
-          company_id?: string | null
-          company_mentor_id?: string | null
-          description?: string | null
-          duration?: string | null
-          end_date?: string | null
-          id?: string
-          location?: string | null
-          mode?: string | null
-          name?: string
-          start_date?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "internships_company_id_fkey"
-            columns: ["company_id"]
-            isOneToOne: false
-            referencedRelation: "companies"
             referencedColumns: ["id"]
           },
         ]
@@ -348,16 +232,13 @@ export type Database = {
           address: string | null
           admission_year: number | null
           batch: string | null
-          branch: string | null
           college_mentor_id: string | null
           company_mentor_id: string | null
-          contact: number | null
           created_at: string
           department_id: string
           division: string | null
           dob: string | null
           institute_id: number
-          internship_id: string | null
           roll_no: number | null
           uid: string
         }
@@ -366,16 +247,13 @@ export type Database = {
           address?: string | null
           admission_year?: number | null
           batch?: string | null
-          branch?: string | null
           college_mentor_id?: string | null
           company_mentor_id?: string | null
-          contact?: number | null
           created_at?: string
           department_id: string
           division?: string | null
           dob?: string | null
           institute_id: number
-          internship_id?: string | null
           roll_no?: number | null
           uid: string
         }
@@ -384,16 +262,13 @@ export type Database = {
           address?: string | null
           admission_year?: number | null
           batch?: string | null
-          branch?: string | null
           college_mentor_id?: string | null
           company_mentor_id?: string | null
-          contact?: number | null
           created_at?: string
           department_id?: string
           division?: string | null
           dob?: string | null
           institute_id?: number
-          internship_id?: string | null
           roll_no?: number | null
           uid?: string
         }
@@ -425,13 +300,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "institutes"
             referencedColumns: ["institute_id"]
-          },
-          {
-            foreignKeyName: "students_internship_id_fkey"
-            columns: ["internship_id"]
-            isOneToOne: false
-            referencedRelation: "internships"
-            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "students_uid_fkey"
@@ -475,6 +343,7 @@ export type Database = {
       users: {
         Row: {
           auth_id: string | null
+          contact: number | null
           created_at: string
           email: string
           id: string
@@ -484,6 +353,7 @@ export type Database = {
         }
         Insert: {
           auth_id?: string | null
+          contact?: number | null
           created_at?: string
           email: string
           id?: string
@@ -493,6 +363,7 @@ export type Database = {
         }
         Update: {
           auth_id?: string | null
+          contact?: number | null
           created_at?: string
           email?: string
           id?: string
