@@ -143,3 +143,28 @@ export const useAttendanceWithStudents = ({
     ...rest,
   };
 };
+
+export const useInstituteProfile = ({ userId }: { userId: string }) => {
+  const shouldFetch = Boolean(userId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('institutes')
+          .select(
+            'uid, name, address, institute_email_domain, student_email_domain, users (name, email, contact)'
+          )
+          .eq('uid', userId)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
