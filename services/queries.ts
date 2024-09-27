@@ -168,3 +168,101 @@ export const useInstituteProfile = ({ userId }: { userId: string }) => {
     ...rest,
   };
 };
+
+export const useDepartmentProfile = ({ userId }: { userId: string }) => {
+  const shouldFetch = Boolean(userId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('departments')
+          .select('uid, name, users (name, email, contact), institutes (name)')
+          .eq('uid', userId)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
+export const useCollegeMentorProfile = ({ userId }: { userId: string }) => {
+  const shouldFetch = Boolean(userId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('college_mentors')
+          .select(
+            'uid, users (name, email, contact), departments (name), institutes (name)'
+          )
+          .eq('uid', userId)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
+export const useStudentProfile = ({ userId }: { userId: string }) => {
+  const shouldFetch = Boolean(userId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('students')
+          .select(
+            'uid, address, admission_year, division, roll_no, admission_id, users (name, email, contact), departments (name), college_mentors (users (name)), institutes (name)'
+          )
+          .eq('uid', userId)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
+export const useCompanyMentorProfile = ({ userId }: { userId: string }) => {
+  const shouldFetch = Boolean(userId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('company_mentors')
+          .select(
+            'uid, designation, company_name, company_address, users (name, email, contact)'
+          )
+          .eq('uid', userId)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};

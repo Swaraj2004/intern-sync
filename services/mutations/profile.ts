@@ -1,4 +1,10 @@
-import { useInstituteProfile } from '@/services/queries';
+import {
+  useCollegeMentorProfile,
+  useCompanyMentorProfile,
+  useDepartmentProfile,
+  useInstituteProfile,
+  useStudentProfile,
+} from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -81,6 +87,282 @@ export const useUpdateInstituteProfile = ({ userId }: { userId: string }) => {
 
   return {
     updateInstituteProfile,
+    isLoading,
+  };
+};
+
+export const useUpdateDepartmentProfile = ({ userId }: { userId: string }) => {
+  const { mutate } = useDepartmentProfile({
+    userId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateDepartmentProfile = useCallback(
+    async (fullName: string, contact: number) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return currentData;
+        return {
+          ...currentData,
+          data: {
+            ...currentData.data,
+            users: {
+              name: fullName,
+              email: currentData?.data?.users?.email ?? '',
+              contact,
+            },
+          },
+        };
+      }, false);
+
+      try {
+        const { error: userError } = await supabase
+          .from('users')
+          .update({
+            name: fullName,
+            contact,
+          })
+          .match({ id: userId });
+
+        if (userError) {
+          throw userError;
+        }
+
+        toast.success('Profile updated successfully.');
+      } catch (error) {
+        console.log(error);
+        toast.error('Failed to update profile.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, userId]
+  );
+
+  return {
+    updateDepartmentProfile,
+    isLoading,
+  };
+};
+
+export const useUpdateCollegeMentorProfile = ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  const { mutate } = useCollegeMentorProfile({
+    userId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateCollegeMentorProfile = useCallback(
+    async (fullName: string, contact: number) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return currentData;
+        return {
+          ...currentData,
+          data: {
+            ...currentData.data,
+            users: {
+              name: fullName,
+              email: currentData?.data?.users?.email ?? '',
+              contact,
+            },
+          },
+        };
+      }, false);
+
+      try {
+        const { error: userError } = await supabase
+          .from('users')
+          .update({
+            name: fullName,
+            contact,
+          })
+          .match({ id: userId });
+
+        if (userError) {
+          throw userError;
+        }
+
+        toast.success('Profile updated successfully.');
+      } catch (error) {
+        toast.error('Failed to update profile.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, userId]
+  );
+
+  return {
+    updateCollegeMentorProfile,
+    isLoading,
+  };
+};
+
+export const useUpdateCompanyMentorProfile = ({
+  userId,
+}: {
+  userId: string;
+}) => {
+  const { mutate } = useCompanyMentorProfile({
+    userId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateCompanyMentorProfile = useCallback(
+    async (
+      fullName: string,
+      contact: number,
+      designation: string,
+      company_name: string,
+      company_address: string
+    ) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return currentData;
+        return {
+          ...currentData,
+          data: {
+            ...currentData.data,
+            designation,
+            company_name,
+            company_address,
+            users: {
+              name: fullName,
+              email: currentData?.data?.users?.email ?? '',
+              contact,
+            },
+          },
+        };
+      }, false);
+
+      try {
+        const { error } = await supabase
+          .from('company_mentors')
+          .update({
+            designation,
+            company_name,
+            company_address,
+          })
+          .match({ uid: userId });
+
+        if (error) {
+          throw error;
+        }
+
+        const { error: userError } = await supabase
+          .from('users')
+          .update({
+            name: fullName,
+            contact,
+          })
+          .match({ id: userId });
+
+        if (userError) {
+          throw userError;
+        }
+
+        toast.success('Profile updated successfully.');
+      } catch (error) {
+        toast.error('Failed to update profile.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, userId]
+  );
+
+  return {
+    updateCompanyMentorProfile,
+    isLoading,
+  };
+};
+
+export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
+  const { mutate } = useStudentProfile({ userId });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateStudentProfile = useCallback(
+    async (
+      contact: number,
+      address: string,
+      admissionYear: number,
+      division: string,
+      rollNumber: number,
+      admissionId: string
+    ) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return currentData;
+        return {
+          ...currentData,
+          data: {
+            ...currentData.data,
+            address,
+            admission_year: admissionYear,
+            division,
+            roll_no: rollNumber,
+            admission_id: admissionId,
+            users: {
+              ...currentData.data.users,
+              name: currentData.data.users?.name ?? '',
+              email: currentData.data.users?.email ?? '',
+              contact,
+            },
+          },
+        };
+      }, false);
+
+      try {
+        const { error: studentError } = await supabase
+          .from('students')
+          .update({
+            address,
+            admission_year: admissionYear,
+            division,
+            roll_no: rollNumber,
+            admission_id: admissionId,
+          })
+          .match({ uid: userId });
+
+        if (studentError) {
+          throw studentError;
+        }
+
+        const { error: userError } = await supabase
+          .from('users')
+          .update({
+            contact,
+          })
+          .match({ id: userId });
+
+        if (userError) {
+          throw userError;
+        }
+
+        toast.success('Profile updated successfully.');
+      } catch (error) {
+        toast.error('Failed to update profile.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, userId]
+  );
+
+  return {
+    updateStudentProfile,
     isLoading,
   };
 };

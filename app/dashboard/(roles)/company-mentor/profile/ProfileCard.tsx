@@ -1,21 +1,18 @@
 import { Card } from '@/components/ui/card';
-import InstituteProfile from '@/types/institute-profile';
+import CompanyMentorProfile from '@/types/company-mentor-profile';
 
-const ProfileCard = ({ profileData }: { profileData: InstituteProfile }) => {
+const ProfileCard = ({
+  profileData,
+}: {
+  profileData: CompanyMentorProfile;
+}) => {
   const fields = [
     { label: 'Full Name', value: profileData.users?.name || '-' },
     { label: 'Email', value: profileData.users?.email || '-' },
     { label: 'Contact', value: profileData.users?.contact || '-' },
-    { label: 'Institute Name', value: profileData.name || '-' },
-    { label: 'Institute Address', value: profileData.address || '-' },
-    {
-      label: 'Institute Email Domain',
-      value: profileData.institute_email_domain || '-',
-    },
-    {
-      label: 'Student Email Domain',
-      value: profileData.student_email_domain || '-',
-    },
+    { label: 'Designation', value: profileData.designation || '-' },
+    { label: 'Company Name', value: profileData.company_name || '-' },
+    { label: 'Company Address', value: profileData.company_address || '-' },
   ];
 
   return (

@@ -86,24 +86,24 @@ export type Database = {
       }
       company_mentors: {
         Row: {
-          company_address: string
-          company_name: string
+          company_address: string | null
+          company_name: string | null
           created_at: string | null
-          designation: string
+          designation: string | null
           uid: string
         }
         Insert: {
-          company_address: string
-          company_name: string
+          company_address?: string | null
+          company_name?: string | null
           created_at?: string | null
-          designation: string
+          designation?: string | null
           uid: string
         }
         Update: {
-          company_address?: string
-          company_name?: string
+          company_address?: string | null
+          company_name?: string | null
           created_at?: string | null
-          designation?: string
+          designation?: string | null
           uid?: string
         }
         Relationships: [
@@ -230,8 +230,8 @@ export type Database = {
         Row: {
           academic_year: number
           address: string | null
+          admission_id: string | null
           admission_year: number | null
-          batch: string | null
           college_mentor_id: string | null
           company_mentor_id: string | null
           created_at: string
@@ -245,8 +245,8 @@ export type Database = {
         Insert: {
           academic_year: number
           address?: string | null
+          admission_id?: string | null
           admission_year?: number | null
-          batch?: string | null
           college_mentor_id?: string | null
           company_mentor_id?: string | null
           created_at?: string
@@ -260,8 +260,8 @@ export type Database = {
         Update: {
           academic_year?: number
           address?: string | null
+          admission_id?: string | null
           admission_year?: number | null
-          batch?: string | null
           college_mentor_id?: string | null
           company_mentor_id?: string | null
           created_at?: string

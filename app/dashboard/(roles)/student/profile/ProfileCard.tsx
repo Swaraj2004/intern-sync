@@ -1,21 +1,22 @@
 import { Card } from '@/components/ui/card';
-import InstituteProfile from '@/types/institute-profile';
+import StudentProfile from '@/types/student-profile';
 
-const ProfileCard = ({ profileData }: { profileData: InstituteProfile }) => {
+const ProfileCard = ({ profileData }: { profileData: StudentProfile }) => {
   const fields = [
     { label: 'Full Name', value: profileData.users?.name || '-' },
     { label: 'Email', value: profileData.users?.email || '-' },
     { label: 'Contact', value: profileData.users?.contact || '-' },
-    { label: 'Institute Name', value: profileData.name || '-' },
-    { label: 'Institute Address', value: profileData.address || '-' },
+    { label: 'Address', value: profileData.address || '-' },
+    { label: 'Admission Year', value: profileData.admission_year || '-' },
+    { label: 'Division', value: profileData.division || '-' },
+    { label: 'Roll No', value: profileData.roll_no || '-' },
+    { label: 'Admission ID', value: profileData.admission_id || '-' },
     {
-      label: 'Institute Email Domain',
-      value: profileData.institute_email_domain || '-',
+      label: 'College Mentor',
+      value: profileData.college_mentors?.users?.name || '-',
     },
-    {
-      label: 'Student Email Domain',
-      value: profileData.student_email_domain || '-',
-    },
+    { label: 'Department', value: profileData.departments?.name || '-' },
+    { label: 'Institute', value: profileData.institutes?.name || '-' },
   ];
 
   return (
