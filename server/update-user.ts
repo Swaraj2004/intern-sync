@@ -79,18 +79,27 @@ export default async function updateUserByAuthId(
     }
   }
 
-  // Update the user metadata with new name and roles
-  const { data: updatedUser, error: updateUserError } =
-    await supabaseAdminClient.auth.admin.updateUserById(authId, {
-      user_metadata: {
-        name: newName || oldName,
-        role_ids: updatedRoleIds,
-      },
-    });
+  // Check if we need to call the update API
+  const shouldUpdateUser =
+    (newName && newName !== oldName) || roleName !== undefined;
 
-  if (updateUserError) {
-    throw new Error(updateUserError.message);
+  if (shouldUpdateUser) {
+    // Update the user metadata with new name and roles
+    const { data: updatedUser, error: updateUserError } =
+      await supabaseAdminClient.auth.admin.updateUserById(authId, {
+        user_metadata: {
+          name: newName || oldName,
+          role_ids: updatedRoleIds,
+        },
+      });
+
+    if (updateUserError) {
+      throw new Error(updateUserError.message);
+    }
+
+    return updatedUser;
   }
 
-  return updatedUser;
+  // If no update is needed, return the existing user data
+  return existingUser;
 }
