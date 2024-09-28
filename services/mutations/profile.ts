@@ -293,6 +293,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
 
   const updateStudentProfile = useCallback(
     async (
+      dob: string | null,
       contact: number,
       address: string,
       admissionYear: number,
@@ -308,6 +309,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
           ...currentData,
           data: {
             ...currentData.data,
+            dob,
             address,
             admission_year: admissionYear,
             division,
@@ -327,6 +329,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
         const { error: studentError } = await supabase
           .from('students')
           .update({
+            dob,
             address,
             admission_year: admissionYear,
             division,

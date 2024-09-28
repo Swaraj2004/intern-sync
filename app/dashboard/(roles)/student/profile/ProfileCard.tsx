@@ -1,10 +1,16 @@
 import { Card } from '@/components/ui/card';
 import StudentProfile from '@/types/student-profile';
+import { formatDateForDisplay } from '../../../../../lib/utils';
 
 const ProfileCard = ({ profileData }: { profileData: StudentProfile }) => {
+  console.log(profileData.dob);
   const fields = [
     { label: 'Full Name', value: profileData.users?.name || '-' },
     { label: 'Email', value: profileData.users?.email || '-' },
+    {
+      label: 'Date of Birth',
+      value: profileData.dob ? formatDateForDisplay(profileData.dob) : '-',
+    },
     { label: 'Contact', value: profileData.users?.contact || '-' },
     { label: 'Address', value: profileData.address || '-' },
     { label: 'Admission Year', value: profileData.admission_year || '-' },

@@ -1,5 +1,6 @@
 type StudentProfile = {
   uid: string;
+  dob: string | null;
   address: string | null;
   admission_year: number | null;
   division: string | null;

@@ -225,7 +225,7 @@ export const useStudentProfile = ({ userId }: { userId: string }) => {
       ? supabase
           .from('students')
           .select(
-            'uid, address, admission_year, division, roll_no, admission_id, users (name, email, contact), departments (name), college_mentors (users (name)), institutes (name)'
+            'uid, dob, address, admission_year, division, roll_no, admission_id, users (name, email, contact), departments (name), college_mentors (users (name)), institutes (name)'
           )
           .eq('uid', userId)
           .single()

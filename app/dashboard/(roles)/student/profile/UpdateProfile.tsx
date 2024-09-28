@@ -15,12 +15,15 @@ import { studentProfileFormSchema } from '@/formSchemas/studentProfile';
 import StudentProfile from '@/types/student-profile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import { DateTimePicker } from '@/components/ui/datetime-picker';
+import { formatDateForInput } from '@/lib/utils';
 import { z } from 'zod';
 
 type UpdateStudentProfileProps = {
   setShowProfileCard: (value: boolean) => void;
   setShowUpdateProfile: (value: boolean) => void;
   updateStudentProfile: (
+    dob: string | null,
     contact: number,
     address: string,
     admissionYear: number,
@@ -42,6 +45,7 @@ const UpdateStudentProfile = ({
     defaultValues: {
       fullName: profileData.users?.name || '',
       email: profileData.users?.email || '',
+      dob: profileData.dob ? new Date(profileData.dob) : undefined,
       contact: profileData.users?.contact?.toString() || '',
       address: profileData.address || '',
       admissionYear: profileData.admission_year?.toString() || '',
@@ -58,6 +62,7 @@ const UpdateStudentProfile = ({
     values: z.infer<typeof studentProfileFormSchema>
   ) => {
     const {
+      dob,
       contact,
       address,
       admissionYear,
@@ -70,6 +75,7 @@ const UpdateStudentProfile = ({
     setShowUpdateProfile(false);
 
     updateStudentProfile(
+      formatDateForInput(dob as Date),
       parseInt(contact),
       address,
       parseInt(admissionYear),
@@ -119,6 +125,25 @@ const UpdateStudentProfile = ({
                     disabled
                     className="sm:max-w-96"
                     {...field}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="dob"
+            render={({ field }) => (
+              <FormItem className="grid sm:grid-cols-5 sm:space-y-0">
+                <FormLabel className="sm:col-span-2 text-base my-auto">
+                  DOB
+                </FormLabel>
+                <FormControl className="sm:col-span-3">
+                  <DateTimePicker
+                    jsDate={field.value}
+                    onJsDateChange={field.onChange}
+                    aria-label="Date of Birth"
+                    className="sm:max-w-96"
                   />
                 </FormControl>
               </FormItem>
@@ -250,7 +275,7 @@ const UpdateStudentProfile = ({
                   College Mentor
                 </FormLabel>
                 <FormControl className="sm:col-span-3">
-                  <Input disabled {...field} />
+                  <Input disabled className="sm:max-w-96" {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -264,7 +289,7 @@ const UpdateStudentProfile = ({
                   Department
                 </FormLabel>
                 <FormControl className="sm:col-span-3">
-                  <Input disabled {...field} />
+                  <Input disabled className="sm:max-w-96" {...field} />
                 </FormControl>
               </FormItem>
             )}
@@ -278,13 +303,13 @@ const UpdateStudentProfile = ({
                   Institute
                 </FormLabel>
                 <FormControl className="sm:col-span-3">
-                  <Input disabled {...field} />
+                  <Input disabled className="sm:max-w-96" {...field} />
                 </FormControl>
               </FormItem>
             )}
           />
           <div className="flex gap-4 mt-2">
-            <Button type="submit">Save Changes</Button>
+            <Button>Save Changes</Button>
             <Button
               variant="outline"
               type="button"
