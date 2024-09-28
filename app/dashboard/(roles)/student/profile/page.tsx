@@ -31,7 +31,6 @@ const ProfilePage = () => {
         {showProfileCard && (
           <Button
             size="sm"
-            className="bg-primary text-white"
             onClick={() => {
               setShowUpdateProfile(!showUpdateProfile);
               setShowProfileCard(!showProfileCard);

@@ -61,7 +61,6 @@ const ChangePassword = () => {
         {!showChangePassword && (
           <Button
             size="sm"
-            className="bg-primary text-white"
             onClick={() => {
               setShowChangePassword(!showChangePassword);
             }}
