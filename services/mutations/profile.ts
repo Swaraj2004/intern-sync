@@ -1,3 +1,4 @@
+import updateUserByAuthId from '@/server/update-user';
 import {
   useCollegeMentorProfile,
   useCompanyMentorProfile,
@@ -62,20 +63,27 @@ export const useUpdateInstituteProfile = ({ userId }: { userId: string }) => {
           throw error;
         }
 
-        const { error: userError } = await supabase
+        const { data: updatedUser, error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId });
+          .match({ id: userId })
+          .select()
+          .single();
 
         if (userError) {
           throw userError;
         }
 
+        if (updatedUser && updatedUser.auth_id) {
+          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
+        }
+
         toast.success('Profile updated successfully.');
       } catch (error) {
+        if (typeof error === 'string') toast.error(error);
         toast.error('Failed to update profile.');
       } finally {
         mutate();
@@ -117,21 +125,27 @@ export const useUpdateDepartmentProfile = ({ userId }: { userId: string }) => {
       }, false);
 
       try {
-        const { error: userError } = await supabase
+        const { data: updatedUser, error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId });
+          .match({ id: userId })
+          .select()
+          .single();
 
         if (userError) {
           throw userError;
         }
 
+        if (updatedUser && updatedUser.auth_id) {
+          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
+        }
+
         toast.success('Profile updated successfully.');
       } catch (error) {
-        console.log(error);
+        if (typeof error === 'string') toast.error(error);
         toast.error('Failed to update profile.');
       } finally {
         mutate();
@@ -177,20 +191,27 @@ export const useUpdateCollegeMentorProfile = ({
       }, false);
 
       try {
-        const { error: userError } = await supabase
+        const { data: updatedUser, error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId });
+          .match({ id: userId })
+          .select()
+          .single();
 
         if (userError) {
           throw userError;
         }
 
+        if (updatedUser && updatedUser.auth_id) {
+          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
+        }
+
         toast.success('Profile updated successfully.');
       } catch (error) {
+        if (typeof error === 'string') toast.error(error);
         toast.error('Failed to update profile.');
       } finally {
         mutate();
@@ -258,20 +279,27 @@ export const useUpdateCompanyMentorProfile = ({
           throw error;
         }
 
-        const { error: userError } = await supabase
+        const { data: updatedUser, error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId });
+          .match({ id: userId })
+          .select()
+          .single();
 
         if (userError) {
           throw userError;
         }
 
+        if (updatedUser && updatedUser.auth_id) {
+          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
+        }
+
         toast.success('Profile updated successfully.');
       } catch (error) {
+        if (typeof error === 'string') toast.error(error);
         toast.error('Failed to update profile.');
       } finally {
         mutate();
