@@ -74,8 +74,10 @@ const UpdateStudentProfile = ({
     setShowProfileCard(true);
     setShowUpdateProfile(false);
 
+    const dateOfBirth = dob ? formatDateForInput(dob) : null;
+
     updateStudentProfile(
-      formatDateForInput(dob as Date),
+      dateOfBirth,
       parseInt(contact),
       address,
       parseInt(admissionYear),
