@@ -190,6 +190,85 @@ export type Database = {
           },
         ]
       }
+      internships: {
+        Row: {
+          approved: boolean
+          college_mentor_id: string
+          company_address: string
+          company_mentor_email: string | null
+          company_mentor_id: string | null
+          company_name: string
+          created_at: string
+          end_date: string
+          field: string
+          id: string
+          internship_letter_url: string
+          mode: string
+          role: string
+          start_date: string
+          student_id: string
+          total_holidays: number | null
+        }
+        Insert: {
+          approved?: boolean
+          college_mentor_id: string
+          company_address: string
+          company_mentor_email?: string | null
+          company_mentor_id?: string | null
+          company_name: string
+          created_at?: string
+          end_date: string
+          field: string
+          id?: string
+          internship_letter_url: string
+          mode: string
+          role: string
+          start_date: string
+          student_id: string
+          total_holidays?: number | null
+        }
+        Update: {
+          approved?: boolean
+          college_mentor_id?: string
+          company_address?: string
+          company_mentor_email?: string | null
+          company_mentor_id?: string | null
+          company_name?: string
+          created_at?: string
+          end_date?: string
+          field?: string
+          id?: string
+          internship_letter_url?: string
+          mode?: string
+          role?: string
+          start_date?: string
+          student_id?: string
+          total_holidays?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internships_college_mentor_id_fkey"
+            columns: ["college_mentor_id"]
+            isOneToOne: false
+            referencedRelation: "college_mentors"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "internships_company_mentor_id_fkey"
+            columns: ["company_mentor_id"]
+            isOneToOne: false
+            referencedRelation: "company_mentors"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "internships_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["uid"]
+          },
+        ]
+      }
       notes: {
         Row: {
           description: string

@@ -266,3 +266,23 @@ export const useCompanyMentorProfile = ({ userId }: { userId: string }) => {
     ...rest,
   };
 };
+
+export const useStudentInternships = ({ studentId }: { studentId: string }) => {
+  const shouldFetch = Boolean(studentId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('internships')
+          .select(
+            'id, role, field, mode, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved'
+          )
+          .eq('student_id', studentId)
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
