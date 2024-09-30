@@ -100,7 +100,7 @@ const StudentDashboardPage = () => {
           </CardFooter>
         </Card>
       )}
-      {upcomingInternship && (
+      {upcomingInternship && studentInternships?.length === 1 && (
         <Card className="my-4">
           <CardHeader>
             <CardTitle className="text-green-600 dark:text-green-400">

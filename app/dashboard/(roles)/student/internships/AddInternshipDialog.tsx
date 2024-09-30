@@ -23,6 +23,7 @@ import SingleSelectInput from '@/components/ui/SelectInput';
 import addInternshipFormSchema from '@/formSchemas/addInternship';
 import { formatDateForInput } from '@/lib/utils';
 import { useAddInternship } from '@/services/mutations/internships';
+import StudentInternship from '@/types/student-internship';
 import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
@@ -41,9 +42,11 @@ const supabase = supabaseClient();
 const AddInternshipDialog = ({
   studentId,
   collegeMentorId,
+  internships,
 }: {
   studentId: string;
   collegeMentorId: string;
+  internships: StudentInternship[];
 }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -70,6 +73,21 @@ const AddInternshipDialog = ({
 
   const onSubmit = async (values: z.infer<typeof addInternshipFormSchema>) => {
     setLoading(true);
+
+    const conflictingInternship = internships.find((internship) => {
+      const existingEndDate = new Date(internship.end_date).getTime();
+      const providedStartDate = new Date(values.startDate).getTime();
+      return existingEndDate >= providedStartDate;
+    });
+
+    if (conflictingInternship) {
+      toast.error(
+        `Conflicting internship found. The provided start date overlaps with an internship that ends on ${conflictingInternship.end_date}.`
+      );
+      setLoading(false);
+      return;
+    }
+
     const internshipId = uuid4();
 
     const { data: fileData, error: fileError } = await supabase.storage
@@ -225,9 +243,7 @@ const AddInternshipDialog = ({
             <DialogFooter>
               <Button
                 type="submit"
-                className={`${
-                  loading && 'opacity-40 pointer-events-none cursor-not-allowed'
-                }`}
+                className={`mt-5 ${loading && 'opacity-60 cursor-not-allowed'}`}
               >
                 {loading ? 'Submitting...' : 'Submit'}
               </Button>

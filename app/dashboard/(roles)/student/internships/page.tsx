@@ -59,10 +59,11 @@ const InternshipsPage = () => {
     <>
       <div className="flex justify-between items-center pb-5 h-14">
         <h1 className="font-semibold text-2xl">Internships</h1>
-        {showAddButton && profileData?.college_mentor_id && (
+        {showAddButton && profileData?.college_mentor_id && internships && (
           <AddInternshipDialog
             studentId={user?.user_metadata.uid}
             collegeMentorId={profileData.college_mentor_id}
+            internships={internships}
           />
         )}
       </div>
