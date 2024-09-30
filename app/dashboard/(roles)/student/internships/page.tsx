@@ -93,7 +93,7 @@ const InternshipsPage = () => {
           </div>
         )}
       {mounted &&
-        profileData?.college_mentor_id === null &&
+        profileData?.college_mentor_id !== null &&
         internships &&
         internships.length === 0 && (
           <div className="md:text-xl h-60 flex justify-center items-center">

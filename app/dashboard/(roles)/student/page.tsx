@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { useUser } from '@/context/UserContext';
+import { formatDateForDisplay } from '@/lib/utils';
 import { useStudentInternships, useStudentProfile } from '@/services/queries';
 import { CircleAlertIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -33,6 +35,10 @@ const StudentDashboardPage = () => {
       !studentData.division ||
       !studentData.roll_no ||
       !studentData.admission_id);
+
+  const upcomingInternship = studentInternships?.find(
+    (internship) => new Date(internship.start_date) > new Date()
+  );
 
   if (!studentData) {
     return (
@@ -82,16 +88,59 @@ const StudentDashboardPage = () => {
             <CardTitle className="text-blue-900 dark:text-blue-200">
               Unlock Internship Features!
             </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
+            <CardDescription>
               You will be able to submit daily reports and attendace once you
               have an active internship. Get started by adding an internship.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild>
+              <Link href="/dashboard/student/internships">Add Internship</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      )}
+      {upcomingInternship && (
+        <Card className="my-4">
+          <CardHeader>
+            <CardTitle className="text-green-600 dark:text-green-400">
+              Congratulations on Your Internship!
+            </CardTitle>
+            <CardDescription>
+              You have an upcoming internship as a{' '}
+              <strong>{upcomingInternship.role}</strong> at{' '}
+              <strong>{upcomingInternship.company_name}</strong>. Once the
+              internship is approved you will be able to mark attendance and
+              submit reports from the start date of internship.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-gray-700 dark:text-gray-300">
+              <strong>Start Date:</strong>{' '}
+              {formatDateForDisplay(upcomingInternship.start_date)}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300">
+              <strong>End Date:</strong>{' '}
+              {formatDateForDisplay(upcomingInternship.end_date)}
+            </p>
+            <p className="text-gray-700 dark:text-gray-300">
+              <strong>Status:</strong>{' '}
+              {upcomingInternship.approved ? (
+                <span className="text-green-500 dark:text-green-400">
+                  Approved
+                </span>
+              ) : (
+                <span className="text-yellow-600 dark:text-yellow-300">
+                  Pending Approval
+                </span>
+              )}
             </p>
           </CardContent>
           <CardFooter>
             <Button asChild>
-              <Link href="/dashboard/student/internships">Add Internship</Link>
+              <Link href={`/dashboard/student/internships`}>
+                View Internship Details
+              </Link>
             </Button>
           </CardFooter>
         </Card>
