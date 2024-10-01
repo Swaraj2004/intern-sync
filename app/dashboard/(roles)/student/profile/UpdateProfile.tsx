@@ -148,6 +148,7 @@ const UpdateStudentProfile = ({
                     className="sm:max-w-96"
                   />
                 </FormControl>
+                <FormMessage className="sm:col-span-2" />
               </FormItem>
             )}
           />

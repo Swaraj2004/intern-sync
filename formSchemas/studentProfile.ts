@@ -10,7 +10,9 @@ export const studentProfileFormSchema = z.object({
     .string()
     .min(1, { message: 'Email address is required.' })
     .email({ message: 'Invalid email address.' }),
-  dob: z.date().optional(),
+  dob: z.date({
+    required_error: 'Date of birth is required.',
+  }),
   contact: z
     .string({
       required_error: 'Contact number is required.',
