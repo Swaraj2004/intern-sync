@@ -31,6 +31,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import uuid4 from 'uuid4';
 import { z } from 'zod';
+import regions from '@/data/regions';
 
 const modeOptions = [
   { value: 'offline', label: 'Offline' },
@@ -62,6 +63,7 @@ const AddInternshipDialog = ({
       role: '',
       field: '',
       mode: '',
+      region: '',
       startDate: undefined,
       endDate: undefined,
       companyMentorEmail: '',
@@ -111,6 +113,7 @@ const AddInternshipDialog = ({
       role: values.role,
       field: values.field,
       mode: values.mode,
+      region: values.region,
       startDate: formatDateForInput(values.startDate),
       endDate: formatDateForInput(values.endDate),
       companyMentorEmail: values?.companyMentorEmail || null,
@@ -154,6 +157,13 @@ const AddInternshipDialog = ({
                 placeholder="Select mode of internship"
                 id="mode"
                 options={modeOptions}
+                form={form}
+              />
+              <SingleSelectInput
+                label="Region"
+                placeholder="Select region"
+                id="region"
+                options={regions}
                 form={form}
               />
               <FormField

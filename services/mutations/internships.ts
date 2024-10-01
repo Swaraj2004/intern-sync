@@ -10,6 +10,7 @@ type AddInternshipParams = {
   role: string;
   field: string;
   mode: string;
+  region: string;
   startDate: string;
   endDate: string;
   companyMentorEmail: string | null;
@@ -35,6 +36,7 @@ export const useAddInternship = ({
     role,
     field,
     mode,
+    region,
     startDate,
     endDate,
     companyMentorEmail,
@@ -43,6 +45,33 @@ export const useAddInternship = ({
     internshipLetterUrl,
   }: AddInternshipParams) => {
     setIsLoading(true);
+
+    mutate((currentData) => {
+      if (!currentData?.data) return undefined;
+
+      return {
+        ...currentData,
+        data: [
+          ...currentData.data,
+          {
+            id,
+            student_id: studentId,
+            role,
+            field,
+            mode,
+            region,
+            start_date: startDate,
+            end_date: endDate,
+            company_mentor_email: companyMentorEmail,
+            company_name: companyName,
+            company_address: companyAddress,
+            internship_letter_url: internshipLetterUrl,
+            approved: false,
+            college_mentor_id: collegeMentorId,
+          },
+        ],
+      };
+    }, false);
 
     try {
       const { data, error } = await supabase
@@ -54,6 +83,7 @@ export const useAddInternship = ({
             role,
             field,
             mode,
+            region,
             start_date: startDate,
             end_date: endDate,
             company_mentor_email: companyMentorEmail,
@@ -70,15 +100,6 @@ export const useAddInternship = ({
       if (error) {
         throw new Error(error.message);
       }
-
-      mutate((currentData) => {
-        if (!currentData?.data) return undefined;
-
-        return {
-          ...currentData,
-          data: [...currentData.data, data],
-        };
-      }, false);
 
       toast.success('Internship added successfully.');
     } catch (error) {

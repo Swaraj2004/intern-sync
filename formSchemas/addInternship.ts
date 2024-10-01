@@ -29,6 +29,11 @@ export const addInternshipFormSchema = z
         required_error: 'Mode is required.',
       })
       .min(2, { message: 'Mode is required.' }),
+    region: z
+      .string({
+        required_error: 'Region is required.',
+      })
+      .min(2, { message: 'Region is required.' }),
     startDate: z.date({
       required_error: 'Start date is required.',
     }),
