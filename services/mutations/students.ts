@@ -193,45 +193,6 @@ export const useDeleteStudent = ({
   };
 };
 
-// export const useChangeCollegeMentor = ({
-//   instituteId,
-//   departmentId,
-// }: {
-//   instituteId: number;
-//   departmentId?: string;
-// }) => {
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   const { trigger: updateMentor } = useUpdateMutation(
-//     supabase.from('students'),
-//     ['uid'],
-//     'college_mentor_id',
-//     {
-//       onSuccess: () => toast.success('College mentor updated successfully.'),
-//       onError: (error) => toast.error('Failed to update college mentor.'),
-//     }
-//   );
-
-//   const changeCollegeMentor = async (
-//     studentId: string,
-//     newMentorId: string,
-//     newMentorName: string
-//   ) => {
-//     setIsLoading(true);
-
-//     await updateMentor({
-//       uid: studentId,
-//       college_mentor_id: newMentorId,
-//     });
-//     setIsLoading(false);
-//   };
-
-//   return {
-//     changeCollegeMentor,
-//     isLoading,
-//   };
-// };
-
 export const useChangeCollegeMentor = ({
   instituteId,
   departmentId,
@@ -295,11 +256,17 @@ export const useChangeCollegeMentor = ({
 export const useSendStudentInvite = ({
   instituteId,
   departmentId,
+  collegeMentorId,
 }: {
   instituteId: number;
   departmentId?: string;
+  collegeMentorId?: string;
 }) => {
-  const { mutate } = useStudents({ instituteId, departmentId });
+  const { mutate } = useStudents({
+    instituteId,
+    departmentId,
+    collegeMentorId,
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   const sendInvite = useCallback(

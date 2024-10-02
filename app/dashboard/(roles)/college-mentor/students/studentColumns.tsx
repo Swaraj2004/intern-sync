@@ -1,4 +1,4 @@
-import { StudentActions } from '@/components/students/StudentActions';
+import { StudentActions } from '@/app/dashboard/(roles)/college-mentor/students/StudentActions';
 import { Button } from '@/components/ui/button';
 import UserStatus from '@/components/ui/UserStatus';
 import Students from '@/types/students';
@@ -6,21 +6,11 @@ import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
 type ColumnProps = {
-  onDelete: (uid: string, authId: string) => void;
   onSendInvite: (email: string, userId: string, name: string) => void;
-  onChangeCollegeMentor: (
-    studentId: string,
-    mentorId: string,
-    mentorName: string
-  ) => void;
-  instituteId: number;
 };
 
 const getStudentColumns = ({
-  onDelete,
   onSendInvite,
-  onChangeCollegeMentor,
-  instituteId,
 }: ColumnProps): ColumnDef<Students>[] => [
   {
     id: 'users.name',
@@ -55,16 +45,6 @@ const getStudentColumns = ({
     ),
   },
   {
-    id: 'college_mentors.users.name',
-    accessorFn: (row) => row.college_mentors?.users?.name,
-    header: () => {
-      return <span className="text-nowrap">College Mentor</span>;
-    },
-    cell: ({ row }) => (
-      <div>{row.original.college_mentors?.users?.name || '-'}</div>
-    ),
-  },
-  {
     id: 'status',
     header: 'Status',
     cell: ({ row }) => (
@@ -77,15 +57,8 @@ const getStudentColumns = ({
   {
     id: 'actions',
     cell: ({ row }) => {
-      const studentId = row.original.uid;
-      const currentMentorId = row.original.college_mentors?.users?.id;
-      const studentDepartmentId = row.original.departments?.uid;
-
       return (
         <StudentActions
-          deleteStudent={async () =>
-            onDelete(row.original.uid, row.original.users?.auth_id || '')
-          }
           sendInvite={async () =>
             onSendInvite(
               row.original.users?.email || '',
@@ -93,11 +66,6 @@ const getStudentColumns = ({
               row.original.users?.name || ''
             )
           }
-          changeCollegeMentor={onChangeCollegeMentor}
-          studentId={studentId}
-          studentDepartmentId={studentDepartmentId}
-          currentMentorId={currentMentorId}
-          instituteId={instituteId}
           isVerified={row.original.users?.is_verified || false}
         />
       );
