@@ -1,23 +1,92 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import AddInternshipCard from '@/app/dashboard/(roles)/student/AddInternshipCard';
+import CompleteProfileCard from '@/app/dashboard/(roles)/student/CompleteProfileCard';
+import MarkAttendanceCard from '@/app/dashboard/(roles)/student/MarkAttendanceCard';
+import SubmitReportCard from '@/app/dashboard/(roles)/student/SubmitReportCard';
+import UpcomingInternshipCard from '@/app/dashboard/(roles)/student/UpcomingInternshipCard';
+import CurrentAttendanceChart from '@/components/ui/CurrentAttendanceChart';
 import { Loader } from '@/components/ui/Loader';
 import { useUser } from '@/context/UserContext';
-import { formatDateForDisplay } from '@/lib/utils';
-import { useStudentInternships, useStudentProfile } from '@/services/queries';
-import { CircleAlertIcon } from 'lucide-react';
-import Link from 'next/link';
+import { convertUTCtoIST } from '@/lib/utils';
+import {
+  useMarkCheckInAndModeAttendance,
+  useMarkCheckOutAttendance,
+} from '@/services/mutations/attendance';
+import { useAddDailyReport } from '@/services/mutations/reports';
+import {
+  useDailyReport,
+  useInternshipAttendance,
+  useStudentInternships,
+  useStudentProfile,
+} from '@/services/queries';
+import { supabaseClient } from '@/utils/supabase/client';
+import { useEffect, useMemo, useState } from 'react';
+
+const supabase = supabaseClient();
+
+async function getTotalWorkingDays(
+  startDate: string,
+  endDate: string,
+  studentRegion: string
+) {
+  const { data, error } = await supabase.rpc('get_working_days', {
+    start_date: startDate,
+    end_date: endDate,
+    region: studentRegion,
+  });
+
+  if (error) {
+    console.error('Error fetching total working days:', error);
+    return null;
+  }
+
+  return data;
+}
+
+async function getTotalPresentDays(studentId: string, internshipId: string) {
+  const { data, error } = await supabase.rpc('get_total_present_days', {
+    student_id: studentId,
+    internship_id: internshipId,
+  });
+
+  if (error) {
+    console.error('Error fetching total present days:', error);
+    return null;
+  }
+
+  return data;
+}
+
+async function checkHolidayForStudent(
+  studentId: string,
+  internshipId: string,
+  checkDate: string
+) {
+  const { data, error } = await supabase.rpc('check_holiday_for_student', {
+    student_id: studentId,
+    internship_id: internshipId,
+    check_date: checkDate,
+  });
+
+  if (error) {
+    console.error('Error checking holiday for student:', error);
+    return null;
+  }
+
+  return data;
+}
 
 const StudentDashboardPage = () => {
   const { user } = useUser();
+  const [totalWorkingDays, setTotalWorkingDays] = useState(0);
+  const [totalPresentDays, setTotalPresentDays] = useState(0);
+  const [isHoliday, setIsHoliday] = useState(false);
+
+  const currentUTCDate = new Date().toISOString();
+  const currentISTDate = useMemo(() => {
+    return new Date(convertUTCtoIST(currentUTCDate));
+  }, [currentUTCDate]);
 
   const { data: studentData } = useStudentProfile({
     userId: user?.user_metadata.uid,
@@ -26,6 +95,78 @@ const StudentDashboardPage = () => {
   const { data: studentInternships } = useStudentInternships({
     studentId: user?.user_metadata.uid,
   });
+
+  const currentInternship = studentInternships?.find(
+    (internship) =>
+      new Date(internship.start_date) <= new Date() &&
+      new Date(internship.end_date) >= new Date()
+  );
+
+  const { data: attendanceData } = useInternshipAttendance({
+    internshipId: currentInternship?.id,
+    attendanceDate: new Date().toISOString().split('T')[0],
+  });
+
+  const { data: reportData } = useDailyReport({
+    attendanceId: attendanceData?.id,
+    reportDate: new Date().toISOString().split('T')[0],
+  });
+
+  const { addDailyReport } = useAddDailyReport({
+    attendanceId: attendanceData?.id || '',
+    studentId: user?.user_metadata.uid || '',
+    internshipId: currentInternship?.id || '',
+  });
+
+  const { markCheckInAndModeAttendance } = useMarkCheckInAndModeAttendance({
+    attendanceId: attendanceData?.id || '',
+    studentId: user?.user_metadata.uid || '',
+    internshipId: currentInternship?.id || '',
+    attendanceDate: new Date().toISOString().split('T')[0],
+  });
+
+  const { markCheckOutAttendance } = useMarkCheckOutAttendance({
+    attendanceId: attendanceData?.id || '',
+    studentId: user?.user_metadata.uid || '',
+    internshipId: currentInternship?.id || '',
+    attendanceDate: new Date().toISOString().split('T')[0],
+  });
+
+  useEffect(() => {
+    if (currentInternship && studentData) {
+      const fetchAttendanceData = async () => {
+        const internshipEndDate = new Date(currentInternship.end_date);
+
+        const effectiveEndDate =
+          currentISTDate < internshipEndDate
+            ? currentISTDate
+            : internshipEndDate;
+
+        const workingDays = await getTotalWorkingDays(
+          currentInternship.start_date,
+          effectiveEndDate.toISOString().split('T')[0],
+          currentInternship.region
+        );
+        const presentDays = await getTotalPresentDays(
+          user?.user_metadata?.uid || '',
+          currentInternship.id
+        );
+
+        setTotalWorkingDays(workingDays || 0);
+        setTotalPresentDays(presentDays || 0);
+
+        const isHoliday = await checkHolidayForStudent(
+          user?.user_metadata?.uid || '',
+          currentInternship.id,
+          currentISTDate.toISOString().split('T')[0]
+        );
+
+        setIsHoliday(isHoliday || false);
+      };
+
+      fetchAttendanceData();
+    }
+  }, [currentInternship, studentData, user, currentISTDate]);
 
   const isProfileIncomplete =
     studentData &&
@@ -49,7 +190,7 @@ const StudentDashboardPage = () => {
   }
 
   return (
-    <>
+    <div className="@container">
       <div className="pb-5">
         <h1 className="text-2xl font-semibold">
           Hello, {studentData?.users?.name} 👋
@@ -59,93 +200,39 @@ const StudentDashboardPage = () => {
           and more.
         </p>
       </div>
-      {isProfileIncomplete && (
-        <Card className="p-5 mb-4 flex gap-x-12 gap-y-4 justify-between flex-wrap sm:flex-nowrap border-yellow-400 dark:border-yellow-200 border-opacity-40 dark:border-opacity-30 bg-gray-50 dark:bg-[#191b2c]">
-          <div>
-            <div className="font-bold text-lg text-yellow-600 dark:text-yellow-200 flex gap-2 items-center">
-              <CircleAlertIcon className="w-5 h-5" />
-              <h2>Complete Your Profile</h2>
-            </div>
-            <p className="text-sm text-muted-foreground pt-1 sm:w-3/4 lg:w-full">
-              It looks like some of your profile information is missing. Please
-              complete your profile for a better experience on the platform.
-            </p>
-          </div>
-          <div>
-            <Button
-              variant="outline"
-              className="border-yellow-500 dark:border-yellow-200 border-opacity-30 dark:border-opacity-20"
-              asChild
-            >
-              <Link href="/dashboard/student/profile">Complete Profile</Link>
-            </Button>
-          </div>
-        </Card>
-      )}
+      {isProfileIncomplete && <CompleteProfileCard />}
       {studentInternships && studentInternships.length === 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-blue-900 dark:text-blue-200">
-              Unlock Internship Features!
-            </CardTitle>
-            <CardDescription>
-              You will be able to submit daily reports and attendace once you
-              have an active internship. Get started by adding an internship.
-            </CardDescription>
-          </CardHeader>
-          <CardFooter>
-            <Button asChild>
-              <Link href="/dashboard/student/internships">Add Internship</Link>
-            </Button>
-          </CardFooter>
-        </Card>
+        <AddInternshipCard />
       )}
       {upcomingInternship && studentInternships?.length === 1 && (
-        <Card className="my-4">
-          <CardHeader>
-            <CardTitle className="text-green-600 dark:text-green-400">
-              Congratulations on Your Internship!
-            </CardTitle>
-            <CardDescription>
-              You have an upcoming internship as a{' '}
-              <strong>{upcomingInternship.role}</strong> at{' '}
-              <strong>{upcomingInternship.company_name}</strong>. Once the
-              internship is approved you will be able to mark attendance and
-              submit reports from the start date of internship.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-gray-700 dark:text-gray-300">
-              <strong>Start Date:</strong>{' '}
-              {formatDateForDisplay(upcomingInternship.start_date)}
-            </p>
-            <p className="text-gray-700 dark:text-gray-300">
-              <strong>End Date:</strong>{' '}
-              {formatDateForDisplay(upcomingInternship.end_date)}
-            </p>
-            <p className="text-gray-700 dark:text-gray-300">
-              <strong>Status:</strong>{' '}
-              {upcomingInternship.approved ? (
-                <span className="text-green-500 dark:text-green-400">
-                  Approved
-                </span>
-              ) : (
-                <span className="text-yellow-600 dark:text-yellow-300">
-                  Pending Approval
-                </span>
-              )}
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button asChild>
-              <Link href={`/dashboard/student/internships`}>
-                View Internship Details
-              </Link>
-            </Button>
-          </CardFooter>
-        </Card>
+        <UpcomingInternshipCard internship={upcomingInternship} />
       )}
-    </>
+      {currentInternship && (
+        <div className="grid md:grid-cols-[320px_auto] gap-5">
+          <div className="flex gap-5 flex-wrap min-[690px]:flex-nowrap md:flex-wrap w-full">
+            <MarkAttendanceCard
+              attendance={attendanceData}
+              internshipMode={currentInternship.mode}
+              isHolidayToday={isHoliday}
+              onCheckIn={markCheckInAndModeAttendance}
+              onCheckOut={markCheckOutAttendance}
+            />
+            <div className="flex-grow min-[690px]:flex-grow-0 md:flex-grow">
+              <CurrentAttendanceChart
+                totalWorkingDays={totalWorkingDays}
+                totalPresentDays={totalPresentDays}
+              />
+            </div>
+          </div>
+          <SubmitReportCard
+            report={reportData}
+            attendance={attendanceData}
+            isHolidayToday={isHoliday}
+            onSubmitReport={addDailyReport}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 
