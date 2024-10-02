@@ -9,7 +9,7 @@ const DashboardNav = ({
   return (
     <div className="lg:flex">
       <div className="relative h-14 lg:h-screen lg:w-2/5 xl:w-[30%] lg:max-w-72 lg:overflow-auto">
-        <div className="fixed w-full lg:h-screen lg:w-2/5 xl:w-[30%] lg:max-w-72 lg:overflow-auto lg:p-4 bg-card shadow-md">
+        <div className="fixed z-50 w-full lg:h-screen lg:w-2/5 xl:w-[30%] lg:max-w-72 lg:overflow-auto lg:p-4 bg-card shadow-md">
           <Navbar />
         </div>
       </div>
