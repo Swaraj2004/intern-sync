@@ -16,6 +16,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import Attendance from '@/types/attendance';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -44,8 +45,11 @@ const SubmitReportCard = ({
   isHolidayToday: boolean;
   onSubmitReport: (reportData: string) => Promise<void>;
 }) => {
+  const [mounted, setMounted] = useState(false);
   const isTextAreaDisabled =
-    typeof report?.internship_reports?.report_data === 'string';
+    typeof report?.internship_reports?.report_data === 'string' || true;
+
+  useEffect(() => setMounted(true), []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -66,7 +70,7 @@ const SubmitReportCard = ({
         <CardTitle>Submit Report</CardTitle>
       </CardHeader>
       <CardContent className="flex-grow">
-        {!isHolidayToday && attendance?.in_time && (
+        {!isHolidayToday && attendance?.in_time && report && mounted && (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -98,15 +102,15 @@ const SubmitReportCard = ({
             </form>
           </Form>
         )}
-        {isHolidayToday && (
-          <div className="text-center p-6 h-full min-h-60 flex rounded-md border border-input bg-background">
+        {isHolidayToday && mounted && (
+          <div className="text-center p-6 h-full min-h-40 flex rounded-md border border-input bg-background">
             <p className="w-3/4 mx-auto text-muted-foreground pt-12">
               It&apos;s a holiday today. No need to submit a report.
             </p>
           </div>
         )}
-        {!isHolidayToday && !attendance?.in_time && (
-          <div className="text-center p-6 h-full min-h-60 flex rounded-md border border-input bg-background">
+        {!isHolidayToday && !attendance?.in_time && mounted && (
+          <div className="text-center p-6 h-full min-h-40 flex rounded-md border border-input bg-background">
             <p className="w-3/4 mx-auto text-muted-foreground pt-12">
               You can only submit a report after checking in.
             </p>

@@ -9,6 +9,7 @@ import CurrentAttendanceChart from '@/components/ui/CurrentAttendanceChart';
 import { Loader } from '@/components/ui/Loader';
 import { useUser } from '@/context/UserContext';
 import { convertUTCtoIST } from '@/lib/utils';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   useMarkCheckInAndModeAttendance,
   useMarkCheckOutAttendance,
@@ -22,6 +23,7 @@ import {
 } from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useEffect, useMemo, useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const supabase = supabaseClient();
 
@@ -102,12 +104,13 @@ const StudentDashboardPage = () => {
       new Date(internship.end_date) >= new Date()
   );
 
-  const { data: attendanceData } = useInternshipAttendance({
-    internshipId: currentInternship?.id,
-    attendanceDate: new Date().toISOString().split('T')[0],
-  });
+  const { data: attendanceData, isLoading: isLoadingAttendance } =
+    useInternshipAttendance({
+      internshipId: currentInternship?.id,
+      attendanceDate: new Date().toISOString().split('T')[0],
+    });
 
-  const { data: reportData } = useDailyReport({
+  const { data: reportData, isLoading: isLoadingReport } = useDailyReport({
     attendanceId: attendanceData?.id,
     reportDate: new Date().toISOString().split('T')[0],
   });
@@ -210,13 +213,27 @@ const StudentDashboardPage = () => {
       {currentInternship && (
         <div className="grid md:grid-cols-[320px_auto] gap-5">
           <div className="flex gap-5 flex-wrap min-[690px]:flex-nowrap md:flex-wrap w-full">
-            <MarkAttendanceCard
-              attendance={attendanceData}
-              internshipMode={currentInternship.mode}
-              isHolidayToday={isHoliday}
-              onCheckIn={markCheckInAndModeAttendance}
-              onCheckOut={markCheckOutAttendance}
-            />
+            {isLoadingAttendance ? (
+              <Card className="flex flex-col flex-grow min-w-[320px] w-1/2">
+                <CardContent className="flex flex-col flex-grow gap-5 justify-between pt-6">
+                  <CardTitle className="text-center">Mark Attendance</CardTitle>
+                  <div className="h-full min-h-40 flex flex-col justify-center items-center gap-4">
+                    <Skeleton className="w-3/4 h-6" />
+                    <Skeleton className="w-3/4 h-6" />
+                    <Skeleton className="w-1/2 h-5 rounded-full" />
+                    <Skeleton className="w-full h-10" />
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <MarkAttendanceCard
+                attendance={attendanceData}
+                internshipMode={currentInternship.mode}
+                isHolidayToday={isHoliday}
+                onCheckIn={markCheckInAndModeAttendance}
+                onCheckOut={markCheckOutAttendance}
+              />
+            )}
             <div className="flex-grow min-[690px]:flex-grow-0 md:flex-grow">
               <CurrentAttendanceChart
                 totalWorkingDays={totalWorkingDays}
@@ -224,12 +241,24 @@ const StudentDashboardPage = () => {
               />
             </div>
           </div>
-          <SubmitReportCard
-            report={reportData}
-            attendance={attendanceData}
-            isHolidayToday={isHoliday}
-            onSubmitReport={addDailyReport}
-          />
+          {isLoadingReport || isLoadingAttendance ? (
+            <Card className="flex flex-col flex-grow">
+              <CardHeader>
+                <CardTitle>Submit Report</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col flex-grow gap-5">
+                <Skeleton className="w-full flex-grow" />
+                <Skeleton className="w-24 h-10" />
+              </CardContent>
+            </Card>
+          ) : (
+            <SubmitReportCard
+              report={reportData}
+              attendance={attendanceData}
+              isHolidayToday={isHoliday}
+              onSubmitReport={addDailyReport}
+            />
+          )}
         </div>
       )}
     </div>

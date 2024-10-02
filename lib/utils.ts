@@ -61,8 +61,6 @@ export function convertUTCToISTWithAMPM(utcTimeString: string) {
   // Create a Date object in UTC for the given time
   const utcDate = new Date(Date.UTC(1970, 0, 1, hours, minutes, seconds));
 
-  console.log(utcDate);
-
   // IST Offset: 5 hours and 30 minutes
   const istOffset = 5 * 60 * 60 * 1000 + 30 * 60 * 1000; // in milliseconds
 
