@@ -89,6 +89,9 @@ importers:
       react-aria:
         specifier: ^3.34.3
         version: 3.34.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-countup:
+        specifier: ^6.5.3
+        version: 6.5.3(react@18.3.1)
       react-dom:
         specifier: ^18
         version: 18.3.1(react@18.3.1)
@@ -1717,6 +1720,9 @@ packages:
   core-js-pure@3.38.1:
     resolution: {integrity: sha512-BY8Etc1FZqdw1glX0XNOq2FDwfrg/VGqoZOZCdaL+UmdaqDwQwYXkMJT4t6In+zfEfOJDcM9T0KdbBeJg8KKCQ==}
 
+  countup.js@2.8.0:
+    resolution: {integrity: sha512-f7xEhX0awl4NOElHulrl4XRfKoNH3rB+qfNSZZyjSZhaAoUk6elvhH+MNxMmlmuUJ2/QNTWPSA7U4mNtIAKljQ==}
+
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
@@ -2675,6 +2681,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0
+
+  react-countup@6.5.3:
+    resolution: {integrity: sha512-udnqVQitxC7QWADSPDOxVWULkLvKUWrDapn5i53HE4DPRVgs+Y5rr4bo25qEl8jSh+0l2cToJgGMx+clxPM3+w==}
+    peerDependencies:
+      react: '>= 16.3.0'
 
   react-dom@18.3.1:
     resolution: {integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==}
@@ -5158,6 +5169,8 @@ snapshots:
 
   core-js-pure@3.38.1: {}
 
+  countup.js@2.8.0: {}
+
   cross-spawn@7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -6305,6 +6318,11 @@ snapshots:
       '@react-types/shared': 3.24.1(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  react-countup@6.5.3(react@18.3.1):
+    dependencies:
+      countup.js: 2.8.0
+      react: 18.3.1
 
   react-dom@18.3.1(react@18.3.1):
     dependencies:
