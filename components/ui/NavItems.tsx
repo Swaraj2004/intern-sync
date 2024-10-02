@@ -58,11 +58,6 @@ const NavItems = ({
       access: ['institute-coordinator', 'department-coordinator'],
     },
     {
-      path: `/dashboard/${role}/company-mentors`,
-      title: 'Company Mentors',
-      access: ['department-coordinator', 'college-mentor'],
-    },
-    {
       path: `/dashboard/${role}/students`,
       title: 'Students',
       access: [
@@ -74,17 +69,12 @@ const NavItems = ({
     {
       path: `/dashboard/${role}/internships`,
       title: 'Internships',
-      access: ['department-coordinator', 'college-mentor', 'student'],
+      access: ['college-mentor', 'student'],
     },
     {
       path: `/dashboard/${role}/attendance`,
       title: 'Attendance',
-      access: [
-        'college-mentor',
-        'student',
-        'company-mentor',
-        'department-coordinator',
-      ],
+      access: ['college-mentor', 'company-mentor', 'department-coordinator'],
     },
   ];
 

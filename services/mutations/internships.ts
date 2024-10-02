@@ -1,6 +1,6 @@
-import { useStudentInternships } from '@/services/queries';
+import { useInternships, useStudentInternships } from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
 const supabase = supabaseClient();
@@ -171,6 +171,89 @@ export const useUpdateCompanyMentorEmail = ({
 
   return {
     updateCompanyMentorEmail,
+    isLoading,
+  };
+};
+
+export const useAcceptOrRejectInternship = ({
+  collegeMentorId,
+}: {
+  collegeMentorId: string;
+}) => {
+  const { mutate } = useInternships({
+    collegeMentorId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const acceptOrRejectInternship = useCallback(
+    async (internshipId: string, approved: boolean) => {
+      setIsLoading(true);
+
+      try {
+        if (approved) {
+          mutate((currentData) => {
+            if (!currentData?.data) return undefined;
+
+            return {
+              ...currentData,
+              data: currentData.data.map((internship) =>
+                internship.id === internshipId
+                  ? {
+                      ...internship,
+                      approved,
+                    }
+                  : internship
+              ),
+            };
+          }, false);
+
+          const { error } = await supabase
+            .from('internships')
+            .update({
+              approved,
+            })
+            .eq('id', internshipId);
+
+          if (error) {
+            throw new Error(error.message);
+          }
+        } else {
+          mutate((currentData) => {
+            if (!currentData?.data) return undefined;
+
+            return {
+              ...currentData,
+              data: currentData.data.filter(
+                (internship) => internship.id !== internshipId
+              ),
+            };
+          }, false);
+
+          const { error } = await supabase
+            .from('internships')
+            .delete()
+            .eq('id', internshipId);
+
+          if (error) {
+            throw new Error(error.message);
+          }
+        }
+
+        toast.success(
+          `Internship ${approved ? 'approved' : 'rejected'} successfully.`
+        );
+      } catch (error) {
+        toast.error(`Failed to ${approved ? 'approve' : 'reject'} internship.`);
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate]
+  );
+
+  return {
+    acceptOrRejectInternship,
     isLoading,
   };
 };
