@@ -119,7 +119,7 @@ export const useAttendanceWithStudents = ({
           let query = supabase
             .from('students')
             .select(
-              'uid, college_mentors (uid, users (id, name)), departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified), attendance(id, status, date)'
+              'uid, college_mentors (uid, users (id, name)), departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified), internships (id, role, start_date, end_date), attendance (id, status, date, in_time, out_time, work_from_home)'
             )
             .eq('institute_id', instituteId)
             .eq('attendance.date', attendanceDate)

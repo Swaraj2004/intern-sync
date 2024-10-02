@@ -53,8 +53,9 @@ const AttendanceTable = ({ date }: { date: Date }) => {
       getStudentAttendanceColumns({
         onUpsert: upsertAttendance,
         departmentId: userId,
+        attendanceDate: date,
       }),
-    [upsertAttendance, userId]
+    [upsertAttendance, userId, date]
   );
 
   const tableData = useMemo(

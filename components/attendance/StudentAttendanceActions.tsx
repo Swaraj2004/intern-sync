@@ -24,6 +24,7 @@ import { z } from 'zod';
 type StudentAttendanceActionsProps = {
   studentId: string;
   attendanceStatus: string;
+  internshipId: string;
   attendanceId?: string;
   departmentId?: string;
   collegeMentorId?: string;
@@ -32,7 +33,7 @@ type StudentAttendanceActionsProps = {
 const statusOptions = [
   { label: 'Present', value: 'present' },
   { label: 'Absent', value: 'absent' },
-  { label: 'Pending', value: 'pending' },
+  { label: 'Holiday', value: 'holiday' },
 ];
 
 const FormSchema = z.object({
@@ -42,6 +43,7 @@ const FormSchema = z.object({
 const StudentAttendanceActions = ({
   studentId,
   attendanceStatus,
+  internshipId,
   attendanceId,
   departmentId,
   collegeMentorId,
@@ -71,6 +73,7 @@ const StudentAttendanceActions = ({
     await upsertAttendance(
       attendanceId ? 'update' : 'insert',
       studentId,
+      internshipId,
       data.attendanceStatus,
       attendanceId
     );

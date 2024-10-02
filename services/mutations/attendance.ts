@@ -54,6 +54,10 @@ export const useUpsertAttendance = ({
                         id: 'new',
                         status: attendanceStatus,
                         date: attendanceDate,
+                        in_time: null,
+                        out_time: null,
+                        work_from_home: false,
+                        internship_id: internshipId,
                       },
                     ],
                   }

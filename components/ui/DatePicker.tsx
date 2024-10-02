@@ -120,7 +120,7 @@ const MobileDatePickerCard = ({
           {date.toDateString()}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[350px]" align="start">
+      <PopoverContent className="w-[350px]" align="end">
         <div className="flex items-center justify-between mb-4">
           <Button variant="outline" size="icon" onClick={handlePrevMonth}>
             <ChevronLeftIcon className="h-4 w-4" />
