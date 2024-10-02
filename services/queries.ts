@@ -275,10 +275,72 @@ export const useStudentInternships = ({ studentId }: { studentId: string }) => {
       ? supabase
           .from('internships')
           .select(
-            'id, role, field, mode, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved'
+            'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved'
           )
           .eq('student_id', studentId)
       : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
+export const useInternshipAttendance = ({
+  internshipId,
+  attendanceDate,
+}: {
+  internshipId?: string;
+  attendanceDate: string;
+}) => {
+  const shouldFetch = Boolean(internshipId && attendanceDate);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('attendance')
+          .select(
+            'id, student_id, status, date, in_time, out_time, work_from_home'
+          )
+          .eq('internship_id', internshipId!)
+          .eq('date', attendanceDate)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
+export const useDailyReport = ({
+  attendanceId,
+  reportDate,
+}: {
+  attendanceId?: string;
+  reportDate: string;
+}) => {
+  const shouldFetch = Boolean(attendanceId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('attendance')
+          .select('date, internship_reports (report_data)')
+          .eq('id', attendanceId!)
+          .eq('date', reportDate)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
