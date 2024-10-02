@@ -11,27 +11,43 @@ export type Database = {
     Tables: {
       attendance: {
         Row: {
-          created_at: string | null
           date: string
           id: string
-          status: string
+          in_time: string | null
+          internship_id: string
+          out_time: string | null
+          status: string | null
           student_id: string
+          work_from_home: boolean
         }
         Insert: {
-          created_at?: string | null
           date: string
           id?: string
-          status: string
+          in_time?: string | null
+          internship_id: string
+          out_time?: string | null
+          status?: string | null
           student_id: string
+          work_from_home?: boolean
         }
         Update: {
-          created_at?: string | null
           date?: string
           id?: string
-          status?: string
+          in_time?: string | null
+          internship_id?: string
+          out_time?: string | null
+          status?: string | null
           student_id?: string
+          work_from_home?: boolean
         }
         Relationships: [
+          {
+            foreignKeyName: "attendance_internship_id_fkey"
+            columns: ["internship_id"]
+            isOneToOne: false
+            referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "attendance_student_id_fkey"
             columns: ["student_id"]
@@ -152,6 +168,33 @@ export type Database = {
           },
         ]
       }
+      holidays: {
+        Row: {
+          description: string | null
+          holiday_date: string
+          holiday_type: string
+          id: string
+          name: string
+          region: string | null
+        }
+        Insert: {
+          description?: string | null
+          holiday_date: string
+          holiday_type: string
+          id?: string
+          name: string
+          region?: string | null
+        }
+        Update: {
+          description?: string | null
+          holiday_date?: string
+          holiday_type?: string
+          id?: string
+          name?: string
+          region?: string | null
+        }
+        Relationships: []
+      }
       institutes: {
         Row: {
           address: string | null
@@ -190,6 +233,52 @@ export type Database = {
           },
         ]
       }
+      internship_reports: {
+        Row: {
+          id: string
+          internship_id: string
+          report_data: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          id: string
+          internship_id: string
+          report_data: string
+          status: string
+          student_id: string
+        }
+        Update: {
+          id?: string
+          internship_id?: string
+          report_data?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "internship_reports_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "attendance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internship_reports_internship_id_fkey"
+            columns: ["internship_id"]
+            isOneToOne: false
+            referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "internship_reports_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["uid"]
+          },
+        ]
+      }
       internships: {
         Row: {
           approved: boolean
@@ -198,16 +287,16 @@ export type Database = {
           company_mentor_email: string | null
           company_mentor_id: string | null
           company_name: string
-          created_at: string
+          created_at: string | null
           end_date: string
           field: string
           id: string
           internship_letter_url: string
           mode: string
+          region: string
           role: string
           start_date: string
           student_id: string
-          total_holidays: number | null
         }
         Insert: {
           approved?: boolean
@@ -216,16 +305,16 @@ export type Database = {
           company_mentor_email?: string | null
           company_mentor_id?: string | null
           company_name: string
-          created_at?: string
+          created_at?: string | null
           end_date: string
           field: string
           id?: string
           internship_letter_url: string
           mode: string
+          region: string
           role: string
           start_date: string
           student_id: string
-          total_holidays?: number | null
         }
         Update: {
           approved?: boolean
@@ -234,16 +323,16 @@ export type Database = {
           company_mentor_email?: string | null
           company_mentor_id?: string | null
           company_name?: string
-          created_at?: string
+          created_at?: string | null
           end_date?: string
           field?: string
           id?: string
           internship_letter_url?: string
           mode?: string
+          region?: string
           role?: string
           start_date?: string
           student_id?: string
-          total_holidays?: number | null
         }
         Relationships: [
           {
@@ -304,6 +393,61 @@ export type Database = {
           name?: string
         }
         Relationships: []
+      }
+      student_attendance_requests: {
+        Row: {
+          approved: boolean
+          college_mentor_id: string
+          date: string
+          description: string
+          id: string
+          internship_id: string
+          request_type: string
+          student_id: string
+        }
+        Insert: {
+          approved?: boolean
+          college_mentor_id: string
+          date: string
+          description: string
+          id?: string
+          internship_id: string
+          request_type: string
+          student_id: string
+        }
+        Update: {
+          approved?: boolean
+          college_mentor_id?: string
+          date?: string
+          description?: string
+          id?: string
+          internship_id?: string
+          request_type?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_attendance_requests_college_mentor_id_fkey"
+            columns: ["college_mentor_id"]
+            isOneToOne: false
+            referencedRelation: "college_mentors"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "student_attendance_requests_internship_id_fkey"
+            columns: ["internship_id"]
+            isOneToOne: false
+            referencedRelation: "internships"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_attendance_requests_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["uid"]
+          },
+        ]
       }
       students: {
         Row: {
@@ -511,6 +655,21 @@ export type Database = {
           is_verified: boolean
         }[]
       }
+      approve_student_attendance_requests: {
+        Args: {
+          request_id: string
+          mentor_approval: boolean
+        }
+        Returns: undefined
+      }
+      check_holiday_for_student: {
+        Args: {
+          student_id: string
+          internship_id: string
+          check_date: string
+        }
+        Returns: boolean
+      }
       delete_college_mentor: {
         Args: {
           user_id: string
@@ -536,6 +695,29 @@ export type Database = {
           department_id?: string
         }
         Returns: Json
+      }
+      get_student_attendance_percentage: {
+        Args: {
+          student_id: string
+          internship_id: string
+          student_region: string
+        }
+        Returns: number
+      }
+      get_total_present_days: {
+        Args: {
+          student_id: string
+          internship_id: string
+        }
+        Returns: number
+      }
+      get_working_days: {
+        Args: {
+          start_date: string
+          end_date: string
+          region: string
+        }
+        Returns: number
       }
     }
     Enums: {
