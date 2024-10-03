@@ -2,22 +2,15 @@
 
 import { Badge } from '@/components/ui/badge';
 
-const checkIsSatOrSun = (date: Date) => {
-  const day = date.getDay();
-  return day === 0 || day === 6;
-};
-
 const AttendanceStatus = ({
   status,
-  attendanceDate,
   noInternship,
+  isHolidayForStudent,
 }: {
   status: string | null;
-  attendanceDate: Date;
   noInternship: boolean;
+  isHolidayForStudent: boolean | null;
 }) => {
-  const isSatOrSun = checkIsSatOrSun(attendanceDate);
-
   return (
     <div className="flex items-center">
       {noInternship && (
@@ -45,12 +38,12 @@ const AttendanceStatus = ({
           Holiday
         </Badge>
       )}
-      {!status && !isSatOrSun && !noInternship && (
+      {!status && !isHolidayForStudent && !noInternship && (
         <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300">
           Not submitted
         </Badge>
       )}
-      {!status && isSatOrSun && !noInternship && (
+      {!status && isHolidayForStudent && !noInternship && (
         <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 text-nowrap">
           Holiday
         </Badge>

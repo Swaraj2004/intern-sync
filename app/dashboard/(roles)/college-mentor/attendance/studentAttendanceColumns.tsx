@@ -4,6 +4,7 @@ import AttendanceStatus from '@/components/ui/AttendanceStatus';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
+import { checkHolidayForStudent } from '@/services/api';
 import StudentAttendance from '@/types/students-attendance';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
@@ -65,11 +66,17 @@ const getStudentAttendanceColumns = ({
   {
     id: 'status',
     header: 'Status',
-    cell: ({ row }) => {
+    cell: async ({ row }) => {
       const currentInternship = row.original.internships?.find(
         (internship) =>
           new Date(internship.start_date) <= new Date(attendanceDate) &&
           new Date(internship.end_date) >= new Date(attendanceDate)
+      );
+
+      const isHolidayForStudent = await checkHolidayForStudent(
+        row.original.uid,
+        currentInternship?.id || '',
+        attendanceDate.toISOString().split('T')[0]
       );
 
       return (
@@ -79,8 +86,8 @@ const getStudentAttendanceColumns = ({
               ? row.original.attendance[0].status
               : null
           }
-          attendanceDate={attendanceDate}
           noInternship={currentInternship === undefined}
+          isHolidayForStudent={isHolidayForStudent}
         />
       );
     },

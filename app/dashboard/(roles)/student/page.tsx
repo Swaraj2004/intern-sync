@@ -5,11 +5,17 @@ import CompleteProfileCard from '@/app/dashboard/(roles)/student/CompleteProfile
 import MarkAttendanceCard from '@/app/dashboard/(roles)/student/MarkAttendanceCard';
 import SubmitReportCard from '@/app/dashboard/(roles)/student/SubmitReportCard';
 import UpcomingInternshipCard from '@/app/dashboard/(roles)/student/UpcomingInternshipCard';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import CurrentAttendanceChart from '@/components/ui/CurrentAttendanceChart';
 import { Loader } from '@/components/ui/Loader';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/context/UserContext';
 import { convertUTCtoIST } from '@/lib/utils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  checkHolidayForStudent,
+  getTotalPresentDays,
+  getTotalWorkingDays,
+} from '@/services/api';
 import {
   useMarkCheckInAndModeAttendance,
   useMarkCheckOutAttendance,
@@ -21,63 +27,7 @@ import {
   useStudentInternships,
   useStudentProfile,
 } from '@/services/queries';
-import { supabaseClient } from '@/utils/supabase/client';
 import { useEffect, useMemo, useState } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const supabase = supabaseClient();
-
-async function getTotalWorkingDays(
-  startDate: string,
-  endDate: string,
-  studentRegion: string
-) {
-  const { data, error } = await supabase.rpc('get_working_days', {
-    start_date: startDate,
-    end_date: endDate,
-    region: studentRegion,
-  });
-
-  if (error) {
-    console.error('Error fetching total working days:', error);
-    return null;
-  }
-
-  return data;
-}
-
-async function getTotalPresentDays(studentId: string, internshipId: string) {
-  const { data, error } = await supabase.rpc('get_total_present_days', {
-    student_id: studentId,
-    internship_id: internshipId,
-  });
-
-  if (error) {
-    console.error('Error fetching total present days:', error);
-    return null;
-  }
-
-  return data;
-}
-
-async function checkHolidayForStudent(
-  studentId: string,
-  internshipId: string,
-  checkDate: string
-) {
-  const { data, error } = await supabase.rpc('check_holiday_for_student', {
-    student_id: studentId,
-    internship_id: internshipId,
-    check_date: checkDate,
-  });
-
-  if (error) {
-    console.error('Error checking holiday for student:', error);
-    return null;
-  }
-
-  return data;
-}
 
 const StudentDashboardPage = () => {
   const { user } = useUser();
