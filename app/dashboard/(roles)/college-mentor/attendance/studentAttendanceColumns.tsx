@@ -1,6 +1,6 @@
-import { StatusCell } from '@/components/attendance/StatusCell';
 import StudentAttendanceActions from '@/components/attendance/StudentAttendanceActions';
 import StudentAttendanceApprovalActions from '@/components/attendance/StudentAttendanceApprovalActions';
+import { AttendanceStatusCell } from '@/components/ui/AttendanceStatusCell';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
@@ -42,9 +42,9 @@ const getStudentAttendanceColumns = ({
   },
   {
     id: 'attendance.in_time',
-    header: 'In Time',
+    header: () => <span className="text-nowrap">In Time</span>,
     cell: ({ row }) => (
-      <div>
+      <div className="text-nowrap">
         {row.original.attendance[0]?.in_time
           ? convertUTCToISTWithAMPM(row.original.attendance[0]?.in_time)
           : '-'}
@@ -53,9 +53,9 @@ const getStudentAttendanceColumns = ({
   },
   {
     id: 'attendance.out_time',
-    header: 'Out Time',
+    header: () => <span className="text-nowrap">Out Time</span>,
     cell: ({ row }) => (
-      <div>
+      <div className="text-nowrap">
         {row.original.attendance[0]?.out_time
           ? convertUTCToISTWithAMPM(row.original.attendance[0]?.out_time)
           : '-'}
@@ -65,7 +65,9 @@ const getStudentAttendanceColumns = ({
   {
     id: 'status',
     header: 'Status',
-    cell: ({ row }) => <StatusCell row={row} attendanceDate={attendanceDate} />,
+    cell: ({ row }) => (
+      <AttendanceStatusCell row={row} attendanceDate={attendanceDate} />
+    ),
   },
   {
     id: 'approval',

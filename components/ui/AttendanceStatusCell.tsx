@@ -4,14 +4,14 @@ import { checkHolidayForStudent } from '@/services/api';
 import StudentInternship from '@/types/student-internship';
 import { useEffect, useState } from 'react';
 
-export const StatusCell = ({
+export const AttendanceStatusCell = ({
   row,
   attendanceDate,
 }: {
   row: any;
   attendanceDate: Date;
 }) => {
-  const [isHoliday, setIsHoliday] = useState<boolean>(false);
+  const [isHoliday, setIsHoliday] = useState<boolean | null>(null);
   const [hasNoInternship, setHasNoInternship] = useState<boolean>(false);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export const StatusCell = ({
           currentInternship.id,
           dateString
         );
-        setIsHoliday(holidayStatus || false);
+        setIsHoliday(holidayStatus);
       }
     }
 

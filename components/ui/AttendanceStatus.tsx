@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AttendanceStatus = ({
   status,
@@ -13,7 +14,7 @@ const AttendanceStatus = ({
 }) => {
   return (
     <div className="flex items-center">
-      {noInternship && (
+      {noInternship && isHolidayForStudent === null && (
         <Badge className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-300 dark:hover:bg-gray-400 text-nowrap">
           No Internship
         </Badge>
@@ -38,16 +39,19 @@ const AttendanceStatus = ({
           Holiday
         </Badge>
       )}
-      {!status && isHolidayForStudent && !noInternship && (
-        <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400">
-          Holiday
-        </Badge>
-      )}
-      {!status && !isHolidayForStudent && !noInternship && (
-        <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap">
-          Not submitted
-        </Badge>
-      )}
+      {!status &&
+        !noInternship &&
+        (isHolidayForStudent === null ? (
+          <Skeleton className="w-24 h-5 rounded-full" />
+        ) : isHolidayForStudent ? (
+          <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400">
+            Holiday
+          </Badge>
+        ) : (
+          <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap">
+            Not submitted
+          </Badge>
+        ))}
     </div>
   );
 };
