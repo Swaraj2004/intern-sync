@@ -47,7 +47,7 @@ const SubmitReportCard = ({
 }) => {
   const [mounted, setMounted] = useState(false);
   const isTextAreaDisabled =
-    typeof report?.internship_reports?.report_data === 'string' || true;
+    typeof report?.internship_reports?.report_data === 'string';
 
   useEffect(() => setMounted(true), []);
 
@@ -70,7 +70,7 @@ const SubmitReportCard = ({
         <CardTitle>Submit Report</CardTitle>
       </CardHeader>
       <CardContent className="flex-grow">
-        {!isHolidayToday && attendance?.in_time && report && mounted && (
+        {!isHolidayToday && attendance?.in_time && mounted && (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(handleSubmit)}
@@ -97,6 +97,7 @@ const SubmitReportCard = ({
               <CardFooter className="p-0">
                 <Button disabled={isSubmitDisabled || isTextAreaDisabled}>
                   {isTextAreaDisabled ? 'Submitted' : 'Submit'}
+                  {/* Submit */}
                 </Button>
               </CardFooter>
             </form>
