@@ -38,7 +38,7 @@ const HomePage = () => {
         <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8 snap-start lg:h-screen">
           <div className="flex flex-col justify-center text-center md:text-left">
             <h1 className="text-4xl lg:text-6xl xl:text-7xl leading-snug text-primary font-semibold pb-6">
-              InternSync: Academic Activity Monitoring Portal
+              InternSync: Internship Activity Monitoring Portal
             </h1>
             <p className="text-lg lg:text-2xl text-slate-800 dark:text-slate-300">
               Your One-Stop Solution for Seamless Communication and Progress
