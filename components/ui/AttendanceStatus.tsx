@@ -34,18 +34,18 @@ const AttendanceStatus = ({
         </Badge>
       )}
       {status === 'holiday' && (
-        <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 text-nowrap">
+        <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400">
+          Holiday
+        </Badge>
+      )}
+      {!status && isHolidayForStudent && !noInternship && (
+        <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400">
           Holiday
         </Badge>
       )}
       {!status && !isHolidayForStudent && !noInternship && (
-        <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300">
+        <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap">
           Not submitted
-        </Badge>
-      )}
-      {!status && isHolidayForStudent && !noInternship && (
-        <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 text-nowrap">
-          Holiday
         </Badge>
       )}
     </div>

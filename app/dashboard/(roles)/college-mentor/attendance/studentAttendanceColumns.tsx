@@ -1,10 +1,9 @@
+import { StatusCell } from '@/components/attendance/StatusCell';
 import StudentAttendanceActions from '@/components/attendance/StudentAttendanceActions';
 import StudentAttendanceApprovalActions from '@/components/attendance/StudentAttendanceApprovalActions';
-import AttendanceStatus from '@/components/ui/AttendanceStatus';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
-import { checkHolidayForStudent } from '@/services/api';
 import StudentAttendance from '@/types/students-attendance';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
@@ -66,43 +65,26 @@ const getStudentAttendanceColumns = ({
   {
     id: 'status',
     header: 'Status',
-    cell: async ({ row }) => {
-      const currentInternship = row.original.internships?.find(
-        (internship) =>
-          new Date(internship.start_date) <= new Date(attendanceDate) &&
-          new Date(internship.end_date) >= new Date(attendanceDate)
-      );
-
-      const isHolidayForStudent = await checkHolidayForStudent(
-        row.original.uid,
-        currentInternship?.id || '',
-        attendanceDate.toISOString().split('T')[0]
-      );
-
-      return (
-        <AttendanceStatus
-          status={
-            row.original.attendance[0]
-              ? row.original.attendance[0].status
-              : null
-          }
-          noInternship={currentInternship === undefined}
-          isHolidayForStudent={isHolidayForStudent}
-        />
-      );
-    },
+    cell: ({ row }) => <StatusCell row={row} attendanceDate={attendanceDate} />,
   },
   {
     id: 'approval',
     header: 'Approval',
     cell: ({ row }) => {
       const attendance = row.original.attendance[0];
+      const currentInternship = row.original.internships?.find(
+        (internship) =>
+          new Date(internship.start_date) <= new Date(attendanceDate) &&
+          new Date(internship.end_date) >= new Date(attendanceDate)
+      );
+
       return attendance && attendance.status === 'pending' ? (
         <StudentAttendanceApprovalActions
           onApprove={async () => {
             onUpsert(
               'update',
               row.original.uid,
+              currentInternship?.id || '',
               'present',
               row.original.attendance[0].id
             );
@@ -111,6 +93,7 @@ const getStudentAttendanceColumns = ({
             onUpsert(
               'update',
               row.original.uid,
+              currentInternship?.id || '',
               'absent',
               row.original.attendance[0].id
             );
