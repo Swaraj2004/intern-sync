@@ -1,4 +1,4 @@
-import { useDailyReport } from '@/services/queries';
+import { useDailyReport, useReportsWithStudents } from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ export const useAddDailyReport = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const addDailyReport = useCallback(
-    async (reportData: string) => {
+    async (division: string, details: string, main_points: string) => {
       setIsLoading(true);
 
       mutate((currentData) => {
@@ -32,7 +32,9 @@ export const useAddDailyReport = ({
           ...currentData,
           data: {
             ...currentData.data,
-            report_data: reportData,
+            division,
+            details,
+            main_points,
           },
         };
       }, false);
@@ -41,7 +43,9 @@ export const useAddDailyReport = ({
         const { error } = await supabase.from('internship_reports').insert([
           {
             id: attendanceId,
-            report_data: reportData,
+            division,
+            details,
+            main_points,
             status: 'pending',
             student_id: studentId,
             internship_id: internshipId,
@@ -65,4 +69,151 @@ export const useAddDailyReport = ({
   );
 
   return { addDailyReport, isLoading };
+};
+
+export const useApproveReport = ({
+  instituteId,
+  departmentId,
+  collegeMentorId,
+  reportDate,
+}: {
+  instituteId: number;
+  departmentId?: string;
+  collegeMentorId?: string;
+  reportDate: string;
+}) => {
+  const { mutate } = useReportsWithStudents({
+    instituteId,
+    departmentId,
+    collegeMentorId,
+    reportDate,
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const approveReport = useCallback(
+    async (
+      actionType: 'approved' | 'revision',
+      attendanceId: string,
+      studentId: string,
+      feedback: string
+    ) => {
+      setIsLoading(true);
+
+      if (actionType === 'approved') {
+        mutate((currentData) => {
+          if (!currentData?.data) return undefined;
+
+          return {
+            ...currentData,
+            data: currentData.data.map((student) =>
+              student.uid === studentId
+                ? {
+                    ...student,
+                    attendance: student.attendance.map((attendance) =>
+                      attendance.id === attendanceId
+                        ? {
+                            ...attendance,
+                            internship_reports: {
+                              feedback,
+                              status: 'approved',
+                              division:
+                                attendance.internship_reports?.division || '',
+                              details:
+                                attendance.internship_reports?.details || '',
+                              main_points:
+                                attendance.internship_reports?.main_points ||
+                                '',
+                            },
+                          }
+                        : attendance
+                    ),
+                  }
+                : student
+            ),
+          };
+        }, false);
+
+        try {
+          const { error } = await supabase
+            .from('internship_reports')
+            .update({
+              feedback,
+              status: 'approved',
+            })
+            .eq('id', attendanceId);
+
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          toast.success('Report approved successfully.');
+        } catch (error) {
+          if (typeof error === 'string') toast.error(error);
+          else toast.error('Failed to approve report.');
+        } finally {
+          mutate();
+          setIsLoading(false);
+        }
+      } else if (actionType === 'revision') {
+        mutate((currentData) => {
+          if (!currentData?.data) return undefined;
+
+          return {
+            ...currentData,
+            data: currentData.data.map((student) =>
+              student.uid === studentId
+                ? {
+                    ...student,
+                    attendance: student.attendance.map((attendance) =>
+                      attendance.id === attendanceId
+                        ? {
+                            ...attendance,
+                            internship_reports: {
+                              feedback,
+                              status: 'revision',
+                              division:
+                                attendance.internship_reports?.division || '',
+                              details:
+                                attendance.internship_reports?.details || '',
+                              main_points:
+                                attendance.internship_reports?.main_points ||
+                                '',
+                            },
+                          }
+                        : attendance
+                    ),
+                  }
+                : student
+            ),
+          };
+        }, false);
+
+        try {
+          const { error } = await supabase
+            .from('internship_reports')
+            .update({
+              feedback,
+              status: 'revision',
+            })
+            .eq('id', attendanceId);
+
+          if (error) {
+            throw new Error(error.message);
+          }
+
+          toast.success('Report sent for revision successfully.');
+        } catch (error) {
+          if (typeof error === 'string') toast.error(error);
+          else toast.error('Failed to send report for revision.');
+        } finally {
+          mutate();
+          setIsLoading(false);
+        }
+      }
+    },
+    [mutate]
+  );
+
+  return { approveReport, isLoading };
 };

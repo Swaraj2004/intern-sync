@@ -235,23 +235,32 @@ export type Database = {
       }
       internship_reports: {
         Row: {
+          details: string
+          division: string
+          feedback: string | null
           id: string
           internship_id: string
-          report_data: string
+          main_points: string
           status: string
           student_id: string
         }
         Insert: {
+          details: string
+          division: string
+          feedback?: string | null
           id: string
           internship_id: string
-          report_data: string
+          main_points: string
           status: string
           student_id: string
         }
         Update: {
+          details?: string
+          division?: string
+          feedback?: string | null
           id?: string
           internship_id?: string
-          report_data?: string
+          main_points?: string
           status?: string
           student_id?: string
         }
@@ -456,7 +465,6 @@ export type Database = {
           admission_id: string | null
           admission_year: number | null
           college_mentor_id: string | null
-          company_mentor_id: string | null
           created_at: string
           department_id: string
           division: string | null
@@ -471,7 +479,6 @@ export type Database = {
           admission_id?: string | null
           admission_year?: number | null
           college_mentor_id?: string | null
-          company_mentor_id?: string | null
           created_at?: string
           department_id: string
           division?: string | null
@@ -486,7 +493,6 @@ export type Database = {
           admission_id?: string | null
           admission_year?: number | null
           college_mentor_id?: string | null
-          company_mentor_id?: string | null
           created_at?: string
           department_id?: string
           division?: string | null
@@ -501,13 +507,6 @@ export type Database = {
             columns: ["college_mentor_id"]
             isOneToOne: false
             referencedRelation: "college_mentors"
-            referencedColumns: ["uid"]
-          },
-          {
-            foreignKeyName: "students_company_mentor_id_fkey"
-            columns: ["company_mentor_id"]
-            isOneToOne: false
-            referencedRelation: "company_mentors"
             referencedColumns: ["uid"]
           },
           {

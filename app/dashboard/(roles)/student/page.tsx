@@ -202,12 +202,15 @@ const StudentDashboardPage = () => {
               </CardContent>
             </Card>
           ) : (
-            <SubmitReportCard
-              report={reportData}
-              attendance={attendanceData}
-              isHolidayToday={isHoliday}
-              onSubmitReport={addDailyReport}
-            />
+            // <SubmitReportCard
+            //   report={reportData}
+            //   attendance={attendanceData}
+            //   isHolidayToday={isHoliday}
+            //   onSubmitReport={addDailyReport}
+            // />
+            <div className="rounded-xl border-2 bg-card text-card-foreground shadow-sm flex-grow min-h-60">
+              Submit Report Card
+            </div>
           )}
         </div>
       )}

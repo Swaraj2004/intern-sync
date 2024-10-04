@@ -144,6 +144,50 @@ export const useAttendanceWithStudents = ({
   };
 };
 
+export const useReportsWithStudents = ({
+  instituteId,
+  departmentId,
+  collegeMentorId,
+  reportDate,
+}: {
+  instituteId: number;
+  departmentId?: string;
+  collegeMentorId?: string;
+  reportDate: string;
+}) => {
+  const shouldFetch = Boolean(instituteId && reportDate);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? (() => {
+          let query = supabase
+            .from('students')
+            .select(
+              'uid, college_mentors (uid, users (name)), users (name), internships (id, start_date, end_date), attendance (id, status, date, in_time, out_time, work_from_home, internship_reports (division, details, main_points, feedback, status))'
+            )
+            .eq('institute_id', instituteId)
+            .eq('attendance.date', reportDate)
+            .order('created_at', { ascending: false });
+
+          if (departmentId) {
+            query = query.eq('department_id', departmentId);
+          }
+
+          if (collegeMentorId) {
+            query = query.eq('college_mentor_id', collegeMentorId);
+          }
+
+          return query;
+        })()
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
 export const useInstituteProfile = ({ userId }: { userId: string }) => {
   const shouldFetch = Boolean(userId);
 
@@ -332,7 +376,7 @@ export const useDailyReport = ({
     shouldFetch
       ? supabase
           .from('attendance')
-          .select('date, internship_reports (report_data)')
+          .select('date, internship_reports (division, details, main_points)')
           .eq('id', attendanceId!)
           .eq('date', reportDate)
           .single()
