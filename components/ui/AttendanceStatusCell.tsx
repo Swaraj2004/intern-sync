@@ -18,8 +18,10 @@ export const AttendanceStatusCell = ({
     async function fetchHolidayStatus() {
       const currentInternship = row.original.internships?.find(
         (internship: StudentInternship) =>
-          new Date(internship.start_date) <= new Date(attendanceDate) &&
-          new Date(internship.end_date) >= new Date(attendanceDate)
+          new Date(internship.start_date) <=
+            new Date(formatDateForInput(attendanceDate)) &&
+          new Date(internship.end_date) >=
+            new Date(formatDateForInput(attendanceDate))
       );
 
       if (!currentInternship) {

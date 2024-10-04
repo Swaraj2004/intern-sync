@@ -26,7 +26,7 @@ const AttendanceStatus = ({
       )}
       {status === 'pending' && (
         <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300">
-          Pending
+          Pending Approval
         </Badge>
       )}
       {status === 'absent' && (
@@ -49,7 +49,7 @@ const AttendanceStatus = ({
           </Badge>
         ) : (
           <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap">
-            Not submitted
+            Not Submitted
           </Badge>
         ))}
     </div>

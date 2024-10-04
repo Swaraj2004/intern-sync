@@ -3,7 +3,7 @@ import StudentAttendanceApprovalActions from '@/components/attendance/StudentAtt
 import { AttendanceStatusCell } from '@/components/ui/AttendanceStatusCell';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { convertUTCToISTWithAMPM } from '@/lib/utils';
+import { convertUTCToISTWithAMPM, formatDateForInput } from '@/lib/utils';
 import StudentAttendance from '@/types/students-attendance';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
@@ -86,8 +86,10 @@ const getStudentAttendanceColumns = ({
       const attendance = row.original.attendance[0];
       const currentInternship = row.original.internships?.find(
         (internship) =>
-          new Date(internship.start_date) <= new Date(attendanceDate) &&
-          new Date(internship.end_date) >= new Date(attendanceDate)
+          new Date(internship.start_date) <=
+            new Date(formatDateForInput(attendanceDate)) &&
+          new Date(internship.end_date) >=
+            new Date(formatDateForInput(attendanceDate))
       );
 
       return attendance && attendance.status === 'pending' ? (
@@ -128,8 +130,10 @@ const getStudentAttendanceColumns = ({
       const attendanceStatus = row.original.attendance[0]?.status || '';
       const currentInternship = row.original.internships?.find(
         (internship) =>
-          new Date(internship.start_date) <= new Date(attendanceDate) &&
-          new Date(internship.end_date) >= new Date(attendanceDate)
+          new Date(internship.start_date) <=
+            new Date(formatDateForInput(attendanceDate)) &&
+          new Date(internship.end_date) >=
+            new Date(formatDateForInput(attendanceDate))
       );
       const attendanceId = row.original.attendance[0]?.id || undefined;
       const studentId = row.original.uid;
