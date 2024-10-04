@@ -76,6 +76,11 @@ const NavItems = ({
       title: 'Attendance',
       access: ['college-mentor', 'company-mentor', 'department-coordinator'],
     },
+    {
+      path: `/dashboard/${role}/reports`,
+      title: 'Reports',
+      access: ['college-mentor'],
+    },
   ];
 
   return (
