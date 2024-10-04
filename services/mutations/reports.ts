@@ -1,3 +1,4 @@
+import { convertUTCtoIST } from '@/lib/utils';
 import { useDailyReport, useReportsWithStudents } from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
@@ -14,9 +15,11 @@ export const useAddDailyReport = ({
   studentId: string;
   internshipId: string;
 }) => {
+  const currentUTCDate = new Date().toISOString();
+  const currentISTDate = new Date(convertUTCtoIST(currentUTCDate));
   const { mutate } = useDailyReport({
     attendanceId,
-    reportDate: new Date().toISOString().split('T')[0],
+    reportDate: currentISTDate.toISOString().split('T')[0],
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -32,15 +35,19 @@ export const useAddDailyReport = ({
           ...currentData,
           data: {
             ...currentData.data,
-            division,
-            details,
-            main_points,
+            internship_reports: {
+              division,
+              details,
+              main_points,
+              status: 'pending',
+              feedback: null,
+            },
           },
         };
       }, false);
 
       try {
-        const { error } = await supabase.from('internship_reports').insert([
+        const { error } = await supabase.from('internship_reports').upsert([
           {
             id: attendanceId,
             division,

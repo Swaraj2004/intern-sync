@@ -710,10 +710,11 @@ export type Database = {
         }
         Returns: number
       }
-      get_working_days: {
+      get_total_working_days: {
         Args: {
           start_date: string
           end_date: string
+          internship_id: string
           region: string
         }
         Returns: number

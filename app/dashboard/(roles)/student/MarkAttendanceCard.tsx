@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardTitle, CardHeader } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
 import Attendance from '@/types/attendance';
@@ -52,9 +52,11 @@ const MarkAttendanceCard = ({
   };
 
   return (
-    <Card className="flex flex-col flex-grow min-w-[320px] w-1/2">
-      <CardContent className="flex flex-col flex-grow gap-5 justify-between pt-6">
+    <Card className="flex flex-col flex-grow min-h-72 min-w-[320px] w-1/2">
+      <CardHeader>
         <CardTitle className="text-center">Mark Attendance</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col flex-grow gap-5 justify-between">
         {isHolidayToday ? (
           <div className="text-center p-6 h-full min-h-40">
             <p className="w-3/4 mx-auto text-muted-foreground">
@@ -161,8 +163,13 @@ const MarkAttendanceCard = ({
               </AlertDialog>
             )}
             {!canCheckOut && attendance?.in_time && !attendance?.out_time && (
-              <p className="text-center text-muted-foreground">
+              <p className="text-center text-muted-foreground w-4/5 mx-auto">
                 Check out button will show up after few minutes.
+              </p>
+            )}
+            {attendance?.in_time && attendance?.out_time && (
+              <p className="text-center text-muted-foreground w-4/5 mx-auto">
+                Your attendance for today has been marked.
               </p>
             )}
           </>

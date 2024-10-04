@@ -352,8 +352,8 @@ export const useInternshipAttendance = ({
           .single()
       : null,
     {
+      shouldRetryOnError: false,
       revalidateOnFocus: false,
-      revalidateOnReconnect: false,
     }
   );
 
@@ -376,14 +376,16 @@ export const useDailyReport = ({
     shouldFetch
       ? supabase
           .from('attendance')
-          .select('date, internship_reports (division, details, main_points)')
+          .select(
+            'date, internship_reports (division, details, main_points, status, feedback)'
+          )
           .eq('id', attendanceId!)
           .eq('date', reportDate)
           .single()
       : null,
     {
+      shouldRetryOnError: false,
       revalidateOnFocus: false,
-      revalidateOnReconnect: false,
     }
   );
 

@@ -24,11 +24,13 @@ export async function checkHolidayForStudent(
 export async function getTotalWorkingDays(
   startDate: string,
   endDate: string,
+  internshipId: string,
   studentRegion: string
 ) {
-  const { data, error } = await supabase.rpc('get_working_days', {
+  const { data, error } = await supabase.rpc('get_total_working_days', {
     start_date: startDate,
     end_date: endDate,
+    internship_id: internshipId,
     region: studentRegion,
   });
 

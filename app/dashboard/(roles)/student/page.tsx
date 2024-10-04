@@ -5,7 +5,13 @@ import CompleteProfileCard from '@/app/dashboard/(roles)/student/CompleteProfile
 import MarkAttendanceCard from '@/app/dashboard/(roles)/student/MarkAttendanceCard';
 import SubmitReportCard from '@/app/dashboard/(roles)/student/SubmitReportCard';
 import UpcomingInternshipCard from '@/app/dashboard/(roles)/student/UpcomingInternshipCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import CurrentAttendanceChart from '@/components/ui/CurrentAttendanceChart';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,9 +37,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 const StudentDashboardPage = () => {
   const { user } = useUser();
-  const [totalWorkingDays, setTotalWorkingDays] = useState(0);
-  const [totalPresentDays, setTotalPresentDays] = useState(0);
-  const [isHoliday, setIsHoliday] = useState(false);
+  const [totalWorkingDays, setTotalWorkingDays] = useState<number | null>(null);
+  const [totalPresentDays, setTotalPresentDays] = useState<number | null>(null);
+  const [isHoliday, setIsHoliday] = useState<boolean | null>(null);
 
   const currentUTCDate = new Date().toISOString();
   const currentISTDate = useMemo(() => {
@@ -57,12 +63,12 @@ const StudentDashboardPage = () => {
   const { data: attendanceData, isLoading: isLoadingAttendance } =
     useInternshipAttendance({
       internshipId: currentInternship?.id,
-      attendanceDate: new Date().toISOString().split('T')[0],
+      attendanceDate: currentISTDate.toISOString().split('T')[0],
     });
 
   const { data: reportData, isLoading: isLoadingReport } = useDailyReport({
     attendanceId: attendanceData?.id,
-    reportDate: new Date().toISOString().split('T')[0],
+    reportDate: currentISTDate.toISOString().split('T')[0],
   });
 
   const { addDailyReport } = useAddDailyReport({
@@ -75,14 +81,14 @@ const StudentDashboardPage = () => {
     attendanceId: attendanceData?.id || '',
     studentId: user?.user_metadata.uid || '',
     internshipId: currentInternship?.id || '',
-    attendanceDate: new Date().toISOString().split('T')[0],
+    attendanceDate: currentISTDate.toISOString().split('T')[0],
   });
 
   const { markCheckOutAttendance } = useMarkCheckOutAttendance({
     attendanceId: attendanceData?.id || '',
     studentId: user?.user_metadata.uid || '',
     internshipId: currentInternship?.id || '',
-    attendanceDate: new Date().toISOString().split('T')[0],
+    attendanceDate: currentISTDate.toISOString().split('T')[0],
   });
 
   useEffect(() => {
@@ -98,6 +104,7 @@ const StudentDashboardPage = () => {
         const workingDays = await getTotalWorkingDays(
           currentInternship.start_date,
           effectiveEndDate.toISOString().split('T')[0],
+          currentInternship.id,
           currentInternship.region
         );
         const presentDays = await getTotalPresentDays(
@@ -105,8 +112,8 @@ const StudentDashboardPage = () => {
           currentInternship.id
         );
 
-        setTotalWorkingDays(workingDays || 0);
-        setTotalPresentDays(presentDays || 0);
+        setTotalWorkingDays(workingDays);
+        setTotalPresentDays(presentDays);
 
         const isHoliday = await checkHolidayForStudent(
           user?.user_metadata?.uid || '',
@@ -162,9 +169,9 @@ const StudentDashboardPage = () => {
       )}
       {currentInternship && (
         <div className="grid md:grid-cols-[320px_auto] gap-5">
-          <div className="flex gap-5 flex-wrap min-[690px]:flex-nowrap md:flex-wrap w-full">
-            {isLoadingAttendance ? (
-              <Card className="flex flex-col flex-grow min-w-[320px] w-1/2">
+          <div className="flex gap-5 flex-wrap min-[690px]:flex-nowrap md:flex-col justify-between w-full">
+            {isLoadingAttendance || isHoliday === null ? (
+              <Card className="flex flex-col flex-grow min-h-72 min-w-[320px] w-1/2">
                 <CardContent className="flex flex-col flex-grow gap-5 justify-between pt-6">
                   <CardTitle className="text-center">Mark Attendance</CardTitle>
                   <div className="h-full min-h-40 flex flex-col justify-center items-center gap-4">
@@ -184,17 +191,33 @@ const StudentDashboardPage = () => {
                 onCheckOut={markCheckOutAttendance}
               />
             )}
-            <div className="flex-grow min-[690px]:flex-grow-0 md:flex-grow">
-              <CurrentAttendanceChart
-                totalWorkingDays={totalWorkingDays}
-                totalPresentDays={totalPresentDays}
-              />
+            <div className="flex-grow min-[690px]:flex-grow-0">
+              {totalWorkingDays === null || totalPresentDays === null ? (
+                <Card className="flex flex-col flex-grow">
+                  <CardHeader>
+                    <CardTitle className="text-center">
+                      Current Attendance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Skeleton className="h-[175px] w-[175px] rounded-full mx-auto" />
+                  </CardContent>
+                  <CardFooter>
+                    <Skeleton className="w-40 h-5 mx-auto" />
+                  </CardFooter>
+                </Card>
+              ) : (
+                <CurrentAttendanceChart
+                  totalWorkingDays={totalWorkingDays}
+                  totalPresentDays={totalPresentDays}
+                />
+              )}
             </div>
           </div>
-          {isLoadingReport || isLoadingAttendance ? (
+          {isLoadingReport || isLoadingAttendance || isHoliday === null ? (
             <Card className="flex flex-col flex-grow">
               <CardHeader>
-                <CardTitle>Submit Report</CardTitle>
+                <CardTitle>Daily Report</CardTitle>
               </CardHeader>
               <CardContent className="flex flex-col flex-grow gap-5">
                 <Skeleton className="w-full flex-grow" />
@@ -202,15 +225,12 @@ const StudentDashboardPage = () => {
               </CardContent>
             </Card>
           ) : (
-            // <SubmitReportCard
-            //   report={reportData}
-            //   attendance={attendanceData}
-            //   isHolidayToday={isHoliday}
-            //   onSubmitReport={addDailyReport}
-            // />
-            <div className="rounded-xl border-2 bg-card text-card-foreground shadow-sm flex-grow min-h-60">
-              Submit Report Card
-            </div>
+            <SubmitReportCard
+              report={reportData}
+              attendance={attendanceData}
+              isHolidayToday={isHoliday}
+              onSubmitReport={addDailyReport}
+            />
           )}
         </div>
       )}
