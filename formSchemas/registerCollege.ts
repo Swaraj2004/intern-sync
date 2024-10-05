@@ -2,16 +2,16 @@ import * as z from 'zod';
 
 const registrationFormSchema = z
   .object({
-    instituteId: z
-      .string({
-        required_error: 'Institute ID is required.',
-      })
-      .min(1, { message: 'Institute ID is required.' }),
     instituteName: z
       .string({
         required_error: 'Institute name is required.',
       })
       .min(3, { message: 'Institute name is required.' }),
+    aicteId: z
+      .string({
+        required_error: 'AICTE ID is required.',
+      })
+      .min(1, { message: 'AICTE ID is required.' }),
     fullName: z
       .string({
         required_error: 'User full name is required.',

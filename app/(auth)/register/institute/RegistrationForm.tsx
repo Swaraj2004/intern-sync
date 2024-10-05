@@ -28,7 +28,7 @@ const RegistrationForm = () => {
   const registerForm = useForm<z.infer<typeof registrationFormSchema>>({
     resolver: zodResolver(registrationFormSchema),
     defaultValues: {
-      instituteId: '',
+      aicteId: '',
       instituteName: '',
       fullName: '',
       email: '',
@@ -38,7 +38,7 @@ const RegistrationForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof registrationFormSchema>) {
-    const { instituteId, instituteName, fullName, email, password } = values;
+    const { aicteId, instituteName, fullName, email, password } = values;
     setLoading(true);
 
     const { data: roleData, error: rolesError } = await supabase
@@ -76,10 +76,6 @@ const RegistrationForm = () => {
         emailRedirectTo: `${window.location.origin}/verify-email`,
         data: {
           uid: usersData[0].id,
-          name: fullName,
-          email,
-          institute_id: parseInt(instituteId),
-          role_ids: [roleData.id],
         },
       },
     });
@@ -104,16 +100,14 @@ const RegistrationForm = () => {
       return;
     }
 
-    const { error: institutesError } = await supabase
-      .from('institutes')
-      .insert({
-        institute_id: parseInt(instituteId),
-        name: instituteName,
-        uid: usersData[0].id,
-      });
+    const { error: instituteError } = await supabase.from('institutes').insert({
+      aicte_id: aicteId,
+      name: instituteName,
+      uid: usersData[0].id,
+    });
 
-    if (institutesError) {
-      toast.error('Institute email already exists.');
+    if (instituteError) {
+      toast.error(instituteError.message);
       setLoading(false);
       return;
     }
@@ -132,7 +126,7 @@ const RegistrationForm = () => {
     toast.success('Registration successfull! Verification email sent.');
     setTimeout(() => {
       router.push('/login');
-    }, 1000);
+    }, 500);
   }
 
   return (
@@ -144,14 +138,16 @@ const RegistrationForm = () => {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <InputBox
-              label="Institute ID"
-              id="instituteId"
-              type="number"
+              label="Institute Name"
+              placeholder="Enter Institute Name"
+              id="instituteName"
+              type="text"
               form={registerForm}
             />
             <InputBox
-              label="Institute Name"
-              id="instituteName"
+              label="AICTE ID"
+              placeholder="Enter AICTE ID"
+              id="aicteId"
               type="text"
               form={registerForm}
             />
@@ -159,12 +155,14 @@ const RegistrationForm = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <InputBox
               label="Full Name"
+              placeholder="Enter Full Name"
               id="fullName"
               type="text"
               form={registerForm}
             />
             <InputBox
               label="Email"
+              placeholder="Enter Email"
               id="email"
               type="email"
               form={registerForm}
@@ -178,7 +176,7 @@ const RegistrationForm = () => {
                 <FormItem className="w-full">
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <PasswordInput placeholder="Password" {...field} />
+                    <PasswordInput placeholder="Enter Password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

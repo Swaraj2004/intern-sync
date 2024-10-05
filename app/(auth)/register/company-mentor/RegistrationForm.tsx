@@ -74,9 +74,6 @@ const RegistrationForm = () => {
         emailRedirectTo: `${window.location.origin}/verify-email`,
         data: {
           uid: usersData[0].id,
-          name: fullName,
-          email,
-          role_ids: [roleData.id],
         },
       },
     });
@@ -115,7 +112,7 @@ const RegistrationForm = () => {
     toast.success('Registration successfull! Verification email sent.');
     setTimeout(() => {
       router.push('/login/company-mentor');
-    }, 1000);
+    }, 500);
   }
 
   return (
@@ -126,11 +123,18 @@ const RegistrationForm = () => {
       >
         <InputBox
           label="Full Name"
+          placeholder="Enter Full Name"
           id="fullName"
           type="text"
           form={registerForm}
         />
-        <InputBox label="Email" id="email" type="email" form={registerForm} />
+        <InputBox
+          label="Email"
+          placeholder="Enter Email"
+          id="email"
+          type="email"
+          form={registerForm}
+        />
         <FormField
           control={registerForm.control}
           name="password"
@@ -138,7 +142,7 @@ const RegistrationForm = () => {
             <FormItem className="w-full">
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <PasswordInput placeholder="Password" {...field} />
+                <PasswordInput placeholder="Enter Password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
