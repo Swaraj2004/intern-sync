@@ -61,19 +61,19 @@ export type Database = {
         Row: {
           created_at: string
           department_id: string
-          institute_id: number
+          institute_id: string
           uid: string
         }
         Insert: {
           created_at?: string
           department_id: string
-          institute_id: number
+          institute_id: string
           uid: string
         }
         Update: {
           created_at?: string
           department_id?: string
-          institute_id?: number
+          institute_id?: string
           uid?: string
         }
         Relationships: [
@@ -89,7 +89,7 @@ export type Database = {
             columns: ["institute_id"]
             isOneToOne: false
             referencedRelation: "institutes"
-            referencedColumns: ["institute_id"]
+            referencedColumns: ["uid"]
           },
           {
             foreignKeyName: "college_mentors_uid_fkey"
@@ -104,21 +104,21 @@ export type Database = {
         Row: {
           company_address: string | null
           company_name: string | null
-          created_at: string | null
+          created_at: string
           designation: string | null
           uid: string
         }
         Insert: {
           company_address?: string | null
           company_name?: string | null
-          created_at?: string | null
+          created_at?: string
           designation?: string | null
           uid: string
         }
         Update: {
           company_address?: string | null
           company_name?: string | null
-          created_at?: string | null
+          created_at?: string
           designation?: string | null
           uid?: string
         }
@@ -135,19 +135,19 @@ export type Database = {
       departments: {
         Row: {
           created_at: string
-          institute_id: number
+          institute_id: string
           name: string
           uid: string
         }
         Insert: {
           created_at?: string
-          institute_id: number
+          institute_id: string
           name: string
           uid: string
         }
         Update: {
           created_at?: string
-          institute_id?: number
+          institute_id?: string
           name?: string
           uid?: string
         }
@@ -157,7 +157,7 @@ export type Database = {
             columns: ["institute_id"]
             isOneToOne: false
             referencedRelation: "institutes"
-            referencedColumns: ["institute_id"]
+            referencedColumns: ["uid"]
           },
           {
             foreignKeyName: "departments_uid_fkey"
@@ -198,27 +198,27 @@ export type Database = {
       institutes: {
         Row: {
           address: string | null
+          aicte_id: string
           created_at: string
           institute_email_domain: string | null
-          institute_id: number
           name: string
           student_email_domain: string | null
           uid: string
         }
         Insert: {
           address?: string | null
+          aicte_id: string
           created_at?: string
           institute_email_domain?: string | null
-          institute_id: number
           name: string
           student_email_domain?: string | null
           uid: string
         }
         Update: {
           address?: string | null
+          aicte_id?: string
           created_at?: string
           institute_email_domain?: string | null
-          institute_id?: number
           name?: string
           student_email_domain?: string | null
           uid?: string
@@ -296,7 +296,7 @@ export type Database = {
           company_mentor_email: string | null
           company_mentor_id: string | null
           company_name: string
-          created_at: string | null
+          created_at: string
           end_date: string
           field: string
           id: string
@@ -314,7 +314,7 @@ export type Database = {
           company_mentor_email?: string | null
           company_mentor_id?: string | null
           company_name: string
-          created_at?: string | null
+          created_at?: string
           end_date: string
           field: string
           id?: string
@@ -332,7 +332,7 @@ export type Database = {
           company_mentor_email?: string | null
           company_mentor_id?: string | null
           company_name?: string
-          created_at?: string | null
+          created_at?: string
           end_date?: string
           field?: string
           id?: string
@@ -367,27 +367,6 @@ export type Database = {
           },
         ]
       }
-      notes: {
-        Row: {
-          description: string
-          id: number
-          title: string
-          uid: string
-        }
-        Insert: {
-          description: string
-          id?: number
-          title: string
-          uid: string
-        }
-        Update: {
-          description?: string
-          id?: number
-          title?: string
-          uid?: string
-        }
-        Relationships: []
-      }
       roles: {
         Row: {
           id: string
@@ -407,6 +386,7 @@ export type Database = {
         Row: {
           approved: boolean
           college_mentor_id: string
+          created_at: string
           date: string
           description: string
           id: string
@@ -417,6 +397,7 @@ export type Database = {
         Insert: {
           approved?: boolean
           college_mentor_id: string
+          created_at?: string
           date: string
           description: string
           id?: string
@@ -427,6 +408,7 @@ export type Database = {
         Update: {
           approved?: boolean
           college_mentor_id?: string
+          created_at?: string
           date?: string
           description?: string
           id?: string
@@ -469,8 +451,8 @@ export type Database = {
           department_id: string
           division: string | null
           dob: string | null
-          institute_id: number
-          roll_no: number | null
+          institute_id: string
+          roll_no: string | null
           uid: string
         }
         Insert: {
@@ -483,8 +465,8 @@ export type Database = {
           department_id: string
           division?: string | null
           dob?: string | null
-          institute_id: number
-          roll_no?: number | null
+          institute_id: string
+          roll_no?: string | null
           uid: string
         }
         Update: {
@@ -497,8 +479,8 @@ export type Database = {
           department_id?: string
           division?: string | null
           dob?: string | null
-          institute_id?: number
-          roll_no?: number | null
+          institute_id?: string
+          roll_no?: string | null
           uid?: string
         }
         Relationships: [
@@ -521,7 +503,7 @@ export type Database = {
             columns: ["institute_id"]
             isOneToOne: false
             referencedRelation: "institutes"
-            referencedColumns: ["institute_id"]
+            referencedColumns: ["uid"]
           },
           {
             foreignKeyName: "students_uid_fkey"
@@ -695,27 +677,9 @@ export type Database = {
         }
         Returns: Json
       }
-      get_current_internship_and_holiday: {
-        Args: {
-          student_id: string
-          report_date: string
-        }
-        Returns: {
-          internship_id: string
-          is_holiday: boolean
-        }[]
-      }
-      get_student_attendance_percentage: {
-        Args: {
-          student_id: string
-          internship_id: string
-          student_region: string
-        }
-        Returns: number
-      }
       get_students_attendance: {
         Args: {
-          institute_id: number
+          institute_id: string
           attendance_date: string
           department_id?: string
           college_mentor_id?: string
@@ -740,7 +704,7 @@ export type Database = {
       }
       get_students_reports: {
         Args: {
-          institute_id: number
+          institute_id: string
           report_date: string
           department_id?: string
           college_mentor_id?: string

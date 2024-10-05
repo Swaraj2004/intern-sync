@@ -84,7 +84,7 @@ export const useApproveReport = ({
   departmentId,
   collegeMentorId,
 }: {
-  instituteId: number;
+  instituteId: string;
   reportDate: string;
   departmentId?: string;
   collegeMentorId?: string;

@@ -106,7 +106,7 @@ export const useAttendanceWithStudents = ({
   departmentId,
   collegeMentorId,
 }: {
-  instituteId: number;
+  instituteId: string;
   attendanceDate: string;
   departmentId?: string;
   collegeMentorId?: string;
@@ -133,7 +133,7 @@ export const useReportsWithStudents = ({
   departmentId,
   collegeMentorId,
 }: {
-  instituteId: number;
+  instituteId: string;
   reportDate: string;
   departmentId?: string;
   collegeMentorId?: string;

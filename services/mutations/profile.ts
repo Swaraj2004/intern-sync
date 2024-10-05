@@ -326,7 +326,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
       address: string,
       admissionYear: number,
       division: string,
-      rollNumber: number,
+      rollNumber: string,
       admissionId: string
     ) => {
       setIsLoading(true);

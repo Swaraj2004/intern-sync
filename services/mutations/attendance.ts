@@ -15,7 +15,7 @@ export const useUpsertAttendance = ({
   collegeMentorId,
   attendanceDate,
 }: {
-  instituteId: number;
+  instituteId: string;
   departmentId?: string;
   collegeMentorId?: string;
   attendanceDate: string;
