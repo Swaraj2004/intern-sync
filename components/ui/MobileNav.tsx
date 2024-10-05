@@ -47,7 +47,6 @@ const MobileNav = () => {
             </Link>
           </SheetHeader>
           <NavItems
-            user={user || null}
             pathname={pathname}
             role={role}
             setSheetOpen={setSheetOpen}
@@ -68,9 +67,7 @@ const MobileNav = () => {
           </div>
         ) : (
           <div className="text-right">
-            <div className="truncate font-medium">
-              {user?.user_metadata.name}
-            </div>
+            <div className="truncate font-medium">{user?.name}</div>
             <div className="text-sm text-muted-foreground">
               {user && convertToTitleCase(role)}
             </div>
@@ -81,7 +78,7 @@ const MobileNav = () => {
         ) : (
           <Avatar className="h-10 w-10 text-xl font-semibold">
             <AvatarFallback className="bg-slate-300 dark:bg-slate-500">
-              {user?.user_metadata.name.charAt(0).toUpperCase()}
+              {user && user.name.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         )}

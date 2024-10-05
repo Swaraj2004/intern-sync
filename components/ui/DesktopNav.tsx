@@ -23,14 +23,14 @@ const DesktopNav = () => {
           <div className="text-2xl font-bold text-center">InternSync</div>
         </Link>
       </div>
-      <NavItems user={user || null} pathname={pathname} role={role} />
+      <NavItems pathname={pathname} role={role} />
       <div className="grid grid-cols-4 gap-3 rounded-lg p-3 bg-blue-100 dark:bg-secondary shadow">
         {loading ? (
           <Skeleton className="h-12 w-12 rounded-full" />
         ) : (
           <Avatar className="h-12 w-12 text-xl font-semibold">
             <AvatarFallback className="bg-slate-300 dark:bg-slate-500">
-              {user?.user_metadata.name.charAt(0).toUpperCase()}
+              {user && user.name.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
         )}
@@ -42,9 +42,7 @@ const DesktopNav = () => {
             </>
           ) : (
             <>
-              <div className="text-lg font-bold truncate">
-                {user?.user_metadata.name}
-              </div>
+              <div className="text-lg font-bold truncate">{user?.name}</div>
               <div className="text-sm text-muted-foreground">
                 {user && convertToTitleCase(role)}
               </div>

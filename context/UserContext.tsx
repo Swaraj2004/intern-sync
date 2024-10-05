@@ -1,8 +1,8 @@
 'use client';
 
+import User from '@/types/user';
 import { supabaseClient } from '@/utils/supabase/client';
-import { User } from '@supabase/supabase-js';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import {
   createContext,
   ReactNode,
@@ -13,6 +13,8 @@ import {
 
 type UserContextType = {
   user: User | null;
+  roles: { [key: string]: string };
+  instituteId: string | null;
   loading: boolean;
 };
 
@@ -20,22 +22,106 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [roles, setRoles] = useState<{ [key: string]: string }>({});
+  const [instituteId, setInstituteId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const supabase = supabaseClient();
 
+    const fetchUserDetails = async (uid: string) => {
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, name, email, auth_id, user_roles (role_id, roles(name))')
+        .eq('id', uid)
+        .single();
+
+      if (userError) {
+        console.error('Error fetching user details:', userError);
+        setUser(null);
+        return;
+      }
+
+      setUser({
+        uid: userData.id,
+        name: userData.name,
+        email: userData.email,
+        auth_id: userData.auth_id,
+      });
+
+      const userRoles: { [key: string]: string } = {};
+      userData.user_roles.forEach((role) => {
+        userRoles[role.role_id] = role.roles?.name as string;
+      });
+
+      setRoles(userRoles);
+
+      if (userRoles['institute-coordinator']) {
+        setInstituteId(userData.id);
+      } else if (userRoles['department-coordinator']) {
+        const { data: departmentData, error: departmentError } = await supabase
+          .from('departments')
+          .select('institute_id')
+          .eq('uid', uid)
+          .single();
+
+        if (departmentError) {
+          console.error(
+            'Error fetching institute_id for department:',
+            departmentError
+          );
+          return;
+        }
+
+        setInstituteId(departmentData.institute_id);
+      } else if (userRoles['college-mentor']) {
+        const { data: mentorData, error: mentorError } = await supabase
+          .from('college_mentors')
+          .select('institute_id')
+          .eq('uid', uid)
+          .single();
+
+        if (mentorError) {
+          console.error(
+            'Error fetching institute_id for college mentor:',
+            mentorError
+          );
+          return;
+        }
+
+        setInstituteId(mentorData.institute_id);
+      } else if (userRoles['student']) {
+        const { data: studentData, error: studentError } = await supabase
+          .from('students')
+          .select('institute_id')
+          .eq('uid', uid)
+          .single();
+
+        if (studentError) {
+          console.error(
+            'Error fetching institute_id for student:',
+            studentError
+          );
+          return;
+        }
+
+        setInstituteId(studentData.institute_id);
+      }
+    };
+
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (session) {
-          setUser(session.user);
+          const uid = session.user.user_metadata.uid;
+          await fetchUserDetails(uid);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
+          setRoles({});
           router.push('/');
         } else {
           setUser(null);
+          setRoles({});
         }
         setLoading(false);
       }
@@ -44,10 +130,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [router, pathname]);
+  }, [router]);
 
   return (
-    <UserContext.Provider value={{ user, loading }}>
+    <UserContext.Provider value={{ user, roles, instituteId, loading }}>
       {children}
     </UserContext.Provider>
   );

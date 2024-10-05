@@ -1,7 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+import { useUser } from '@/context/UserContext';
 import { supabaseClient } from '@/utils/supabase/client';
-import { User } from '@supabase/supabase-js';
 import {
   DotIcon,
   LayoutDashboardIcon,
@@ -11,20 +11,18 @@ import {
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import path from 'path';
 import { useEffect, useState } from 'react';
 
 const NavItems = ({
-  user,
   pathname,
   role,
   setSheetOpen,
 }: {
-  user: User | null;
   pathname: string;
   role: string;
   setSheetOpen?: (open: boolean) => void;
 }) => {
+  const { roles } = useUser();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -140,7 +138,7 @@ const NavItems = ({
               Profile
             </Link>
           </li>
-          {user?.user_metadata.role_ids.length > 1 && (
+          {Object.keys(roles).length > 1 && (
             <li
               onClick={() => {
                 if (setSheetOpen) {
