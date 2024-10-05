@@ -102,91 +102,30 @@ export const useStudents = ({
 
 export const useAttendanceWithStudents = ({
   instituteId,
+  attendanceDate,
   departmentId,
   collegeMentorId,
-  attendanceDate,
 }: {
   instituteId: number;
+  attendanceDate: string;
   departmentId?: string;
   collegeMentorId?: string;
-  attendanceDate: string;
 }) => {
   const shouldFetch = Boolean(instituteId && attendanceDate);
 
   const { data, ...rest } = useQuery(
     shouldFetch
-      ? (() => {
-          let query = supabase
-            .from('students')
-            .select(
-              'uid, college_mentors (uid, users (id, name)), departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified), internships (id, role, start_date, end_date), attendance (id, status, date, in_time, out_time, work_from_home)'
-            )
-            .eq('institute_id', instituteId)
-            .eq('attendance.date', attendanceDate)
-            .order('created_at', { ascending: false });
-
-          if (departmentId) {
-            query = query.eq('department_id', departmentId);
-          }
-
-          if (collegeMentorId) {
-            query = query.eq('college_mentor_id', collegeMentorId);
-          }
-
-          return query;
-        })()
+      ? supabase.rpc('get_students_attendance', {
+          institute_id: instituteId,
+          attendance_date: attendanceDate,
+          department_id: departmentId,
+          college_mentor_id: collegeMentorId,
+        })
       : null
   );
 
-  return {
-    data,
-    ...rest,
-  };
+  return { data, ...rest };
 };
-
-// export const useReportsWithStudents = ({
-//   instituteId,
-//   departmentId,
-//   collegeMentorId,
-//   reportDate,
-// }: {
-//   instituteId: number;
-//   departmentId?: string;
-//   collegeMentorId?: string;
-//   reportDate: string;
-// }) => {
-//   const shouldFetch = Boolean(instituteId && reportDate);
-
-//   const { data, ...rest } = useQuery(
-//     shouldFetch
-//       ? (() => {
-//           let query = supabase
-//             .from('students')
-//             .select(
-//               'uid, college_mentors (uid, users (name)), users (name), internships (id, start_date, end_date), attendance (id, status, date, in_time, out_time, work_from_home, internship_reports (division, details, main_points, feedback, status))'
-//             )
-//             .eq('institute_id', instituteId)
-//             .eq('attendance.date', reportDate)
-//             .order('created_at', { ascending: false });
-
-//           if (departmentId) {
-//             query = query.eq('department_id', departmentId);
-//           }
-
-//           if (collegeMentorId) {
-//             query = query.eq('college_mentor_id', collegeMentorId);
-//           }
-
-//           return query;
-//         })()
-//       : null
-//   );
-
-//   return {
-//     data,
-//     ...rest,
-//   };
-// };
 
 export const useReportsWithStudents = ({
   instituteId,

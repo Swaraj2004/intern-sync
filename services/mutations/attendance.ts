@@ -34,7 +34,7 @@ export const useUpsertAttendance = ({
       studentId: string,
       internshipId: string,
       attendanceStatus: string,
-      attendanceId?: string
+      attendanceId: string | null
     ) => {
       setIsLoading(true);
 
@@ -45,21 +45,11 @@ export const useUpsertAttendance = ({
           return {
             ...currentData,
             data: currentData.data.map((student) =>
-              student.uid === studentId
+              student.student_uid === studentId
                 ? {
                     ...student,
-                    attendance: [
-                      ...student.attendance,
-                      {
-                        id: 'new',
-                        status: attendanceStatus,
-                        date: attendanceDate,
-                        in_time: null,
-                        out_time: null,
-                        work_from_home: false,
-                        internship_id: internshipId,
-                      },
-                    ],
+                    attendance_id: uuid4(),
+                    attendance_status: attendanceStatus,
                   }
                 : student
             ),
@@ -95,14 +85,10 @@ export const useUpsertAttendance = ({
           return {
             ...currentData,
             data: currentData.data.map((student) =>
-              student.uid === studentId
+              student.student_uid === studentId
                 ? {
                     ...student,
-                    attendance: student.attendance.map((attendance) =>
-                      attendance.id === attendanceId
-                        ? { ...attendance, status: attendanceStatus }
-                        : attendance
-                    ),
+                    attendance_status: attendanceStatus,
                   }
                 : student
             ),

@@ -23,9 +23,9 @@ import { z } from 'zod';
 
 type StudentAttendanceActionsProps = {
   studentId: string;
-  attendanceStatus: string;
   internshipId: string;
-  attendanceId?: string;
+  attendanceId: string | null;
+  attendanceStatus: string | null;
   departmentId?: string;
   collegeMentorId?: string;
 };
@@ -42,8 +42,8 @@ const FormSchema = z.object({
 
 const StudentAttendanceActions = ({
   studentId,
-  attendanceStatus,
   internshipId,
+  attendanceStatus,
   attendanceId,
   departmentId,
   collegeMentorId,

@@ -10,7 +10,7 @@ import { useUser } from '@/context/UserContext';
 import { formatDateForInput } from '@/lib/utils';
 import { useUpsertAttendance } from '@/services/mutations/attendance';
 import { useAttendanceWithStudents } from '@/services/queries';
-import StudentAttendance from '@/types/students-attendance';
+import StudentAttendance from '@/types/student-attendance';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -108,7 +108,7 @@ const AttendanceTable = ({ date }: { date: Date }) => {
           <TableSearch
             table={table}
             placeholder="Search Student"
-            column="users.name"
+            column="user_name"
           />
         )
       )}

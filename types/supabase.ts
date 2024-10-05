@@ -713,6 +713,31 @@ export type Database = {
         }
         Returns: number
       }
+      get_students_attendance: {
+        Args: {
+          institute_id: number
+          attendance_date: string
+          department_id?: string
+          college_mentor_id?: string
+        }
+        Returns: {
+          student_uid: string
+          user_name: string
+          college_mentor_uid: string
+          college_mentor_name: string
+          department_uid: string
+          department_name: string
+          current_internship_id: string
+          internship_start_date: string
+          internship_end_date: string
+          attendance_id: string
+          attendance_status: string
+          in_time: string
+          out_time: string
+          work_from_home: boolean
+          is_holiday: boolean
+        }[]
+      }
       get_students_reports: {
         Args: {
           institute_id: number

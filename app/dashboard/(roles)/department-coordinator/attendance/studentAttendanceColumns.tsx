@@ -1,10 +1,9 @@
 import StudentAttendanceActions from '@/components/attendance/StudentAttendanceActions';
 import StudentAttendanceApprovalActions from '@/components/attendance/StudentAttendanceApprovalActions';
-import { AttendanceStatusCell } from '@/components/ui/AttendanceStatusCell';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { convertUTCToISTWithAMPM, formatDateForInput } from '@/lib/utils';
-import StudentAttendance from '@/types/students-attendance';
+import { convertUTCToISTWithAMPM } from '@/lib/utils';
+import StudentAttendance from '@/types/student-attendance';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
@@ -14,7 +13,7 @@ type ColumnProps = {
     studentId: string,
     internshipId: string,
     status: string,
-    attendanceId?: string
+    attendanceId: string | null
   ) => void;
   departmentId: string;
   attendanceDate: Date;
@@ -26,8 +25,7 @@ const getStudentAttendanceColumns = ({
   attendanceDate,
 }: ColumnProps): ColumnDef<StudentAttendance>[] => [
   {
-    id: 'users.name',
-    accessorFn: (row) => row.users?.name,
+    accessorKey: 'user_name',
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -38,84 +36,119 @@ const getStudentAttendanceColumns = ({
         <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.original.users?.name || '-'}</div>,
+    cell: ({ row }) => <div>{row.original.user_name || '-'}</div>,
   },
   {
-    id: 'college_mentors.users.name',
-    accessorFn: (row) => row.college_mentors?.users?.name,
+    id: 'college_mentor_name',
+    accessorFn: (row) => row.college_mentor_name,
     header: () => {
       return <span className="text-nowrap">College Mentor</span>;
     },
-    cell: ({ row }) => (
-      <div>{row.original.college_mentors?.users?.name || '-'}</div>
-    ),
+    cell: ({ row }) => <div>{row.original.college_mentor_name || '-'}</div>,
   },
   {
-    id: 'attendance.in_time',
+    id: 'in_time',
     header: () => <span className="text-nowrap">In Time</span>,
     cell: ({ row }) => (
       <div className="text-nowrap">
-        {row.original.attendance[0]?.in_time
-          ? convertUTCToISTWithAMPM(row.original.attendance[0]?.in_time)
+        {row.original.in_time
+          ? convertUTCToISTWithAMPM(row.original.in_time)
           : '-'}
       </div>
     ),
   },
   {
-    id: 'attendance.out_time',
+    id: 'out_time',
     header: () => <span className="text-nowrap">Out Time</span>,
     cell: ({ row }) => (
       <div className="text-nowrap">
-        {row.original.attendance[0]?.out_time
-          ? convertUTCToISTWithAMPM(row.original.attendance[0]?.out_time)
+        {row.original.out_time
+          ? convertUTCToISTWithAMPM(row.original.out_time)
           : '-'}
       </div>
     ),
   },
   {
-    id: 'status',
-    header: 'Status',
-    cell: ({ row }) => (
-      <AttendanceStatusCell row={row} attendanceDate={attendanceDate} />
-    ),
+    id: 'attendance_status',
+    header: () => <span className="text-nowrap">Attendance Status</span>,
+    cell: ({ row }) => {
+      const status = row.original.attendance_status;
+      const noInternship = row.original.current_internship_id === null;
+      const isHolidayForStudent = row.original.is_holiday;
+      return (
+        <>
+          {noInternship && (
+            <Badge className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-300 dark:hover:bg-gray-400 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              No Internship
+            </Badge>
+          )}
+          {status === 'present' && (
+            <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Present
+            </Badge>
+          )}
+          {status === 'pending' && (
+            <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Pending Approval
+            </Badge>
+          )}
+          {status === 'absent' && (
+            <Badge className="bg-red-500 hover:bg-red-600 dark:bg-red-300 dark:hover:bg-red-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Absent
+            </Badge>
+          )}
+          {status === 'holiday' && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Holiday
+            </Badge>
+          )}
+          {!status && !noInternship && isHolidayForStudent && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Holiday
+            </Badge>
+          )}
+          {!status && !noInternship && !isHolidayForStudent && (
+            <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Not Submitted
+            </Badge>
+          )}
+        </>
+      );
+    },
   },
   {
     id: 'approval',
     header: 'Approval',
     cell: ({ row }) => {
-      const attendance = row.original.attendance[0];
-      const currentInternship = row.original.internships?.find(
-        (internship) =>
-          new Date(internship.start_date) <=
-            new Date(formatDateForInput(attendanceDate)) &&
-          new Date(internship.end_date) >=
-            new Date(formatDateForInput(attendanceDate))
-      );
+      const attendanceId = row.original.attendance_id;
+      const attendanceStatus = row.original.attendance_status;
+      const currentInternshipId = row.original.current_internship_id;
+      const studentId = row.original.student_uid;
 
-      return attendance && attendance.status === 'pending' ? (
+      return attendanceId && attendanceStatus === 'pending' ? (
         <StudentAttendanceApprovalActions
           onApprove={async () => {
             onUpsert(
               'update',
-              row.original.uid,
-              currentInternship?.id || '',
+              studentId,
+              currentInternshipId || '',
               'present',
-              row.original.attendance[0].id
+              attendanceId
             );
           }}
           onReject={async () => {
             onUpsert(
               'update',
-              row.original.uid,
-              currentInternship?.id || '',
+              studentId,
+              currentInternshipId || '',
               'absent',
-              row.original.attendance[0].id
+              attendanceId
             );
           }}
         />
-      ) : !attendance ? (
+      ) : !attendanceId ? (
         <Badge className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-300 dark:hover:bg-gray-400 text-nowrap">
-          Not applicable
+          Not Applicable
         </Badge>
       ) : (
         <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400">
@@ -127,27 +160,21 @@ const getStudentAttendanceColumns = ({
   {
     id: 'actions',
     cell: ({ row }) => {
-      const attendanceStatus = row.original.attendance[0]?.status || '';
-      const currentInternship = row.original.internships?.find(
-        (internship) =>
-          new Date(internship.start_date) <=
-            new Date(formatDateForInput(attendanceDate)) &&
-          new Date(internship.end_date) >=
-            new Date(formatDateForInput(attendanceDate))
-      );
-      const attendanceId = row.original.attendance[0]?.id || undefined;
-      const studentId = row.original.uid;
+      const attendanceStatus = row.original.attendance_status;
+      const currentInternshipId = row.original.current_internship_id;
+      const attendanceId = row.original.attendance_id;
+      const studentId = row.original.student_uid;
 
-      if (!currentInternship) {
+      if (!currentInternshipId) {
         return null;
       }
 
       return (
         <StudentAttendanceActions
           studentId={studentId}
-          attendanceStatus={attendanceStatus}
-          internshipId={currentInternship?.id || ''}
+          internshipId={currentInternshipId}
           attendanceId={attendanceId}
+          attendanceStatus={attendanceStatus}
           departmentId={departmentId}
         />
       );
