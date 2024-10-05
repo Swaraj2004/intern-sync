@@ -144,48 +144,75 @@ export const useAttendanceWithStudents = ({
   };
 };
 
+// export const useReportsWithStudents = ({
+//   instituteId,
+//   departmentId,
+//   collegeMentorId,
+//   reportDate,
+// }: {
+//   instituteId: number;
+//   departmentId?: string;
+//   collegeMentorId?: string;
+//   reportDate: string;
+// }) => {
+//   const shouldFetch = Boolean(instituteId && reportDate);
+
+//   const { data, ...rest } = useQuery(
+//     shouldFetch
+//       ? (() => {
+//           let query = supabase
+//             .from('students')
+//             .select(
+//               'uid, college_mentors (uid, users (name)), users (name), internships (id, start_date, end_date), attendance (id, status, date, in_time, out_time, work_from_home, internship_reports (division, details, main_points, feedback, status))'
+//             )
+//             .eq('institute_id', instituteId)
+//             .eq('attendance.date', reportDate)
+//             .order('created_at', { ascending: false });
+
+//           if (departmentId) {
+//             query = query.eq('department_id', departmentId);
+//           }
+
+//           if (collegeMentorId) {
+//             query = query.eq('college_mentor_id', collegeMentorId);
+//           }
+
+//           return query;
+//         })()
+//       : null
+//   );
+
+//   return {
+//     data,
+//     ...rest,
+//   };
+// };
+
 export const useReportsWithStudents = ({
   instituteId,
+  reportDate,
   departmentId,
   collegeMentorId,
-  reportDate,
 }: {
   instituteId: number;
+  reportDate: string;
   departmentId?: string;
   collegeMentorId?: string;
-  reportDate: string;
 }) => {
   const shouldFetch = Boolean(instituteId && reportDate);
 
   const { data, ...rest } = useQuery(
     shouldFetch
-      ? (() => {
-          let query = supabase
-            .from('students')
-            .select(
-              'uid, college_mentors (uid, users (name)), users (name), internships (id, start_date, end_date), attendance (id, status, date, in_time, out_time, work_from_home, internship_reports (division, details, main_points, feedback, status))'
-            )
-            .eq('institute_id', instituteId)
-            .eq('attendance.date', reportDate)
-            .order('created_at', { ascending: false });
-
-          if (departmentId) {
-            query = query.eq('department_id', departmentId);
-          }
-
-          if (collegeMentorId) {
-            query = query.eq('college_mentor_id', collegeMentorId);
-          }
-
-          return query;
-        })()
+      ? supabase.rpc('get_students_reports', {
+          institute_id: instituteId,
+          report_date: reportDate,
+          department_id: departmentId,
+          college_mentor_id: collegeMentorId,
+        })
       : null
   );
 
-  return {
-    data,
-    ...rest,
-  };
+  return { data, ...rest };
 };
 
 export const useInstituteProfile = ({ userId }: { userId: string }) => {

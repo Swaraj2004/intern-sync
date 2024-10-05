@@ -1,7 +1,4 @@
-import StudentAttendanceActions from '@/components/attendance/StudentAttendanceActions';
-import StudentAttendanceApprovalActions from '@/components/attendance/StudentAttendanceApprovalActions';
 import StudentReportApprovalActions from '@/components/reports/StudentReportApprovalActions';
-import { AttendanceStatusCell } from '@/components/ui/AttendanceStatusCell';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
@@ -24,8 +21,7 @@ const getStudentAttendanceColumns = ({
   reportDate,
 }: ColumnProps): ColumnDef<StudentReport>[] => [
   {
-    id: 'users.name',
-    accessorFn: (row) => row.users?.name,
+    accessorKey: 'user_name',
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -36,78 +32,131 @@ const getStudentAttendanceColumns = ({
         <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.original.users?.name || '-'}</div>,
+    cell: ({ row }) => <div>{row.original.user_name || '-'}</div>,
   },
   {
-    id: 'attendance.in_time',
+    id: 'in_time',
     header: () => <span className="text-nowrap">In Time</span>,
     cell: ({ row }) => (
       <div className="text-nowrap">
-        {row.original.attendance[0]?.in_time
-          ? convertUTCToISTWithAMPM(row.original.attendance[0]?.in_time)
+        {row.original.in_time
+          ? convertUTCToISTWithAMPM(row.original.in_time)
           : '-'}
       </div>
     ),
   },
   {
-    id: 'attendance.out_time',
+    id: 'out_time',
     header: () => <span className="text-nowrap">Out Time</span>,
     cell: ({ row }) => (
       <div className="text-nowrap">
-        {row.original.attendance[0]?.out_time
-          ? convertUTCToISTWithAMPM(row.original.attendance[0]?.out_time)
+        {row.original.out_time
+          ? convertUTCToISTWithAMPM(row.original.out_time)
           : '-'}
       </div>
     ),
   },
   {
-    id: 'attendance.status',
+    id: 'attendance_status',
     header: () => <span className="text-nowrap">Attendance Status</span>,
-    cell: ({ row }) => (
-      <AttendanceStatusCell row={row} attendanceDate={reportDate} />
-    ),
+    cell: ({ row }) => {
+      const status = row.original.attendance_status;
+      const noInternship = row.original.current_internship_id === null;
+      const isHolidayForStudent = row.original.is_holiday;
+      return (
+        <>
+          {noInternship && (
+            <Badge className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-300 dark:hover:bg-gray-400 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              No Internship
+            </Badge>
+          )}
+          {status === 'present' && (
+            <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Present
+            </Badge>
+          )}
+          {status === 'pending' && (
+            <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Pending Approval
+            </Badge>
+          )}
+          {status === 'absent' && (
+            <Badge className="bg-red-500 hover:bg-red-600 dark:bg-red-300 dark:hover:bg-red-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Absent
+            </Badge>
+          )}
+          {status === 'holiday' && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Holiday
+            </Badge>
+          )}
+          {!status && !noInternship && isHolidayForStudent && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Holiday
+            </Badge>
+          )}
+          {!status && !noInternship && !isHolidayForStudent && (
+            <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Not Submitted
+            </Badge>
+          )}
+        </>
+      );
+    },
   },
   {
     id: 'status',
     header: () => <span className="text-nowrap">Report Status</span>,
     cell: ({ row }) => {
-      const attendance = row.original.attendance[0];
-      return attendance && attendance.internship_reports?.status ? (
+      const report_status = row.original.report_status;
+      const noInternship = row.original.current_internship_id === null;
+      const isHolidayForStudent = row.original.is_holiday;
+      return (
         <>
-          {attendance.internship_reports?.status === 'approved' && (
-            <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400">
+          {noInternship && (
+            <Badge className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-300 dark:hover:bg-gray-400 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              No Internship
+            </Badge>
+          )}
+          {report_status === 'approved' && (
+            <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
               Approved
             </Badge>
           )}
-          {attendance.internship_reports?.status === 'revision' && (
-            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400">
+          {report_status === 'revision' && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
               Revision
             </Badge>
           )}
-          {attendance.internship_reports?.status === 'pending' && (
-            <Badge className="bg-yellow-500 hover:bg-yellow-600 dark:bg-yellow-300 dark:hover:bg-yellow-400 text-nowrap">
+          {report_status === 'pending' && (
+            <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
               Pending Approval
             </Badge>
           )}
+          {!report_status && !noInternship && isHolidayForStudent && (
+            <Badge className="bg-orange-500 hover:bg-orange-600 dark:bg-orange-300 dark:hover:bg-orange-400 [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Holiday
+            </Badge>
+          )}
+          {!report_status && !noInternship && !isHolidayForStudent && (
+            <Badge className="bg-yellow-400 hover:bg-yellow-500 dark:bg-yellow-200 dark:hover:bg-yellow-300 text-nowrap [text-shadow:_0_1px_0_rgb(0_0_0_/_15%)]">
+              Not Submitted
+            </Badge>
+          )}
         </>
-      ) : (
-        <Badge className="bg-gray-500 hover:bg-gray-600 dark:bg-gray-300 dark:hover:bg-gray-400 text-nowrap">
-          Not Submitted
-        </Badge>
       );
     },
   },
   {
     id: 'actions',
     cell: ({ row }) => {
-      const attendance = row.original.attendance[0];
-      const attendanceId = attendance?.id;
-      const studentId = row.original.uid;
+      const attendanceId = row.original.attendance_id;
+      const studentId = row.original.student_uid;
       return (
-        attendance && (
+        attendanceId && (
           <StudentReportApprovalActions
             approveReport={approveReport}
-            internshipReport={attendance.internship_reports}
+            studentReportData={row.original}
             studentId={studentId}
             attendanceId={attendanceId}
           />

@@ -80,20 +80,20 @@ export const useAddDailyReport = ({
 
 export const useApproveReport = ({
   instituteId,
+  reportDate,
   departmentId,
   collegeMentorId,
-  reportDate,
 }: {
   instituteId: number;
+  reportDate: string;
   departmentId?: string;
   collegeMentorId?: string;
-  reportDate: string;
 }) => {
   const { mutate } = useReportsWithStudents({
     instituteId,
+    reportDate,
     departmentId,
     collegeMentorId,
-    reportDate,
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -113,31 +113,16 @@ export const useApproveReport = ({
 
           return {
             ...currentData,
-            data: currentData.data.map((student) =>
-              student.uid === studentId
-                ? {
-                    ...student,
-                    attendance: student.attendance.map((attendance) =>
-                      attendance.id === attendanceId
-                        ? {
-                            ...attendance,
-                            internship_reports: {
-                              feedback,
-                              status: 'approved',
-                              division:
-                                attendance.internship_reports?.division || '',
-                              details:
-                                attendance.internship_reports?.details || '',
-                              main_points:
-                                attendance.internship_reports?.main_points ||
-                                '',
-                            },
-                          }
-                        : attendance
-                    ),
-                  }
-                : student
-            ),
+            data: currentData.data.map((studentReport) => {
+              if (studentReport.student_uid === studentId) {
+                return {
+                  ...studentReport,
+                  report_status: 'approved',
+                };
+              }
+
+              return studentReport;
+            }),
           };
         }, false);
 
@@ -168,31 +153,16 @@ export const useApproveReport = ({
 
           return {
             ...currentData,
-            data: currentData.data.map((student) =>
-              student.uid === studentId
-                ? {
-                    ...student,
-                    attendance: student.attendance.map((attendance) =>
-                      attendance.id === attendanceId
-                        ? {
-                            ...attendance,
-                            internship_reports: {
-                              feedback,
-                              status: 'revision',
-                              division:
-                                attendance.internship_reports?.division || '',
-                              details:
-                                attendance.internship_reports?.details || '',
-                              main_points:
-                                attendance.internship_reports?.main_points ||
-                                '',
-                            },
-                          }
-                        : attendance
-                    ),
-                  }
-                : student
-            ),
+            data: currentData.data.map((studentReport) => {
+              if (studentReport.student_uid === studentId) {
+                return {
+                  ...studentReport,
+                  report_status: 'revision',
+                };
+              }
+
+              return studentReport;
+            }),
           };
         }, false);
 

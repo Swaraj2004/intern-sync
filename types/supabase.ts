@@ -695,6 +695,16 @@ export type Database = {
         }
         Returns: Json
       }
+      get_current_internship_and_holiday: {
+        Args: {
+          student_id: string
+          report_date: string
+        }
+        Returns: {
+          internship_id: string
+          is_holiday: boolean
+        }[]
+      }
       get_student_attendance_percentage: {
         Args: {
           student_id: string
@@ -702,6 +712,35 @@ export type Database = {
           student_region: string
         }
         Returns: number
+      }
+      get_students_reports: {
+        Args: {
+          institute_id: number
+          report_date: string
+          department_id?: string
+          college_mentor_id?: string
+        }
+        Returns: {
+          student_uid: string
+          user_name: string
+          college_mentor_uid: string
+          college_mentor_name: string
+          current_internship_id: string
+          internship_start_date: string
+          internship_end_date: string
+          attendance_id: string
+          attendance_status: string
+          attendance_date: string
+          in_time: string
+          out_time: string
+          work_from_home: boolean
+          report_division: string
+          report_details: string
+          report_main_points: string
+          report_feedback: string
+          report_status: string
+          is_holiday: boolean
+        }[]
       }
       get_total_present_days: {
         Args: {
