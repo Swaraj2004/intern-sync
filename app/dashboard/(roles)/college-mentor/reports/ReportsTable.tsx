@@ -54,9 +54,8 @@ const ReportsTable = () => {
     () =>
       getStudentReportsColumns({
         approveReport: approveReport,
-        reportDate: reportsDate,
       }),
-    [approveReport, reportsDate]
+    [approveReport]
   );
 
   const tableData = useMemo(

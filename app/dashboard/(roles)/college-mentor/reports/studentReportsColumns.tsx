@@ -13,12 +13,10 @@ type ColumnProps = {
     studentId: string,
     status: string
   ) => void;
-  reportDate: Date;
 };
 
 const getStudentAttendanceColumns = ({
   approveReport,
-  reportDate,
 }: ColumnProps): ColumnDef<StudentReport>[] => [
   {
     accessorKey: 'user_name',
