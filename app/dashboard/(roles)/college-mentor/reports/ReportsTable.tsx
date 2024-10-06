@@ -23,7 +23,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 const ReportsTable = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const { reportsDate } = useReportsDate();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -33,20 +33,17 @@ const ReportsTable = () => {
     setMounted(true);
   }, []);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const dateString: string = formatDateForInput(reportsDate);
 
   const { data: studentsReports, isLoading } = useReportsWithStudents({
-    instituteId,
-    collegeMentorId: userId,
+    instituteId: instituteId,
+    collegeMentorId: user?.uid,
     reportDate: dateString,
   });
 
   const { approveReport } = useApproveReport({
-    instituteId,
-    collegeMentorId: userId,
+    instituteId: instituteId!,
+    collegeMentorId: user?.uid,
     reportDate: dateString,
   });
 
