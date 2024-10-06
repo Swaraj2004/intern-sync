@@ -1,6 +1,6 @@
 import { Card } from '@/components/ui/card';
 import StudentProfile from '@/types/student-profile';
-import { formatDateForDisplay } from '../../../../../lib/utils';
+import { formatDateForDisplay } from '@/lib/utils';
 
 const ProfileCard = ({ profileData }: { profileData: StudentProfile }) => {
   console.log(profileData.dob);

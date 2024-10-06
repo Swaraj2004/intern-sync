@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { DateTimePicker } from '@/components/ui/datetime-picker';
 import {
   Form,
   FormControl,
@@ -12,11 +13,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { studentProfileFormSchema } from '@/formSchemas/studentProfile';
+import { formatDateForInput } from '@/lib/utils';
 import StudentProfile from '@/types/student-profile';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { DateTimePicker } from '@/components/ui/datetime-picker';
-import { formatDateForInput } from '@/lib/utils';
 import { z } from 'zod';
 
 type UpdateStudentProfileProps = {
@@ -28,7 +28,7 @@ type UpdateStudentProfileProps = {
     address: string,
     admissionYear: number,
     division: string,
-    rollNumber: number,
+    rollNumber: string,
     admissionNumber: string
   ) => void;
   profileData: StudentProfile;
@@ -50,7 +50,7 @@ const UpdateStudentProfile = ({
       address: profileData.address || '',
       admissionYear: profileData.admission_year?.toString() || '',
       division: profileData.division || '',
-      rollNumber: profileData.roll_no?.toString() || '',
+      rollNumber: profileData.roll_no || '',
       admissionId: profileData.admission_id?.toString() || '',
       departmentName: profileData.departments?.name || '',
       instituteName: profileData.institutes?.name || '',
@@ -82,7 +82,7 @@ const UpdateStudentProfile = ({
       address,
       parseInt(admissionYear),
       division.toLocaleUpperCase(),
-      parseInt(rollNumber),
+      rollNumber,
       admissionId
     );
   };
@@ -241,7 +241,7 @@ const UpdateStudentProfile = ({
                 <FormControl className="sm:col-span-3">
                   <Input
                     placeholder="Enter roll number"
-                    type="number"
+                    type="text"
                     className="sm:max-w-96"
                     {...field}
                   />

@@ -4,7 +4,7 @@ type StudentProfile = {
   address: string | null;
   admission_year: number | null;
   division: string | null;
-  roll_no: number | null;
+  roll_no: string | null;
   admission_id: string | null;
   users: {
     name: string;

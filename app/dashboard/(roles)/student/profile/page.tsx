@@ -17,11 +17,11 @@ const ProfilePage = () => {
   const [showUpdateProfile, setShowUpdateProfile] = useState(false);
 
   const { data: profileData, isLoading: isLoadingProfile } = useStudentProfile({
-    userId: user?.user_metadata.uid,
+    userId: user?.uid!,
   });
 
   const { updateStudentProfile } = useUpdateStudentProfile({
-    userId: user?.user_metadata.uid,
+    userId: user?.uid!,
   });
 
   return (

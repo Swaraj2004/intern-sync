@@ -18,11 +18,11 @@ const ProfilePage = () => {
 
   const { data: profileData, isLoading: isLoadingProfile } =
     useCollegeMentorProfile({
-      userId: user?.user_metadata.uid,
+      userId: user?.uid!,
     });
 
   const { updateCollegeMentorProfile } = useUpdateCollegeMentorProfile({
-    userId: user?.user_metadata.uid,
+    userId: user?.uid!,
   });
 
   return (

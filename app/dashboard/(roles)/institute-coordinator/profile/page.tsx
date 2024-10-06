@@ -18,11 +18,11 @@ const ProfilePage = () => {
 
   const { data: profileData, isLoading: isLoadingProfile } =
     useInstituteProfile({
-      userId: user?.user_metadata.uid,
+      userId: user?.uid!,
     });
 
   const { updateInstituteProfile } = useUpdateInstituteProfile({
-    userId: user?.user_metadata.uid,
+    userId: user?.uid!,
   });
 
   return (

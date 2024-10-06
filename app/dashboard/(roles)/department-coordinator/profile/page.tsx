@@ -18,11 +18,11 @@ const ProfilePage = () => {
 
   const { data: profileData, isLoading: isLoadingProfile } =
     useDepartmentProfile({
-      userId: user?.user_metadata.uid,
+      userId: user?.uid!,
     });
 
   const { updateDepartmentProfile } = useUpdateDepartmentProfile({
-    userId: user?.user_metadata.uid,
+    userId: user?.uid!,
   });
 
   return (
