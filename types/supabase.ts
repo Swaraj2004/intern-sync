@@ -645,8 +645,6 @@ export type Database = {
           requesting_user_id: string
           academic_year: number
           college_mentor_id?: string
-          contact?: number
-          dob?: string
         }
         Returns: {
           user_id: string

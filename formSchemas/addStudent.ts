@@ -12,8 +12,6 @@ const addStudentByInstituteFormSchema = z.object({
     .email({ message: 'Invalid email address.' }),
   departmentId: z.string().min(1, { message: 'Department is required.' }),
   collegeMentorId: z.string().optional(),
-  contact: z.bigint().optional(),
-  dob: z.date().optional(),
   sendInvite: z.boolean(),
 });
 
@@ -28,9 +26,7 @@ const addStudentByDepartmentFormSchema = z.object({
     .min(1, { message: 'Email address is required.' })
     .email({ message: 'Invalid email address.' }),
   collegeMentorId: z.string().optional(),
-  contact: z.bigint().optional(),
-  dob: z.date().optional(),
   sendInvite: z.boolean(),
 });
 
-export { addStudentByInstituteFormSchema, addStudentByDepartmentFormSchema };
+export { addStudentByDepartmentFormSchema, addStudentByInstituteFormSchema };

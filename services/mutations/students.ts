@@ -28,9 +28,7 @@ export const useAddStudent = ({
       departmentName: string,
       sendInvite: boolean,
       collegeMentorId?: string,
-      collegeMentorName?: string,
-      contact?: number,
-      dob?: string
+      collegeMentorName?: string
     ) => {
       setIsLoading(true);
 
@@ -74,8 +72,6 @@ export const useAddStudent = ({
           requesting_user_id: userId,
           academic_year: new Date().getFullYear(),
           college_mentor_id: collegeMentorId || undefined,
-          contact: contact || undefined,
-          dob: dob || undefined,
         });
 
         if (error) {
