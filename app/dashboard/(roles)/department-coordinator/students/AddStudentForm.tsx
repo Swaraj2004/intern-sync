@@ -28,23 +28,24 @@ import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import { PlusIcon } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const supabase = supabaseClient();
 
 const AddStudentForm = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [collegeMentorName, setCollegeMentorName] = useState<string>('');
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const { data: departmentData } = useQuery(
-    userId
-      ? supabase.from('departments').select('name').eq('uid', userId).single()
+    user?.uid
+      ? supabase
+          .from('departments')
+          .select('name')
+          .eq('uid', user?.uid)
+          .single()
       : null,
     {
       revalidateOnFocus: false,
@@ -55,10 +56,12 @@ const AddStudentForm = () => {
   const departmentName = departmentData?.name || '';
 
   const { data: mentorsData, isLoading: isMentorsLoading } = useQuery(
-    supabase
-      .from('college_mentors')
-      .select('uid, users(id, name)')
-      .eq('department_id', userId),
+    user?.uid
+      ? supabase
+          .from('college_mentors')
+          .select('uid, users(id, name)')
+          .eq('department_id', user?.uid)
+      : null,
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -83,9 +86,9 @@ const AddStudentForm = () => {
   });
 
   const { addStudent } = useAddStudent({
-    userId,
-    instituteId,
-    departmentId: userId,
+    userId: user?.uid!,
+    instituteId: instituteId!,
+    departmentId: user?.uid,
   });
 
   const handleAddStudent = async (
@@ -97,7 +100,7 @@ const AddStudentForm = () => {
     await addStudent(
       studentName,
       email,
-      userId,
+      user?.uid!,
       departmentName,
       sendInvite,
       collegeMentorId,

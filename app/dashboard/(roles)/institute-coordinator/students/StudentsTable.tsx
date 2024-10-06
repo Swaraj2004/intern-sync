@@ -25,7 +25,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 const StudentsTable = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -34,20 +34,17 @@ const StudentsTable = () => {
     setMounted(true);
   }, []);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const { data: students, isLoading } = useStudents({
     instituteId,
   });
 
   const { deleteStudent } = useDeleteStudent({
-    instituteId,
-    requestingUserId: userId,
+    instituteId: instituteId!,
+    requestingUserId: user?.uid!,
   });
-  const { sendInvite } = useSendStudentInvite({ instituteId });
+  const { sendInvite } = useSendStudentInvite({ instituteId: instituteId! });
   const { changeCollegeMentor } = useChangeCollegeMentor({
-    instituteId,
+    instituteId: instituteId!,
   });
 
   const studentColumns = useMemo(
@@ -56,9 +53,8 @@ const StudentsTable = () => {
         onDelete: deleteStudent,
         onSendInvite: sendInvite,
         onChangeCollegeMentor: changeCollegeMentor,
-        instituteId,
       }),
-    [deleteStudent, sendInvite, changeCollegeMentor, instituteId]
+    [deleteStudent, sendInvite, changeCollegeMentor]
   );
 
   const tableData = useMemo(

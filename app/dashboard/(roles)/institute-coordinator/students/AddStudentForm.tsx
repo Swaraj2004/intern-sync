@@ -35,7 +35,7 @@ import { z } from 'zod';
 const supabase = supabaseClient();
 
 const AddStudentForm = () => {
-  const { user } = useUser();
+  const { instituteId } = useUser();
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [collegeMentorId, setCollegeMentorId] = useState<string>('');
   const [collegeMentorName, setCollegeMentorName] = useState<string>('');
@@ -44,9 +44,6 @@ const AddStudentForm = () => {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(
     null
   );
-
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
 
   const { data: departmentData } = useQuery(
     instituteId
@@ -101,8 +98,8 @@ const AddStudentForm = () => {
   });
 
   const { addStudent } = useAddStudent({
-    userId,
-    instituteId,
+    userId: instituteId!,
+    instituteId: instituteId!,
   });
 
   const handleAddStudent = async (
