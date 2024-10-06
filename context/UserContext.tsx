@@ -52,7 +52,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       const userRoles: { [key: string]: string } = {};
       userData.user_roles.forEach((role) => {
-        userRoles[role.role_id] = role.roles?.name as string;
+        userRoles[role.roles?.name as string] = role.role_id as string;
       });
 
       setRoles(userRoles);
