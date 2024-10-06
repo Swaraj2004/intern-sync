@@ -23,19 +23,19 @@ const InstituteCoordinatorDashboardPage = () => {
       const { count: departmentCount, error: departmentError } = await supabase
         .from('departments')
         .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.user_metadata.institute_id);
+        .eq('institute_id', user?.uid!);
       if (departmentError) console.error(departmentError);
 
       const { count: mentorCount, error: mentorError } = await supabase
         .from('college_mentors')
         .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.user_metadata.institute_id);
+        .eq('institute_id', user?.uid!);
       if (mentorError) console.error(mentorError);
 
       const { count: studentCount, error: studentError } = await supabase
         .from('students')
         .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.user_metadata.institute_id);
+        .eq('institute_id', user?.uid!);
       if (studentError) console.error(studentError);
 
       setCounts({
@@ -71,9 +71,7 @@ const InstituteCoordinatorDashboardPage = () => {
       <div className="pb-5">
         <h1 className="text-2xl font-semibold flex">
           <span>Hello,&nbsp;</span>
-          <span>
-            {user ? user.user_metadata.name : <Skeleton className="h-8 w-40" />}
-          </span>
+          <span>{user ? user.name : <Skeleton className="h-8 w-40" />}</span>
           <span>&nbsp;👋</span>
         </h1>
         <p className="text-gray-700 dark:text-gray-300 py-2">
@@ -92,7 +90,7 @@ const InstituteCoordinatorDashboardPage = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold text-primary">
-                {item.total ? (
+                {typeof item.total === 'number' ? (
                   <CountUp end={item.total} duration={2.5} />
                 ) : (
                   <Skeleton className="h-10 w-16 mx-auto" />

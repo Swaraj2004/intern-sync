@@ -153,7 +153,9 @@ const StudentDashboardPage = () => {
     <div className="@container">
       <div className="pb-5">
         <h1 className="text-2xl font-semibold">
-          Hello, {studentData?.users?.name} 👋
+          <span>Hello,&nbsp;</span>
+          <span>{user ? user.name : <Skeleton className="h-8 w-40" />}</span>
+          <span>&nbsp;👋</span>
         </h1>
         <p className="text-gray-700 dark:text-gray-300 py-2">
           Welcome to your dashboard. Here you can view your internships, profile

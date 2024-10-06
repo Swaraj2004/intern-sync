@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/context/UserContext';
 import { supabaseClient } from '@/utils/supabase/client';
-import { Building2, GraduationCap, Users } from 'lucide-react';
+import { GraduationCap, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 
@@ -22,13 +22,13 @@ const DepartmentCoordinatorDashboardPage = () => {
       const { count: mentorCount, error: mentorError } = await supabase
         .from('college_mentors')
         .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.user_metadata.institute_id);
+        .eq('department_id', user?.uid!);
       if (mentorError) console.error(mentorError);
 
       const { count: studentCount, error: studentError } = await supabase
         .from('students')
         .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.user_metadata.institute_id);
+        .eq('department_id', user?.uid!);
       if (studentError) console.error(studentError);
 
       setCounts({
@@ -58,9 +58,7 @@ const DepartmentCoordinatorDashboardPage = () => {
       <div className="pb-5">
         <h1 className="text-2xl font-semibold flex">
           <span>Hello,&nbsp;</span>
-          <span>
-            {user ? user.user_metadata.name : <Skeleton className="h-8 w-40" />}
-          </span>
+          <span>{user ? user.name : <Skeleton className="h-8 w-40" />}</span>
           <span>&nbsp;👋</span>
         </h1>
         <p className="text-gray-700 dark:text-gray-300 py-2">
@@ -79,7 +77,7 @@ const DepartmentCoordinatorDashboardPage = () => {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold text-primary">
-                {item.total ? (
+                {typeof item.total === 'number' ? (
                   <CountUp end={item.total} duration={2.5} />
                 ) : (
                   <Skeleton className="h-10 w-16 mx-auto" />
