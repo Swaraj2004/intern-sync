@@ -47,11 +47,11 @@ const StudentDashboardPage = () => {
   }, [currentUTCDate]);
 
   const { data: studentData } = useStudentProfile({
-    userId: user?.user_metadata.uid,
+    userId: user?.uid!,
   });
 
   const { data: studentInternships } = useStudentInternships({
-    studentId: user?.user_metadata.uid,
+    studentId: user?.uid!,
   });
 
   const currentInternship = studentInternships?.find(
@@ -62,31 +62,31 @@ const StudentDashboardPage = () => {
 
   const { data: attendanceData, isLoading: isLoadingAttendance } =
     useInternshipAttendance({
-      internshipId: currentInternship?.id,
+      internshipId: currentInternship?.id || null,
       attendanceDate: currentISTDate.toISOString().split('T')[0],
     });
 
   const { data: reportData, isLoading: isLoadingReport } = useDailyReport({
-    attendanceId: attendanceData?.id,
+    attendanceId: attendanceData?.id || null,
     reportDate: currentISTDate.toISOString().split('T')[0],
   });
 
   const { addDailyReport } = useAddDailyReport({
     attendanceId: attendanceData?.id || '',
-    studentId: user?.user_metadata.uid || '',
+    studentId: user?.uid!,
     internshipId: currentInternship?.id || '',
   });
 
   const { markCheckInAndModeAttendance } = useMarkCheckInAndModeAttendance({
     attendanceId: attendanceData?.id || '',
-    studentId: user?.user_metadata.uid || '',
+    studentId: user?.uid!,
     internshipId: currentInternship?.id || '',
     attendanceDate: currentISTDate.toISOString().split('T')[0],
   });
 
   const { markCheckOutAttendance } = useMarkCheckOutAttendance({
     attendanceId: attendanceData?.id || '',
-    studentId: user?.user_metadata.uid || '',
+    studentId: user?.uid!,
     internshipId: currentInternship?.id || '',
     attendanceDate: currentISTDate.toISOString().split('T')[0],
   });
@@ -108,7 +108,7 @@ const StudentDashboardPage = () => {
           currentInternship.region
         );
         const presentDays = await getTotalPresentDays(
-          user?.user_metadata?.uid || '',
+          user?.uid!,
           currentInternship.id
         );
 
@@ -116,7 +116,7 @@ const StudentDashboardPage = () => {
         setTotalPresentDays(presentDays);
 
         const isHoliday = await checkHolidayForStudent(
-          user?.user_metadata?.uid || '',
+          user?.uid!,
           currentInternship.id,
           currentISTDate.toISOString().split('T')[0]
         );

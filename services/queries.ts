@@ -318,7 +318,7 @@ export const useInternshipAttendance = ({
   attendanceDate,
 }: {
   internshipId: string | null;
-  attendanceDate?: string;
+  attendanceDate: string | null;
 }) => {
   const shouldFetch = Boolean(internshipId && attendanceDate);
 
@@ -349,8 +349,8 @@ export const useDailyReport = ({
   attendanceId,
   reportDate,
 }: {
-  attendanceId?: string;
-  reportDate?: string;
+  attendanceId: string | null;
+  reportDate: string | null;
 }) => {
   const shouldFetch = Boolean(attendanceId && reportDate);
 
