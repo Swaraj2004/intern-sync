@@ -17,7 +17,7 @@ const AttendancePageContent = () => {
         </span>
       </div>
       <Card className="p-4 bg-card rounded-lg w-full h-fit">
-        <AttendanceTable date={attendanceDate} />
+        <AttendanceTable />
       </Card>
     </>
   );

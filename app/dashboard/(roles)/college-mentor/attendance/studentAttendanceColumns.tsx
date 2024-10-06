@@ -15,14 +15,12 @@ type ColumnProps = {
     status: string,
     attendanceId: string | null
   ) => void;
-  collegeMentorId: string;
-  attendanceDate: Date;
+  collegeMentorId?: string;
 };
 
 const getStudentAttendanceColumns = ({
   onUpsert,
   collegeMentorId,
-  attendanceDate,
 }: ColumnProps): ColumnDef<StudentAttendance>[] => [
   {
     accessorKey: 'user_name',

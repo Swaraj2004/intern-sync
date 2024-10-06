@@ -3,7 +3,6 @@
 import AttendanceTable from '@/app/dashboard/(roles)/college-mentor/attendance/AttendanceTable';
 import { Card } from '@/components/ui/card';
 import DatePicker from '@/components/ui/DatePicker';
-import DatePickerCard from '@/components/ui/DatePickerCard';
 import { useAttendanceDate } from '@/context/AttendanceDateContext';
 
 const AttendancePageContent = () => {
@@ -18,7 +17,7 @@ const AttendancePageContent = () => {
         </span>
       </div>
       <Card className="p-4 bg-card rounded-lg w-full h-fit">
-        <AttendanceTable date={attendanceDate} />
+        <AttendanceTable />
       </Card>
     </>
   );

@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
+import { useAttendanceDate } from '@/context/AttendanceDateContext';
 import { useUser } from '@/context/UserContext';
 import { formatDateForInput } from '@/lib/utils';
 import { useUpsertAttendance } from '@/services/mutations/attendance';
@@ -21,8 +22,9 @@ import {
 } from '@tanstack/react-table';
 import { useEffect, useMemo, useState } from 'react';
 
-const AttendanceTable = ({ date }: { date: Date }) => {
-  const { user } = useUser();
+const AttendanceTable = () => {
+  const { user, instituteId } = useUser();
+  const { attendanceDate } = useAttendanceDate();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -31,20 +33,17 @@ const AttendanceTable = ({ date }: { date: Date }) => {
     setMounted(true);
   }, []);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
-  const dateString: string = formatDateForInput(date);
+  const dateString: string = formatDateForInput(attendanceDate);
 
   const { data: studentsAttendance, isLoading } = useAttendanceWithStudents({
-    instituteId,
-    collegeMentorId: userId,
+    instituteId: instituteId,
+    collegeMentorId: user?.uid,
     attendanceDate: dateString,
   });
 
   const { upsertAttendance } = useUpsertAttendance({
-    instituteId,
-    collegeMentorId: userId,
+    instituteId: instituteId!,
+    collegeMentorId: user?.uid,
     attendanceDate: dateString,
   });
 
@@ -52,10 +51,9 @@ const AttendanceTable = ({ date }: { date: Date }) => {
     () =>
       getStudentAttendanceColumns({
         onUpsert: upsertAttendance,
-        collegeMentorId: userId,
-        attendanceDate: date,
+        collegeMentorId: user?.uid,
       }),
-    [upsertAttendance, userId, date]
+    [upsertAttendance, user]
   );
 
   const tableData = useMemo(
