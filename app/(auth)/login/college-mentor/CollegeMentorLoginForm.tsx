@@ -37,50 +37,35 @@ const CollegeMentorLoginForm = () => {
     const { email, password } = values;
     setLoading(true);
 
-    const { data: user, error: userError } = await supabase
+    const { data, error } = await supabase
       .from('users')
-      .select()
+      .select('id,email,user_roles (role_id, roles (name))')
       .eq('email', email)
       .single();
 
-    if (userError) {
+    if (error || !data) {
       toast.error('Email does not exist.');
       setLoading(false);
       return;
     }
 
-    const { data: roleData, error: rolesError } = await supabase
-      .from('roles')
-      .select('id')
-      .eq('name', 'college-mentor')
-      .single();
+    const hasCollegeMentorRole = data.user_roles?.some(
+      (role) => role.roles?.name === 'college-mentor'
+    );
 
-    if (rolesError && !roleData) {
-      toast.error(rolesError.message);
+    if (!hasCollegeMentorRole) {
+      toast.error('User is not a college mentor.');
       setLoading(false);
       return;
     }
 
-    const { data: userRoleData, error: userRoleError } = await supabase
-      .from('user_roles')
-      .select('uid')
-      .eq('uid', user.id)
-      .eq('role_id', roleData.id)
-      .single();
-
-    if (userRoleError && !userRoleData) {
-      toast.error('User is not an college mentor.');
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: signinError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
-      toast.error(error.message);
+    if (signinError) {
+      toast.error(signinError.message);
       setLoading(false);
       return;
     }
