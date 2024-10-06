@@ -48,14 +48,12 @@ const StudentAttendanceActions = ({
   departmentId,
   collegeMentorId,
 }: StudentAttendanceActionsProps) => {
-  const { user } = useUser();
+  const { instituteId } = useUser();
   const { attendanceDate } = useAttendanceDate();
   const [openDialog, setOpenDialog] = useState(false);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-
   const { upsertAttendance } = useUpsertAttendance({
-    instituteId: instituteId,
+    instituteId: instituteId!,
     departmentId: departmentId,
     collegeMentorId: collegeMentorId,
     attendanceDate: formatDateForInput(attendanceDate),

@@ -24,6 +24,7 @@ import { Form } from '@/components/ui/form';
 import { Loader } from '@/components/ui/Loader';
 import SearchInput from '@/components/ui/SearchInput';
 import SelectInputSkeleton from '@/components/ui/SelectInputSkeleton';
+import { useUser } from '@/context/UserContext';
 import { useCollegeMentors } from '@/services/queries';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { MailPlusIcon, Trash2, UserRoundPenIcon } from 'lucide-react';
@@ -42,7 +43,6 @@ type StudentActionsProps = {
   studentId: string;
   studentDepartmentId?: string;
   currentMentorId?: string;
-  instituteId: number;
   isVerified: boolean;
 };
 
@@ -59,9 +59,9 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
   studentId,
   studentDepartmentId,
   currentMentorId,
-  instituteId,
   isVerified,
 }) => {
+  const { instituteId } = useUser();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedMentorName, setSelectedMentorName] = useState<string>('');
   const { data, isLoading: isMentorsLoading } = useCollegeMentors({

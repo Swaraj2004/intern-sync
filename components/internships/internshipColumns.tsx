@@ -3,11 +3,8 @@ import InternshipLetterCell from '@/components/internships/InternshipLetterCell'
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Internship from '@/types/internships';
-import { supabaseClient } from '@/utils/supabase/client';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
-
-const supabase = supabaseClient();
 
 type ColumnProps = {
   onApproveInternship: (internshipId: string, approved: boolean) => void;
