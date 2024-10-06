@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import InputBox from '@/components/ui/InputBox';
 import SingleSelectInput from '@/components/ui/SelectInput';
+import regions from '@/data/regions';
 import addInternshipFormSchema from '@/formSchemas/addInternship';
 import { formatDateForInput } from '@/lib/utils';
 import { useAddInternship } from '@/services/mutations/internships';
@@ -31,7 +32,6 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import uuid4 from 'uuid4';
 import { z } from 'zod';
-import regions from '@/data/regions';
 
 const modeOptions = [
   { value: 'offline', label: 'Offline' },
@@ -43,10 +43,14 @@ const supabase = supabaseClient();
 const AddInternshipDialog = ({
   studentId,
   collegeMentorId,
+  departmentId,
+  instituteId,
   internships,
 }: {
   studentId: string;
   collegeMentorId: string;
+  departmentId: string;
+  instituteId: string;
   internships: StudentInternship[];
 }) => {
   const [open, setOpen] = useState(false);
@@ -54,6 +58,8 @@ const AddInternshipDialog = ({
 
   const { addInternship } = useAddInternship({
     studentId,
+    departmentId,
+    instituteId,
     collegeMentorId,
   });
 

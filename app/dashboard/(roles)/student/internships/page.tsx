@@ -13,27 +13,27 @@ import { useEffect, useState } from 'react';
 const supabase = supabaseClient();
 
 const InternshipsPage = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [mounted, setMounted] = useState(false);
   const [showAddButton, setShowAddButton] = useState(false);
 
   const { data: internships, isLoading: isLoadingInternships } =
     useStudentInternships({
-      studentId: user?.user_metadata.uid,
+      studentId: user?.uid!,
     });
 
   const { data: profileData } = useQuery(
-    user?.user_metadata.uid
+    user?.uid
       ? supabase
           .from('students')
-          .select('college_mentor_id')
-          .eq('uid', user.user_metadata.uid)
+          .select('college_mentor_id, department_id')
+          .eq('uid', user.uid)
           .single()
       : null
   );
 
   const { updateCompanyMentorEmail } = useUpdateCompanyMentorEmail({
-    studentId: user?.user_metadata.uid,
+    studentId: user?.uid!,
   });
 
   useEffect(() => setMounted(true), []);
@@ -59,13 +59,18 @@ const InternshipsPage = () => {
     <>
       <div className="flex justify-between items-center pb-5 h-14">
         <h1 className="font-semibold text-2xl">Internships</h1>
-        {showAddButton && profileData?.college_mentor_id && internships && (
-          <AddInternshipDialog
-            studentId={user?.user_metadata.uid}
-            collegeMentorId={profileData.college_mentor_id}
-            internships={internships}
-          />
-        )}
+        {showAddButton &&
+          profileData?.college_mentor_id &&
+          instituteId &&
+          internships && (
+            <AddInternshipDialog
+              studentId={user?.uid!}
+              collegeMentorId={profileData.college_mentor_id}
+              departmentId={profileData.department_id}
+              instituteId={instituteId}
+              internships={internships}
+            />
+          )}
       </div>
       {(!mounted || isLoadingInternships) && (
         <div className="h-60 flex justify-center items-center">
