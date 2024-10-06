@@ -87,14 +87,22 @@ export async function updateSession(request: NextRequest) {
     lastFetchTime = currentTime;
   }
 
-  const userRoles = new Set(user?.user_metadata?.role_ids || []);
+  const { data: userRolesData, error: userRolesError } = await supabase
+    .from('user_roles')
+    .select('role_id')
+    .eq('uid', user?.user_metadata.uid);
+
+  if (userRolesError || !userRolesData) return NextResponse.error();
+
+  const userRolesSet = new Set(userRolesData.map((role) => role.role_id));
+
   const roleMap = cachedRoles.reduce((acc, { name, id }) => {
     acc[`/dashboard/${name}`] = id;
     return acc;
   }, {} as Record<string, string>);
 
   const isAuthorized = Object.entries(roleMap).some(
-    ([path, role_id]) => pathname.startsWith(path) && userRoles.has(role_id)
+    ([path, role_id]) => pathname.startsWith(path) && userRolesSet.has(role_id)
   );
 
   if (!isAuthorized) {

@@ -17,30 +17,40 @@ const DashboardRolesPage = async () => {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) return redirect('/login');
+
+  const { data: userRolesData, error: userRolesError } = await supabase
+    .from('user_roles')
+    .select('role_id')
+    .eq('uid', user.user_metadata.uid);
+
+  if (userRolesError || !userRolesData) return redirect('/error');
+
+  const roleIds = userRolesData.map((role) => role.role_id);
+
   const { data, error } = await getRoles();
   if (error) return redirect('/error');
 
   const roles: Roles = data;
 
-  const roleMap =
-    roles.reduce((acc, { name, id }) => {
+  const roleMap = roles.reduce((acc, { name, id }) => {
+    if (roleIds.includes(id)) {
       acc[id] = name;
-      return acc;
-    }, {} as Record<string, string>) || {};
+    }
+    return acc;
+  }, {} as Record<string, string>);
 
-  if (user?.user_metadata?.role_ids.length === 1) {
-    return redirect(`/dashboard/${roleMap[user?.user_metadata?.role_ids[0]]}`);
+  if (roleIds.length === 1) {
+    return redirect(`/dashboard/${roleMap[roleIds[0]]}`);
   }
 
-  const usersRoles: UserRoles = user?.user_metadata?.role_ids.map(
-    (role_id: string) => {
-      return {
-        id: role_id,
-        path: `/dashboard/${roleMap[role_id]}`,
-        title: convertToTitleCase(roleMap[role_id]),
-      };
-    }
-  );
+  const usersRoles: UserRoles = roleIds.map((role_id: string) => {
+    return {
+      id: role_id,
+      path: `/dashboard/${roleMap[role_id]}`,
+      title: convertToTitleCase(roleMap[role_id]),
+    };
+  });
 
   return (
     <div>
@@ -49,7 +59,7 @@ const DashboardRolesPage = async () => {
         <Card className="p-8 sm:p-10 mx-4 w-fit">
           <div className="text-center text-2xl font-medium">Select Role</div>
           <div className="flex flex-col items-center gap-5 pt-6">
-            {usersRoles?.map(({ id, path, title }) => (
+            {usersRoles.map(({ id, path, title }) => (
               <Button
                 key={id}
                 asChild
