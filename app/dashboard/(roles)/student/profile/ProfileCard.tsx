@@ -3,7 +3,6 @@ import StudentProfile from '@/types/student-profile';
 import { formatDateForDisplay } from '@/lib/utils';
 
 const ProfileCard = ({ profileData }: { profileData: StudentProfile }) => {
-  console.log(profileData.dob);
   const fields = [
     { label: 'Full Name', value: profileData.users?.name || '-' },
     { label: 'Email', value: profileData.users?.email || '-' },

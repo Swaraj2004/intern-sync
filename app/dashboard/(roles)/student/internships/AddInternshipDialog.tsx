@@ -104,7 +104,6 @@ const AddInternshipDialog = ({
         `${internshipId}/${values.internshipLetter[0].name}`,
         values.internshipLetter[0]
       );
-    console.log(fileData, fileError);
 
     if (fileError) {
       toast.error(fileError.message);
