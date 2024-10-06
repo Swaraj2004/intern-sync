@@ -25,9 +25,7 @@ export const useAddCollegeMentor = ({
     email: string,
     sendInvite: boolean,
     departmentId: string,
-    departmentName?: string,
-    contact?: number,
-    dob?: string
+    departmentName?: string
   ) => {
     setIsLoading(true);
 
@@ -62,8 +60,6 @@ export const useAddCollegeMentor = ({
         institute_id: instituteId,
         department_id: departmentId,
         requesting_user_id: userId,
-        contact,
-        dob,
       });
 
       if (error) {

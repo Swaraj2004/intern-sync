@@ -609,8 +609,6 @@ export type Database = {
           institute_id: string
           department_id: string
           requesting_user_id: string
-          contact?: number
-          dob?: string
         }
         Returns: {
           user_id: string
