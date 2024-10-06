@@ -10,12 +10,18 @@ import CountUp from 'react-countup';
 
 const supabase = supabaseClient();
 
+interface UserCounts {
+  departments: number | null;
+  collegeMentors: number | null;
+  students: number | null;
+}
+
 const InstituteCoordinatorDashboardPage = () => {
   const { user } = useUser();
-  const [counts, setCounts] = useState({
-    departments: 0,
-    collegeMentors: 0,
-    students: 0,
+  const [counts, setCounts] = useState<UserCounts>({
+    departments: null,
+    collegeMentors: null,
+    students: null,
   });
 
   useEffect(() => {
