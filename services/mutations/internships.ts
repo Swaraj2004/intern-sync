@@ -185,8 +185,8 @@ export const useAcceptOrRejectInternship = ({
   collegeMentorId,
 }: {
   instituteId: string;
-  departmentId: string;
-  collegeMentorId: string;
+  departmentId?: string;
+  collegeMentorId?: string;
 }) => {
   const { mutate } = useInternships({
     instituteId,

@@ -21,7 +21,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 const InternshipsTable = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -30,15 +30,14 @@ const InternshipsTable = () => {
     setMounted(true);
   }, []);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const { data: internships, isLoading } = useInternships({
-    collegeMentorId: userId,
+    instituteId,
+    collegeMentorId: user?.uid,
   });
 
   const { acceptOrRejectInternship } = useAcceptOrRejectInternship({
-    collegeMentorId: userId,
+    instituteId: instituteId!,
+    collegeMentorId: user?.uid,
   });
 
   const internshipColumns = useMemo(
