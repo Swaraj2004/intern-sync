@@ -29,7 +29,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const AddDepartmentForm = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [openAddDialog, setOpenAddDialog] = useState(false);
 
   const form = useForm<z.infer<typeof addDepartmentFormSchema>>({
@@ -42,12 +42,9 @@ const AddDepartmentForm = () => {
     },
   });
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const { addDepartment } = useAddDepartment({
-    instituteId,
-    userId,
+    instituteId: instituteId!,
+    userId: user?.uid!,
   });
 
   const handleAddRole = async (

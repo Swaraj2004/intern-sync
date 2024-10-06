@@ -8,7 +8,6 @@ import { ChevronsUpDownIcon } from 'lucide-react';
 type ColumnProps = {
   onDelete: (uid: string, authId: string) => void;
   onSendInvite: (email: string, userId: string, name: string) => void;
-  instituteId: number;
 };
 
 const getCollegeMentorColumns = ({

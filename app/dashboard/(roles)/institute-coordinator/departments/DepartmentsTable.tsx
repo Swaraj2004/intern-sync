@@ -24,7 +24,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 const DepartmentsTable = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -33,24 +33,20 @@ const DepartmentsTable = () => {
     setMounted(true);
   }, []);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const { data: departments, isLoading } = useDepartments({ instituteId });
   const { deleteDepartment } = useDeleteDepartment({
-    instituteId,
-    requestingUserId: userId,
+    instituteId: instituteId!,
+    requestingUserId: user?.uid!,
   });
-  const { sendInvite } = useSendDepartmentInvite({ instituteId });
+  const { sendInvite } = useSendDepartmentInvite({ instituteId: instituteId! });
 
   const departmentColumns = useMemo(
     () =>
       getDepartmentColumns({
         onDelete: deleteDepartment,
         onSendInvite: sendInvite,
-        instituteId,
       }),
-    [deleteDepartment, sendInvite, instituteId]
+    [deleteDepartment, sendInvite]
   );
 
   const tableData = useMemo(

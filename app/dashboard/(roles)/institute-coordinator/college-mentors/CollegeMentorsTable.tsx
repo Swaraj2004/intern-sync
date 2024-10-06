@@ -24,7 +24,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 const CollegeMentorsTable = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -33,26 +33,24 @@ const CollegeMentorsTable = () => {
     setMounted(true);
   }, []);
 
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
-
   const { data: collegeMentors, isLoading } = useCollegeMentors({
     instituteId,
   });
   const { deleteCollegeMentor } = useDeleteCollegeMentor({
-    instituteId,
-    requestingUserId: userId,
+    instituteId: instituteId!,
+    requestingUserId: user?.uid!,
   });
-  const { sendInvite } = useSendCollegeMentorInvite({ instituteId });
+  const { sendInvite } = useSendCollegeMentorInvite({
+    instituteId: instituteId!,
+  });
 
   const collegeMentorColumns = useMemo(
     () =>
       getCollegeMentorColumns({
         onDelete: deleteCollegeMentor,
         onSendInvite: sendInvite,
-        instituteId,
       }),
-    [deleteCollegeMentor, sendInvite, instituteId]
+    [deleteCollegeMentor, sendInvite]
   );
 
   const tableData = useMemo(

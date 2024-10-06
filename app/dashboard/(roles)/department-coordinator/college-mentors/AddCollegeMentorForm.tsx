@@ -29,11 +29,8 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 const AddCollegeMentorForm = () => {
-  const { user } = useUser();
+  const { user, instituteId } = useUser();
   const [openAddDialog, setOpenAddDialog] = useState(false);
-
-  const instituteId: number = user?.user_metadata.institute_id;
-  const userId: string = user?.user_metadata.uid;
 
   const form = useForm({
     resolver: zodResolver(addCollegeMentorByDepartmentFormSchema),
@@ -45,9 +42,9 @@ const AddCollegeMentorForm = () => {
   });
 
   const { addCollegeMentor } = useAddCollegeMentor({
-    userId,
-    instituteId,
-    departmentId: userId,
+    userId: user?.uid!,
+    instituteId: instituteId!,
+    departmentId: user?.uid,
   });
 
   const handleAddMentor = async (
@@ -56,7 +53,7 @@ const AddCollegeMentorForm = () => {
     const { collegeMentorName, email, sendInvite } = values;
     setOpenAddDialog(false);
 
-    await addCollegeMentor(collegeMentorName, email, sendInvite, userId);
+    await addCollegeMentor(collegeMentorName, email, sendInvite, user?.uid!);
   };
 
   return (
