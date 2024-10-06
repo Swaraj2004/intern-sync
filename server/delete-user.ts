@@ -19,17 +19,27 @@ export default async function deleteUserById(authId: string) {
       throw new Error('User not authorized.');
     }
 
-    const { data, error: rolesError } = await getRoles();
+    const { data: rolesData, error: rolesError } = await getRoles();
     if (rolesError) {
       throw new Error(rolesError.details);
     }
 
-    const roles: Roles = data;
+    const roles: Roles = rolesData;
     const roleMap = roles.reduce((acc, { name, id }) => {
       acc[name] = id;
       return acc;
     }, {} as Record<string, string>);
-    const roleIds = user.user_metadata.role_ids as string[];
+
+    const { data: userRoles, error: userRolesError } = await supabase
+      .from('user_roles')
+      .select('role_id')
+      .eq('uid', user.user_metadata.uid);
+
+    if (userRolesError) {
+      throw new Error(userRolesError.message);
+    }
+
+    const roleIds = userRoles.map((role) => role.role_id);
 
     const hasRole =
       roleIds.includes(roleMap['institute-coordinator']) ||

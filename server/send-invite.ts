@@ -6,12 +6,7 @@ import { supabaseServer } from '@/utils/supabase/server';
 
 type Roles = { id: string; name: string }[];
 
-export default async function sendInviteEmail(
-  email: string,
-  uid: string,
-  name: string,
-  insitituteId: number
-) {
+export default async function sendInviteEmail(email: string, uid: string) {
   const supabase = supabaseServer();
   const supabaseAdminClient = supabaseAdmin();
 
@@ -59,25 +54,11 @@ export default async function sendInviteEmail(
     throw new Error('User does not have the required role.');
   }
 
-  // Fetch the roles for the invited user
-  const { data: inviteeRoles, error: inviteeRolesError } = await supabase
-    .from('user_roles')
-    .select('role_id')
-    .eq('uid', uid);
-
-  if (inviteeRolesError) {
-    throw new Error(inviteeRolesError.message);
-  }
-
   // Send the invite email using Supabase admin client
   const { data, error: inviteError } =
     await supabaseAdminClient.auth.admin.inviteUserByEmail(email, {
       data: {
         uid,
-        name,
-        email,
-        institute_id: insitituteId,
-        role_ids: inviteeRoles.map((role) => role.role_id),
       },
       redirectTo: `${process.env.NEXT_PUBLIC_URL}/verify-email`,
     });

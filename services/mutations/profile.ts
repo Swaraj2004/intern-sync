@@ -1,4 +1,3 @@
-import updateUserByAuthId from '@/server/update-user';
 import {
   useCollegeMentorProfile,
   useCompanyMentorProfile,
@@ -57,28 +56,22 @@ export const useUpdateInstituteProfile = ({ userId }: { userId: string }) => {
             institute_email_domain: instituteEmailDomain,
             student_email_domain: studentEmailDomain,
           })
-          .match({ uid: userId });
+          .eq('id', userId);
 
         if (error) {
           throw error;
         }
 
-        const { data: updatedUser, error: userError } = await supabase
+        const { error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId })
-          .select()
-          .single();
+          .eq('id', userId);
 
         if (userError) {
           throw userError;
-        }
-
-        if (updatedUser && updatedUser.auth_id) {
-          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
         }
 
         toast.success('Profile updated successfully.');
@@ -125,22 +118,16 @@ export const useUpdateDepartmentProfile = ({ userId }: { userId: string }) => {
       }, false);
 
       try {
-        const { data: updatedUser, error: userError } = await supabase
+        const { error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId })
-          .select()
-          .single();
+          .eq('id', userId);
 
         if (userError) {
           throw userError;
-        }
-
-        if (updatedUser && updatedUser.auth_id) {
-          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
         }
 
         toast.success('Profile updated successfully.');
@@ -197,16 +184,10 @@ export const useUpdateCollegeMentorProfile = ({
             name: fullName,
             contact,
           })
-          .match({ id: userId })
-          .select()
-          .single();
+          .eq('id', userId);
 
         if (userError) {
           throw userError;
-        }
-
-        if (updatedUser && updatedUser.auth_id) {
-          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
         }
 
         toast.success('Profile updated successfully.');
@@ -273,28 +254,22 @@ export const useUpdateCompanyMentorProfile = ({
             company_name,
             company_address,
           })
-          .match({ uid: userId });
+          .eq('id', userId);
 
         if (error) {
           throw error;
         }
 
-        const { data: updatedUser, error: userError } = await supabase
+        const { error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
             contact,
           })
-          .match({ id: userId })
-          .select()
-          .single();
+          .eq('id', userId);
 
         if (userError) {
           throw userError;
-        }
-
-        if (updatedUser && updatedUser.auth_id) {
-          await updateUserByAuthId(updatedUser.auth_id, undefined, fullName);
         }
 
         toast.success('Profile updated successfully.');
@@ -364,7 +339,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
             roll_no: rollNumber,
             admission_id: admissionId,
           })
-          .match({ uid: userId });
+          .eq('id', userId);
 
         if (studentError) {
           throw studentError;
@@ -375,7 +350,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
           .update({
             contact,
           })
-          .match({ id: userId });
+          .eq('id', userId);
 
         if (userError) {
           throw userError;

@@ -1,6 +1,5 @@
 import deleteUserById from '@/server/delete-user';
 import sendInviteEmail from '@/server/send-invite';
-import updateUserByAuthId from '@/server/update-user';
 import { useDepartments } from '@/services/queries';
 import Departments from '@/types/departments';
 import { supabaseClient } from '@/utils/supabase/client';
@@ -13,7 +12,7 @@ export const useAddDepartment = ({
   instituteId,
   userId,
 }: {
-  instituteId: number;
+  instituteId: string;
   userId: string;
 }) => {
   const { mutate } = useDepartments({
@@ -68,27 +67,12 @@ export const useAddDepartment = ({
       const result = data[0];
 
       if (result && !result.is_new_user && !result.has_role && result.auth_id) {
-        try {
-          await updateUserByAuthId(
-            result.auth_id,
-            'department-coordinator',
-            departmentCoordinatorName
-          );
-          toast.success(
-            'User already exists, assigned department coordinator role.'
-          );
-        } catch (error) {
-          if (typeof error === 'string') toast.error(error);
-          else console.error(error);
-        }
+        toast.success(
+          'User already exists, assigned department coordinator role.'
+        );
       } else if (result && !result.is_verified && sendInvite) {
         try {
-          const data = await sendInviteEmail(
-            email,
-            result.user_id,
-            departmentCoordinatorName,
-            instituteId
-          );
+          const data = await sendInviteEmail(email, result.user_id);
 
           if (data) {
             await supabase
@@ -123,7 +107,7 @@ export const useDeleteDepartment = ({
   instituteId,
   requestingUserId,
 }: {
-  instituteId: number;
+  instituteId: string;
   requestingUserId: string;
 }) => {
   const { mutate } = useDepartments({
@@ -160,18 +144,7 @@ export const useDeleteDepartment = ({
       } | null;
 
       if (authId && result && !result.is_user_deleted) {
-        try {
-          await updateUserByAuthId(
-            authId,
-            'department-coordinator',
-            undefined,
-            'remove'
-          );
-          toast.success('Department role deleted successfully.');
-        } catch (error) {
-          if (typeof error === 'string') toast.error(error);
-          else toast.error('Failed to delete department role.');
-        }
+        toast.success('Department role deleted successfully.');
       }
 
       if (authId && result && result.is_user_deleted) {
@@ -201,7 +174,7 @@ export const useDeleteDepartment = ({
 export const useSendDepartmentInvite = ({
   instituteId,
 }: {
-  instituteId: number;
+  instituteId: string;
 }) => {
   const { mutate } = useDepartments({
     instituteId,
@@ -230,7 +203,7 @@ export const useSendDepartmentInvite = ({
     }, false);
 
     try {
-      const { user } = await sendInviteEmail(email, userId, name, instituteId);
+      const { user } = await sendInviteEmail(email, userId);
 
       await supabase
         .from('users')

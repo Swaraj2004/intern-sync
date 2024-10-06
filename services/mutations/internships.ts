@@ -1,6 +1,6 @@
 import { useInternships, useStudentInternships } from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 const supabase = supabaseClient();
@@ -22,9 +22,13 @@ type AddInternshipParams = {
 export const useAddInternship = ({
   studentId,
   collegeMentorId,
+  departmentId,
+  instituteId,
 }: {
   studentId: string;
   collegeMentorId: string;
+  departmentId: string;
+  instituteId: string;
 }) => {
   const { mutate } = useStudentInternships({
     studentId,
@@ -68,34 +72,34 @@ export const useAddInternship = ({
             internship_letter_url: internshipLetterUrl,
             approved: false,
             college_mentor_id: collegeMentorId,
+            department_id: departmentId,
+            institute_id: instituteId,
           },
         ],
       };
     }, false);
 
     try {
-      const { data, error } = await supabase
-        .from('internships')
-        .insert([
-          {
-            id,
-            student_id: studentId,
-            role,
-            field,
-            mode,
-            region,
-            start_date: startDate,
-            end_date: endDate,
-            company_mentor_email: companyMentorEmail,
-            company_name: companyName,
-            company_address: companyAddress,
-            internship_letter_url: internshipLetterUrl,
-            approved: false,
-            college_mentor_id: collegeMentorId,
-          },
-        ])
-        .select()
-        .single();
+      const { error } = await supabase.from('internships').insert([
+        {
+          id,
+          student_id: studentId,
+          role,
+          field,
+          mode,
+          region,
+          start_date: startDate,
+          end_date: endDate,
+          company_mentor_email: companyMentorEmail,
+          company_name: companyName,
+          company_address: companyAddress,
+          internship_letter_url: internshipLetterUrl,
+          approved: false,
+          college_mentor_id: collegeMentorId,
+          department_id: departmentId,
+          institute_id: instituteId,
+        },
+      ]);
 
       if (error) {
         throw new Error(error.message);
@@ -176,11 +180,17 @@ export const useUpdateCompanyMentorEmail = ({
 };
 
 export const useAcceptOrRejectInternship = ({
+  instituteId,
+  departmentId,
   collegeMentorId,
 }: {
+  instituteId: string;
+  departmentId: string;
   collegeMentorId: string;
 }) => {
   const { mutate } = useInternships({
+    instituteId,
+    departmentId,
     collegeMentorId,
   });
   const [isLoading, setIsLoading] = useState(false);

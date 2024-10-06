@@ -3,7 +3,11 @@ import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 
 const supabase = supabaseClient();
 
-export const useDepartments = ({ instituteId }: { instituteId: number }) => {
+export const useDepartments = ({
+  instituteId,
+}: {
+  instituteId: string | null;
+}) => {
   const shouldFetch = Boolean(instituteId);
 
   const { data, ...rest } = useQuery(
@@ -13,7 +17,7 @@ export const useDepartments = ({ instituteId }: { instituteId: number }) => {
           .select(
             'uid, name, users (id, auth_id, name, email, is_registered, is_verified)'
           )
-          .eq('institute_id', instituteId)
+          .eq('institute_id', instituteId!)
           .order('created_at', { ascending: false })
       : null
   );
@@ -28,7 +32,7 @@ export const useCollegeMentors = ({
   instituteId,
   departmentId,
 }: {
-  instituteId: number;
+  instituteId: string | null;
   departmentId?: string;
 }) => {
   const shouldFetch = Boolean(instituteId);
@@ -41,7 +45,7 @@ export const useCollegeMentors = ({
             .select(
               'uid, departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified)'
             )
-            .eq('institute_id', instituteId)
+            .eq('institute_id', instituteId!)
             .order('created_at', { ascending: false });
 
           if (departmentId) {
@@ -64,7 +68,7 @@ export const useStudents = ({
   departmentId,
   collegeMentorId,
 }: {
-  instituteId: number;
+  instituteId: string | null;
   departmentId?: string;
   collegeMentorId?: string;
 }) => {
@@ -78,7 +82,7 @@ export const useStudents = ({
             .select(
               'uid, college_mentors (uid, users (id, name)), departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified)'
             )
-            .eq('institute_id', instituteId)
+            .eq('institute_id', instituteId!)
             .order('created_at', { ascending: false });
 
           if (departmentId) {
@@ -106,8 +110,8 @@ export const useAttendanceWithStudents = ({
   departmentId,
   collegeMentorId,
 }: {
-  instituteId: string;
-  attendanceDate: string;
+  instituteId: string | null;
+  attendanceDate?: string;
   departmentId?: string;
   collegeMentorId?: string;
 }) => {
@@ -116,8 +120,8 @@ export const useAttendanceWithStudents = ({
   const { data, ...rest } = useQuery(
     shouldFetch
       ? supabase.rpc('get_students_attendance', {
-          institute_id: instituteId,
-          attendance_date: attendanceDate,
+          institute_id: instituteId!,
+          attendance_date: attendanceDate!,
           department_id: departmentId,
           college_mentor_id: collegeMentorId,
         })
@@ -133,8 +137,8 @@ export const useReportsWithStudents = ({
   departmentId,
   collegeMentorId,
 }: {
-  instituteId: string;
-  reportDate: string;
+  instituteId: string | null;
+  reportDate?: string;
   departmentId?: string;
   collegeMentorId?: string;
 }) => {
@@ -143,8 +147,8 @@ export const useReportsWithStudents = ({
   const { data, ...rest } = useQuery(
     shouldFetch
       ? supabase.rpc('get_students_reports', {
-          institute_id: instituteId,
-          report_date: reportDate,
+          institute_id: instituteId!,
+          report_date: reportDate!,
           department_id: departmentId,
           college_mentor_id: collegeMentorId,
         })
@@ -154,7 +158,7 @@ export const useReportsWithStudents = ({
   return { data, ...rest };
 };
 
-export const useInstituteProfile = ({ userId }: { userId: string }) => {
+export const useInstituteProfile = ({ userId }: { userId: string | null }) => {
   const shouldFetch = Boolean(userId);
 
   const { data, ...rest } = useQuery(
@@ -164,7 +168,7 @@ export const useInstituteProfile = ({ userId }: { userId: string }) => {
           .select(
             'uid, name, address, institute_email_domain, student_email_domain, users (name, email, contact)'
           )
-          .eq('uid', userId)
+          .eq('uid', userId!)
           .single()
       : null,
     {
@@ -179,7 +183,7 @@ export const useInstituteProfile = ({ userId }: { userId: string }) => {
   };
 };
 
-export const useDepartmentProfile = ({ userId }: { userId: string }) => {
+export const useDepartmentProfile = ({ userId }: { userId: string | null }) => {
   const shouldFetch = Boolean(userId);
 
   const { data, ...rest } = useQuery(
@@ -187,7 +191,7 @@ export const useDepartmentProfile = ({ userId }: { userId: string }) => {
       ? supabase
           .from('departments')
           .select('uid, name, users (name, email, contact), institutes (name)')
-          .eq('uid', userId)
+          .eq('uid', userId!)
           .single()
       : null,
     {
@@ -202,7 +206,11 @@ export const useDepartmentProfile = ({ userId }: { userId: string }) => {
   };
 };
 
-export const useCollegeMentorProfile = ({ userId }: { userId: string }) => {
+export const useCollegeMentorProfile = ({
+  userId,
+}: {
+  userId: string | null;
+}) => {
   const shouldFetch = Boolean(userId);
 
   const { data, ...rest } = useQuery(
@@ -212,7 +220,7 @@ export const useCollegeMentorProfile = ({ userId }: { userId: string }) => {
           .select(
             'uid, users (name, email, contact), departments (name), institutes (name)'
           )
-          .eq('uid', userId)
+          .eq('uid', userId!)
           .single()
       : null,
     {
@@ -227,7 +235,7 @@ export const useCollegeMentorProfile = ({ userId }: { userId: string }) => {
   };
 };
 
-export const useStudentProfile = ({ userId }: { userId: string }) => {
+export const useStudentProfile = ({ userId }: { userId: string | null }) => {
   const shouldFetch = Boolean(userId);
 
   const { data, ...rest } = useQuery(
@@ -237,7 +245,7 @@ export const useStudentProfile = ({ userId }: { userId: string }) => {
           .select(
             'uid, dob, address, admission_year, division, roll_no, admission_id, users (name, email, contact), departments (name), college_mentors (users (name)), institutes (name)'
           )
-          .eq('uid', userId)
+          .eq('uid', userId!)
           .single()
       : null,
     {
@@ -252,7 +260,11 @@ export const useStudentProfile = ({ userId }: { userId: string }) => {
   };
 };
 
-export const useCompanyMentorProfile = ({ userId }: { userId: string }) => {
+export const useCompanyMentorProfile = ({
+  userId,
+}: {
+  userId: string | null;
+}) => {
   const shouldFetch = Boolean(userId);
 
   const { data, ...rest } = useQuery(
@@ -262,7 +274,7 @@ export const useCompanyMentorProfile = ({ userId }: { userId: string }) => {
           .select(
             'uid, designation, company_name, company_address, users (name, email, contact)'
           )
-          .eq('uid', userId)
+          .eq('uid', userId!)
           .single()
       : null,
     {
@@ -277,7 +289,11 @@ export const useCompanyMentorProfile = ({ userId }: { userId: string }) => {
   };
 };
 
-export const useStudentInternships = ({ studentId }: { studentId: string }) => {
+export const useStudentInternships = ({
+  studentId,
+}: {
+  studentId: string | null;
+}) => {
   const shouldFetch = Boolean(studentId);
 
   const { data, ...rest } = useQuery(
@@ -287,7 +303,7 @@ export const useStudentInternships = ({ studentId }: { studentId: string }) => {
           .select(
             'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved'
           )
-          .eq('student_id', studentId)
+          .eq('student_id', studentId!)
       : null
   );
 
@@ -301,8 +317,8 @@ export const useInternshipAttendance = ({
   internshipId,
   attendanceDate,
 }: {
-  internshipId?: string;
-  attendanceDate: string;
+  internshipId: string | null;
+  attendanceDate?: string;
 }) => {
   const shouldFetch = Boolean(internshipId && attendanceDate);
 
@@ -314,7 +330,7 @@ export const useInternshipAttendance = ({
             'id, student_id, status, date, in_time, out_time, work_from_home'
           )
           .eq('internship_id', internshipId!)
-          .eq('date', attendanceDate)
+          .eq('date', attendanceDate!)
           .single()
       : null,
     {
@@ -334,9 +350,9 @@ export const useDailyReport = ({
   reportDate,
 }: {
   attendanceId?: string;
-  reportDate: string;
+  reportDate?: string;
 }) => {
-  const shouldFetch = Boolean(attendanceId);
+  const shouldFetch = Boolean(attendanceId && reportDate);
 
   const { data, ...rest } = useQuery(
     shouldFetch
@@ -346,7 +362,7 @@ export const useDailyReport = ({
             'date, internship_reports (division, details, main_points, status, feedback)'
           )
           .eq('id', attendanceId!)
-          .eq('date', reportDate)
+          .eq('date', reportDate!)
           .single()
       : null,
     {
@@ -362,20 +378,36 @@ export const useDailyReport = ({
 };
 
 export const useInternships = ({
+  instituteId,
+  departmentId,
   collegeMentorId,
 }: {
-  collegeMentorId: string;
+  instituteId: string | null;
+  departmentId?: string;
+  collegeMentorId?: string;
 }) => {
   const shouldFetch = Boolean(collegeMentorId);
 
   const { data, ...rest } = useQuery(
     shouldFetch
-      ? supabase
-          .from('internships')
-          .select(
-            'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved, students (uid, users (name))'
-          )
-          .eq('college_mentor_id', collegeMentorId)
+      ? (() => {
+          let query = supabase
+            .from('internships')
+            .select(
+              'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved, students (uid, users (name))'
+            )
+            .eq('institute_id', instituteId!);
+
+          if (departmentId) {
+            query = query.eq('department_id', departmentId);
+          }
+
+          if (collegeMentorId) {
+            query = query.eq('college_mentor_id', collegeMentorId);
+          }
+
+          return query;
+        })()
       : null
   );
 

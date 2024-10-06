@@ -297,9 +297,11 @@ export type Database = {
           company_mentor_id: string | null
           company_name: string
           created_at: string
+          department_id: string
           end_date: string
           field: string
           id: string
+          institute_id: string
           internship_letter_url: string
           mode: string
           region: string
@@ -315,9 +317,11 @@ export type Database = {
           company_mentor_id?: string | null
           company_name: string
           created_at?: string
+          department_id: string
           end_date: string
           field: string
           id?: string
+          institute_id: string
           internship_letter_url: string
           mode: string
           region: string
@@ -333,9 +337,11 @@ export type Database = {
           company_mentor_id?: string | null
           company_name?: string
           created_at?: string
+          department_id?: string
           end_date?: string
           field?: string
           id?: string
+          institute_id?: string
           internship_letter_url?: string
           mode?: string
           region?: string
@@ -356,6 +362,20 @@ export type Database = {
             columns: ["company_mentor_id"]
             isOneToOne: false
             referencedRelation: "company_mentors"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "internships_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "internships_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
             referencedColumns: ["uid"]
           },
           {
@@ -586,7 +606,7 @@ export type Database = {
         Args: {
           mentor_name: string
           email: string
-          institute_id: number
+          institute_id: string
           department_id: string
           requesting_user_id: string
           contact?: number
@@ -605,7 +625,7 @@ export type Database = {
           department_coordinator_name: string
           email: string
           department_name: string
-          institute_id: number
+          institute_id: string
           requesting_user_id: string
         }
         Returns: {
@@ -620,7 +640,7 @@ export type Database = {
         Args: {
           student_name: string
           email: string
-          institute_id: number
+          institute_id: string
           department_id: string
           requesting_user_id: string
           academic_year: number
@@ -654,7 +674,7 @@ export type Database = {
       delete_college_mentor: {
         Args: {
           user_id: string
-          institute_id: number
+          institute_id: string
           requesting_user_id: string
           department_id?: string
         }
@@ -663,7 +683,7 @@ export type Database = {
       delete_department: {
         Args: {
           user_id: string
-          institute_id: number
+          institute_id: string
           requesting_user_id: string
         }
         Returns: Json
@@ -671,7 +691,7 @@ export type Database = {
       delete_student: {
         Args: {
           user_id: string
-          institute_id: number
+          institute_id: string
           requesting_user_id: string
           department_id?: string
         }

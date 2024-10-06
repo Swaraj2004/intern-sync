@@ -1,6 +1,5 @@
 import deleteUserById from '@/server/delete-user';
 import sendInviteEmail from '@/server/send-invite';
-import updateUserByAuthId from '@/server/update-user';
 import { useCollegeMentors } from '@/services/queries';
 import CollegeMentors from '@/types/college-mentors';
 import { supabaseClient } from '@/utils/supabase/client';
@@ -15,7 +14,7 @@ export const useAddCollegeMentor = ({
   departmentId,
 }: {
   userId: string;
-  instituteId: number;
+  instituteId: string;
   departmentId?: string;
 }) => {
   const { mutate } = useCollegeMentors({ instituteId, departmentId });
@@ -75,15 +74,9 @@ export const useAddCollegeMentor = ({
       const result = data[0];
 
       if (result && !result.is_new_user && !result.has_role && result.auth_id) {
-        await updateUserByAuthId(result.auth_id, 'college-mentor', mentorName);
         toast.success('User already exists, assigned mentor role.');
       } else if (result && !result.is_verified && sendInvite) {
-        const inviteData = await sendInviteEmail(
-          email,
-          result.user_id,
-          mentorName,
-          instituteId
-        );
+        const inviteData = await sendInviteEmail(email, result.user_id);
 
         if (inviteData) {
           await supabase
@@ -115,7 +108,7 @@ export const useDeleteCollegeMentor = ({
   departmentId,
   requestingUserId,
 }: {
-  instituteId: number;
+  instituteId: string;
   departmentId?: string;
   requestingUserId: string;
 }) => {
@@ -149,7 +142,6 @@ export const useDeleteCollegeMentor = ({
       const result = data as { is_user_deleted: boolean } | null;
 
       if (authId && result && !result.is_user_deleted) {
-        await updateUserByAuthId(authId, 'college-mentor', undefined, 'remove');
         toast.success('College mentor role deleted successfully.');
       } else if (authId && result && result.is_user_deleted) {
         await deleteUserById(authId);
@@ -175,13 +167,13 @@ export const useSendCollegeMentorInvite = ({
   instituteId,
   departmentId,
 }: {
-  instituteId: number;
+  instituteId: string;
   departmentId?: string;
 }) => {
   const { mutate } = useCollegeMentors({ instituteId, departmentId });
   const [isLoading, setIsLoading] = useState(false);
 
-  const sendInvite = async (email: string, userId: string, name: string) => {
+  const sendInvite = async (email: string, userId: string) => {
     setIsLoading(true);
 
     mutate((currentData) => {
@@ -202,7 +194,7 @@ export const useSendCollegeMentorInvite = ({
     }, false);
 
     try {
-      const { user } = await sendInviteEmail(email, userId, name, instituteId);
+      const { user } = await sendInviteEmail(email, userId);
 
       await supabase
         .from('users')
