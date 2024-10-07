@@ -21,6 +21,7 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const [uid, setUid] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<{ [key: string]: string }>({});
   const [instituteId, setInstituteId] = useState<string | null>(null);
@@ -30,7 +31,40 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const supabase = supabaseClient();
 
-    const fetchUserDetails = async (uid: string) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (session) {
+          const uid = session.user.user_metadata.uid;
+          setUid(uid);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+          setRoles({});
+          setInstituteId(null);
+          setLoading(false);
+          setUid(null);
+          router.push('/');
+        } else {
+          setUser(null);
+          setRoles({});
+          setInstituteId(null);
+          setLoading(false);
+          setUid(null);
+        }
+      }
+    );
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [router]);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      if (!uid) return;
+
+      const supabase = supabaseClient();
+      setLoading(true);
+
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('id, name, email, auth_id, user_roles (role_id, roles(name))')
@@ -40,6 +74,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (userError) {
         console.error('Error fetching user details:', userError);
         setUser(null);
+        setLoading(false);
         return;
       }
 
@@ -71,10 +106,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
             'Error fetching institute_id for department:',
             departmentError
           );
-          return;
+        } else {
+          setInstituteId(departmentData.institute_id);
         }
-
-        setInstituteId(departmentData.institute_id);
       } else if (userRoles['college-mentor']) {
         const { data: mentorData, error: mentorError } = await supabase
           .from('college_mentors')
@@ -87,10 +121,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
             'Error fetching institute_id for college mentor:',
             mentorError
           );
-          return;
+        } else {
+          setInstituteId(mentorData.institute_id);
         }
-
-        setInstituteId(mentorData.institute_id);
       } else if (userRoles['student']) {
         const { data: studentData, error: studentError } = await supabase
           .from('students')
@@ -103,34 +136,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
             'Error fetching institute_id for student:',
             studentError
           );
-          return;
-        }
-
-        setInstituteId(studentData.institute_id);
-      }
-    };
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session) {
-          const uid = session.user.user_metadata.uid;
-          await fetchUserDetails(uid);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setRoles({});
-          router.push('/');
         } else {
-          setUser(null);
-          setRoles({});
+          setInstituteId(studentData.institute_id);
         }
-        setLoading(false);
       }
-    );
-
-    return () => {
-      authListener.subscription.unsubscribe();
+      setLoading(false);
     };
-  }, [router]);
+
+    fetchUserDetails();
+  }, [uid]);
 
   return (
     <UserContext.Provider value={{ user, roles, instituteId, loading }}>
