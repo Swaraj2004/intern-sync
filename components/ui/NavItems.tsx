@@ -30,7 +30,7 @@ const NavItems = ({
 
   const logout = async () => {
     const supabase = supabaseClient();
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: 'local' });
   };
 
   const menuitems = [
@@ -77,7 +77,7 @@ const NavItems = ({
     {
       path: `/dashboard/${role}/reports`,
       title: 'Reports',
-      access: ['college-mentor, department-coordinator'],
+      access: ['college-mentor', 'company-mentor', 'department-coordinator'],
     },
   ];
 
@@ -103,7 +103,10 @@ const NavItems = ({
                   <Link
                     href={item.path}
                     className={`flex gap-2 w-full p-2 rounded-lg hover:text-primary ${
-                      pathname === item.path && 'text-primary lg:bg-secondary'
+                      (pathname === item.path ||
+                        (item.path !== `/dashboard/${role}` &&
+                          pathname.startsWith(item.path))) &&
+                      'text-primary lg:bg-secondary'
                     }`}
                   >
                     <DotIcon strokeWidth={6} />
