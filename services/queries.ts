@@ -158,6 +158,30 @@ export const useReportsWithStudents = ({
   return { data, ...rest };
 };
 
+export const useStudentReports = ({
+  studentId,
+  fromDate,
+  toDate,
+}: {
+  studentId: string;
+  fromDate: string;
+  toDate: string;
+}) => {
+  const shouldFetch = Boolean(studentId && fromDate && toDate);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_student_reports', {
+          student_id: studentId,
+          from_date: fromDate,
+          to_date: toDate,
+        })
+      : null
+  );
+
+  return { data, ...rest };
+};
+
 export const useInstituteProfile = ({ userId }: { userId: string | null }) => {
   const shouldFetch = Boolean(userId);
 

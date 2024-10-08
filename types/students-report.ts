@@ -1,11 +1,14 @@
-type StudentReport = {
-  report_date: string;
+type StudentsReport = {
+  student_uid: string;
   user_name: string;
-  college_mentor_uid: string;
-  college_mentor_name: string;
-  has_internship: boolean;
+  college_mentor_uid: string | null;
+  college_mentor_name: string | null;
+  current_internship_id: string | null;
+  internship_start_date: string | null;
+  internship_end_date: string | null;
   attendance_id: string | null;
   attendance_status: string | null;
+  attendance_date: string | null;
   in_time: string | null;
   out_time: string | null;
   work_from_home: boolean | null;
@@ -17,4 +20,4 @@ type StudentReport = {
   is_holiday: boolean;
 };
 
-export default StudentReport;
+export default StudentsReport;

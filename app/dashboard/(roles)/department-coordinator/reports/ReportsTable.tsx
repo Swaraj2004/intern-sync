@@ -11,7 +11,7 @@ import { useUser } from '@/context/UserContext';
 import { formatDateForInput } from '@/lib/utils';
 import { useApproveReport } from '@/services/mutations/reports';
 import { useReportsWithStudents } from '@/services/queries';
-import StudentReport from '@/types/student-report';
+import StudentsReport from '@/types/students-report';
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -74,7 +74,7 @@ const ReportsTable = () => {
   );
 
   const table = useReactTable({
-    data: tableData as StudentReport[],
+    data: tableData as StudentsReport[],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -110,7 +110,7 @@ const ReportsTable = () => {
         )
       )}
       {mounted && (
-        <TableContent<StudentReport>
+        <TableContent<StudentsReport>
           table={table}
           isLoading={isLoading}
           mounted={mounted}

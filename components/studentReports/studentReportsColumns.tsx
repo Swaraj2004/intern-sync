@@ -1,37 +1,24 @@
 import StudentReportApprovalAction from '@/components/reports/StudentReportApprovalAction';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
-import StudentsReport from '@/types/students-report';
+import StudentReport from '@/types/student-report';
 import { ColumnDef } from '@tanstack/react-table';
-import { CalendarRangeIcon, ChevronsUpDownIcon } from 'lucide-react';
-import Link from 'next/link';
 
 type ColumnProps = {
   approveReport: (
     actionType: 'approved' | 'revision',
     attendanceId: string,
-    studentId: string,
-    status: string
+    feedback: string
   ) => void;
 };
 
 const getStudentAttendanceColumns = ({
   approveReport,
-}: ColumnProps): ColumnDef<StudentsReport>[] => [
+}: ColumnProps): ColumnDef<StudentReport>[] => [
   {
-    accessorKey: 'user_name',
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="px-0 hover:bg-transparent"
-      >
-        Student Name
-        <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => <div>{row.original.user_name || '-'}</div>,
+    accessorKey: 'report_date',
+    header: () => <span className="text-nowrap">Report Date</span>,
+    cell: ({ row }) => <div>{row.original.report_date || '-'}</div>,
   },
   {
     id: 'in_time',
@@ -60,7 +47,7 @@ const getStudentAttendanceColumns = ({
     header: () => <span className="text-nowrap">Attendance Status</span>,
     cell: ({ row }) => {
       const status = row.original.attendance_status;
-      const noInternship = row.original.current_internship_id === null;
+      const noInternship = row.original.has_internship === false;
       const isHolidayForStudent = row.original.is_holiday;
       return (
         <>
@@ -108,7 +95,7 @@ const getStudentAttendanceColumns = ({
     header: () => <span className="text-nowrap">Report Status</span>,
     cell: ({ row }) => {
       const report_status = row.original.report_status;
-      const noInternship = row.original.current_internship_id === null;
+      const noInternship = row.original.has_internship === false;
       const isHolidayForStudent = row.original.is_holiday;
       return (
         <>
@@ -149,26 +136,15 @@ const getStudentAttendanceColumns = ({
   {
     id: 'actions',
     cell: ({ row }) => {
-      const noInternship = row.original.current_internship_id === null;
       const attendanceId = row.original.attendance_id;
-      const studentId = row.original.student_uid;
-
       return (
         <div className="flex gap-3 justify-end">
           {attendanceId && (
             <StudentReportApprovalAction
-              approveDailyReport={approveReport}
+              approveStudentReport={approveReport}
               studentReportData={row.original}
-              studentId={studentId}
               attendanceId={attendanceId}
             />
-          )}
-          {!noInternship && (
-            <Button size="icon-sm">
-              <Link href={`/dashboard/college-mentor/reports/${studentId}`}>
-                <CalendarRangeIcon className="h-5 w-5" />
-              </Link>
-            </Button>
           )}
         </div>
       );

@@ -693,6 +693,31 @@ export type Database = {
         }
         Returns: Json
       }
+      get_student_reports: {
+        Args: {
+          student_id: string
+          from_date: string
+          to_date: string
+        }
+        Returns: {
+          report_date: string
+          user_name: string
+          college_mentor_uid: string
+          college_mentor_name: string
+          has_internship: boolean
+          attendance_id: string
+          attendance_status: string
+          in_time: string
+          out_time: string
+          work_from_home: boolean
+          report_division: string
+          report_details: string
+          report_main_points: string
+          report_feedback: string
+          report_status: string
+          is_holiday: boolean
+        }[]
+      }
       get_students_attendance: {
         Args: {
           institute_id: string

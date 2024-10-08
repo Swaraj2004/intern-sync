@@ -1,10 +1,11 @@
-import StudentReportApprovalActions from '@/components/reports/StudentReportApprovalActions';
+import StudentReportApprovalAction from '@/components/reports/StudentReportApprovalAction';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
-import StudentReport from '@/types/student-report';
+import StudentsReport from '@/types/students-report';
 import { ColumnDef } from '@tanstack/react-table';
-import { ChevronsUpDownIcon } from 'lucide-react';
+import { CalendarRangeIcon, ChevronsUpDownIcon } from 'lucide-react';
+import Link from 'next/link';
 
 type ColumnProps = {
   approveReport: (
@@ -17,7 +18,7 @@ type ColumnProps = {
 
 const getStudentAttendanceColumns = ({
   approveReport,
-}: ColumnProps): ColumnDef<StudentReport>[] => [
+}: ColumnProps): ColumnDef<StudentsReport>[] => [
   {
     accessorKey: 'user_name',
     header: ({ column }) => (
@@ -156,17 +157,30 @@ const getStudentAttendanceColumns = ({
   {
     id: 'actions',
     cell: ({ row }) => {
+      const noInternship = row.original.current_internship_id === null;
       const attendanceId = row.original.attendance_id;
       const studentId = row.original.student_uid;
+
       return (
-        attendanceId && (
-          <StudentReportApprovalActions
-            approveReport={approveReport}
-            studentReportData={row.original}
-            studentId={studentId}
-            attendanceId={attendanceId}
-          />
-        )
+        <div className="flex gap-3 justify-end">
+          {attendanceId && (
+            <StudentReportApprovalAction
+              approveDailyReport={approveReport}
+              studentReportData={row.original}
+              studentId={studentId}
+              attendanceId={attendanceId}
+            />
+          )}
+          {!noInternship && (
+            <Button size="icon-sm">
+              <Link
+                href={`/dashboard/department-coordinator/reports/${studentId}`}
+              >
+                <CalendarRangeIcon className="h-5 w-5" />
+              </Link>
+            </Button>
+          )}
+        </div>
       );
     },
   },

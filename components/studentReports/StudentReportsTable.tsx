@@ -1,30 +1,28 @@
 'use client';
 
-import getStudentReportsColumns from '@/app/dashboard/(roles)/college-mentor/reports/studentReportsColumns';
+import getStudentReportsColumns from '@/components/studentReports/studentReportsColumns';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
-import TableSearch from '@/components/ui/TableSearch';
-import { useReportsDate } from '@/context/ReportsDateContext';
-import { useUser } from '@/context/UserContext';
+import { useReportsDateRange } from '@/context/ReportsDateRangeContext';
 import { formatDateForInput } from '@/lib/utils';
-import { useApproveReport } from '@/services/mutations/reports';
-import { useReportsWithStudents } from '@/services/queries';
-import StudentsReport from '@/types/students-report';
+import { useApproveStudentReport } from '@/services/mutations/reports';
+import { useStudentReports } from '@/services/queries';
+import StudentReport from '@/types/student-report';
 import {
   getCoreRowModel,
-  getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 const ReportsTable = () => {
-  const { user, instituteId } = useUser();
-  const { reportsDate } = useReportsDate();
+  const params = useParams<{ uid: string }>();
+  const { reportsDateRange } = useReportsDateRange();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -33,18 +31,19 @@ const ReportsTable = () => {
     setMounted(true);
   }, []);
 
-  const dateString: string = formatDateForInput(reportsDate);
+  const fromDateString: string = formatDateForInput(reportsDateRange.from);
+  const toDateString: string = formatDateForInput(reportsDateRange.to);
 
-  const { data: studentsReports, isLoading } = useReportsWithStudents({
-    instituteId: instituteId,
-    collegeMentorId: user?.uid,
-    reportDate: dateString,
+  const { data: studentReports, isLoading } = useStudentReports({
+    studentId: params.uid,
+    fromDate: fromDateString,
+    toDate: toDateString,
   });
 
-  const { approveReport } = useApproveReport({
-    instituteId: instituteId!,
-    collegeMentorId: user?.uid,
-    reportDate: dateString,
+  const { approveReport } = useApproveStudentReport({
+    studentId: params.uid,
+    fromDate: fromDateString,
+    toDate: toDateString,
   });
 
   const studentReportsColumns = useMemo(
@@ -56,8 +55,8 @@ const ReportsTable = () => {
   );
 
   const tableData = useMemo(
-    () => (isLoading ? Array(10).fill({}) : studentsReports),
-    [isLoading, studentsReports]
+    () => (isLoading ? Array(10).fill({}) : studentReports),
+    [isLoading, studentReports]
   );
 
   const tableColumns = useMemo(
@@ -74,10 +73,9 @@ const ReportsTable = () => {
   );
 
   const table = useReactTable({
-    data: tableData as StudentsReport[],
+    data: tableData as StudentReport[],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
@@ -98,27 +96,25 @@ const ReportsTable = () => {
 
   return (
     <>
-      {isLoading ? (
+      {!studentReports ? (
         <Skeleton className="h-10 max-w-xs rounded-md" />
       ) : (
         mounted && (
-          <TableSearch
-            table={table}
-            placeholder="Search Student"
-            column="user_name"
-          />
+          <div className="font-medium text-xl">
+            {studentReports[0].user_name}
+          </div>
         )
       )}
       {mounted && (
-        <TableContent<StudentsReport>
+        <TableContent<StudentReport>
           table={table}
           isLoading={isLoading}
           mounted={mounted}
-          tableData={studentsReports}
+          tableData={studentReports}
           tableColumns={tableColumns}
         />
       )}
-      {studentsReports && <TablePagination table={table} />}
+      {studentReports && <TablePagination table={table} />}
     </>
   );
 };
