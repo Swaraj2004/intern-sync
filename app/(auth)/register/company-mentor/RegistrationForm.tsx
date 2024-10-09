@@ -98,6 +98,18 @@ const RegistrationForm = () => {
       return;
     }
 
+    const { error: companyMentorError } = await supabase
+      .from('company_mentors')
+      .insert({
+        uid: usersData[0].id,
+      });
+
+    if (companyMentorError) {
+      toast.error(companyMentorError.message);
+      setLoading(false);
+      return;
+    }
+
     const { error: userRolesError } = await supabase.from('user_roles').insert({
       uid: usersData[0].id,
       role_id: roleData.id,
