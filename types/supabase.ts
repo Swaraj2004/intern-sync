@@ -734,6 +734,7 @@ export type Database = {
           company_longitude: number
           company_latitude: number
           company_radius: number
+          student_uid: string
           student_home_longitude: number
           student_home_latitude: number
           student_home_radius: number

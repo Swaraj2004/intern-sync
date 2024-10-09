@@ -1,28 +1,32 @@
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import React from 'react';
 
 type InputBoxProps = {
+  id: string;
+  type: string;
   label: string;
   noLabel?: boolean;
   placeholder?: string;
-  id: string;
-  type: string;
+  description?: React.ReactNode;
   form: any;
   className?: string;
 };
 
 const InputBox = ({
+  id,
+  type,
   label,
   noLabel,
   placeholder,
-  id,
-  type,
+  description,
   form,
   className,
 }: InputBoxProps) => {
@@ -48,6 +52,7 @@ const InputBox = ({
               {...field}
             />
           </FormControl>
+          {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
       )}

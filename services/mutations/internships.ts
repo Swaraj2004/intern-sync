@@ -1,4 +1,8 @@
-import { useInternships, useStudentInternships } from '@/services/queries';
+import {
+  useInternshipDetails,
+  useInternships,
+  useStudentInternships,
+} from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -264,6 +268,121 @@ export const useAcceptOrRejectInternship = ({
 
   return {
     acceptOrRejectInternship,
+    isLoading,
+  };
+};
+
+export const useAssignCompanyMentor = ({
+  companyMentorEmail,
+  internshipId,
+}: {
+  companyMentorEmail: string;
+  internshipId: string;
+}) => {
+  const { mutate } = useInternshipDetails({
+    internshipId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const assignCompanyMentor = async () => {
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, roles (name)')
+        .eq('email', companyMentorEmail)
+        .eq('roles.name', 'company-mentor')
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      const { error: assignCompanyMentorError } = await supabase
+        .from('internships')
+        .update({
+          company_mentor_id: data.id,
+        })
+        .eq('id', internshipId);
+
+      if (assignCompanyMentorError) {
+        throw new Error(assignCompanyMentorError.message);
+      }
+
+      toast.success('Company mentor assigned successfully.');
+    } catch (error) {
+      toast.error('Failed to assign company mentor.');
+    } finally {
+      mutate();
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    assignCompanyMentor,
+    isLoading,
+  };
+};
+
+export const useAddHomeCoordinates = ({
+  internshipId,
+  studentId,
+}: {
+  internshipId: string;
+  studentId: string;
+}) => {
+  const { mutate } = useInternshipDetails({
+    internshipId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const addHomeCoordinates = async (
+    latitude: number,
+    longitude: number,
+    radius: number
+  ) => {
+    setIsLoading(true);
+
+    mutate((currentData) => {
+      if (!currentData?.data) return undefined;
+
+      return {
+        ...currentData,
+        data: {
+          ...currentData.data,
+          student_home_latitude: latitude,
+          student_home_longitude: longitude,
+          student_home_radius: radius,
+        },
+      };
+    }, false);
+
+    try {
+      const { error } = await supabase
+        .from('students')
+        .update({
+          home_latitude: latitude,
+          home_longitude: longitude,
+          home_radius: radius,
+        })
+        .eq('uid', studentId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      toast.success('Home coordinates added successfully.');
+    } catch (error) {
+      toast.error('Failed to add home coordinates.');
+    } finally {
+      mutate();
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    addHomeCoordinates,
     isLoading,
   };
 };
