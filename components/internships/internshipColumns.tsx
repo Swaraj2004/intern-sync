@@ -4,14 +4,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import Internship from '@/types/internships';
 import { ColumnDef } from '@tanstack/react-table';
-import { ChevronsUpDownIcon } from 'lucide-react';
+import { ChevronsUpDownIcon, ListIcon } from 'lucide-react';
+import Link from 'next/link';
 
 type ColumnProps = {
   onApproveInternship: (internshipId: string, approved: boolean) => void;
+  dashboardRole: string;
 };
 
 const getInternshipColumns = ({
   onApproveInternship,
+  dashboardRole,
 }: ColumnProps): ColumnDef<Internship>[] => [
   {
     id: 'users.name',
@@ -37,7 +40,7 @@ const getInternshipColumns = ({
     id: 'mode',
     header: 'Mode',
     cell: ({ row }) => {
-      const mode = row.getValue('mode');
+      const mode = row.original.mode;
       return mode === 'hybrid' ? 'Hybrid' : 'Offline';
     },
   },
@@ -82,6 +85,20 @@ const getInternshipColumns = ({
         <Badge className="bg-green-500 hover:bg-green-600 dark:bg-green-300 dark:hover:bg-green-400">
           Approved
         </Badge>
+      );
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <Button size="icon-sm" asChild>
+          <Link
+            href={`/dashboard/${dashboardRole}/internships/${row.original.id}`}
+          >
+            <ListIcon className="h-5 w-5" />
+          </Link>
+        </Button>
       );
     },
   },

@@ -337,6 +337,27 @@ export const useStudentInternships = ({
   };
 };
 
+export const useInternshipDetails = ({
+  internshipId,
+}: {
+  internshipId: string | null;
+}) => {
+  const shouldFetch = Boolean(internshipId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_internship_details', {
+          internship_id: internshipId!,
+        })
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
+
 export const useInternshipAttendance = ({
   internshipId,
   attendanceDate,

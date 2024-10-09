@@ -164,7 +164,7 @@ const getStudentAttendanceColumns = ({
             />
           )}
           {!noInternship && (
-            <Button size="icon-sm">
+            <Button size="icon-sm" asChild>
               <Link href={`/dashboard/college-mentor/reports/${studentId}`}>
                 <CalendarRangeIcon className="h-5 w-5" />
               </Link>

@@ -103,21 +103,30 @@ export type Database = {
       company_mentors: {
         Row: {
           company_address: string | null
+          company_latitude: number | null
+          company_longitude: number | null
           company_name: string | null
+          company_radius: number | null
           created_at: string
           designation: string | null
           uid: string
         }
         Insert: {
           company_address?: string | null
+          company_latitude?: number | null
+          company_longitude?: number | null
           company_name?: string | null
+          company_radius?: number | null
           created_at?: string
           designation?: string | null
           uid: string
         }
         Update: {
           company_address?: string | null
+          company_latitude?: number | null
+          company_longitude?: number | null
           company_name?: string | null
+          company_radius?: number | null
           created_at?: string
           designation?: string | null
           uid?: string
@@ -471,6 +480,9 @@ export type Database = {
           department_id: string
           division: string | null
           dob: string | null
+          home_latitude: number | null
+          home_longitude: number | null
+          home_radius: number | null
           institute_id: string
           roll_no: string | null
           uid: string
@@ -485,6 +497,9 @@ export type Database = {
           department_id: string
           division?: string | null
           dob?: string | null
+          home_latitude?: number | null
+          home_longitude?: number | null
+          home_radius?: number | null
           institute_id: string
           roll_no?: string | null
           uid: string
@@ -499,6 +514,9 @@ export type Database = {
           department_id?: string
           division?: string | null
           dob?: string | null
+          home_latitude?: number | null
+          home_longitude?: number | null
+          home_radius?: number | null
           institute_id?: string
           roll_no?: string | null
           uid?: string
@@ -692,6 +710,35 @@ export type Database = {
           department_id?: string
         }
         Returns: Json
+      }
+      get_internship_details: {
+        Args: {
+          internship_id: string
+        }
+        Returns: {
+          role: string
+          field: string
+          mode: string
+          start_date: string
+          end_date: string
+          company_mentor_email: string
+          company_name: string
+          company_address: string
+          internship_letter_url: string
+          approved: boolean
+          college_mentor_uid: string
+          college_mentor_name: string
+          company_mentor_uid: string
+          company_mentor_name: string
+          company_mentor_designation: string
+          company_longitude: number
+          company_latitude: number
+          company_radius: number
+          student_home_longitude: number
+          student_home_latitude: number
+          student_home_radius: number
+          student_name: string
+        }[]
       }
       get_student_reports: {
         Args: {
