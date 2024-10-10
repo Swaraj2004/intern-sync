@@ -16,22 +16,29 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { convertUTCToISTWithAMPM } from '@/lib/utils';
 import Attendance from '@/types/attendance';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 const MarkAttendanceCard = ({
   attendance,
   internshipMode,
   isHolidayToday,
-  onCheckIn,
-  onCheckOut,
+  onMarkAttendance,
 }: {
   attendance: Attendance | null | undefined;
   internshipMode: string;
   isHolidayToday: boolean;
-  onCheckIn: (workFromHome?: boolean) => void;
-  onCheckOut: () => void;
+  onMarkAttendance: (
+    workFromHome: boolean,
+    latitude: number,
+    longitude: number,
+    isCheckOut: boolean
+  ) => void;
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [currentTime, setCurrentTime] = useState('');
-  const [workFromHome, setWorkFromHome] = useState(false);
+  const [workFromHome, setWorkFromHome] = useState(
+    attendance?.work_from_home || false
+  );
   const [canCheckOut, setCanCheckOut] = useState(true);
 
   const handleOpenDialog = () => {
@@ -49,6 +56,28 @@ const MarkAttendanceCard = ({
     const formattedIST = `${hours}:${formattedMinutes} ${ampm}`;
 
     setCurrentTime(formattedIST);
+  };
+
+  const handleMarkAttendance = (isCheckOut: boolean) => {
+    if (navigator.geolocation) {
+      setIsLoading(true);
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          onMarkAttendance(workFromHome, latitude, longitude, isCheckOut);
+          setIsLoading(false);
+        },
+        (error) => {
+          setIsLoading(false);
+          toast.error('Error getting location: ' + error.message);
+        }
+      );
+    } else {
+      setIsLoading(false);
+      toast.error('Geolocation is not supported by this browser.');
+    }
   };
 
   return (
@@ -98,7 +127,7 @@ const MarkAttendanceCard = ({
               {internshipMode === 'hybrid' && attendance?.in_time && (
                 <>
                   {attendance.work_from_home ? (
-                    <Badge>Work form home</Badge>
+                    <Badge>Work from home</Badge>
                   ) : (
                     <Badge>Work in office</Badge>
                   )}
@@ -109,7 +138,9 @@ const MarkAttendanceCard = ({
               attendance?.in_time === null) && (
               <AlertDialog onOpenChange={handleOpenDialog}>
                 <AlertDialogTrigger asChild>
-                  <Button>Check In</Button>
+                  <Button disabled={isLoading}>
+                    {isLoading ? 'Checking In...' : 'Check In'}
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-[calc(100vw-24px)] sm:max-w-lg">
                   <AlertDialogHeader>
@@ -123,7 +154,7 @@ const MarkAttendanceCard = ({
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        onCheckIn(workFromHome);
+                        handleMarkAttendance(false);
                         setCanCheckOut(false);
                         setTimeout(() => {
                           setCanCheckOut(true);
@@ -139,7 +170,9 @@ const MarkAttendanceCard = ({
             {attendance?.in_time && !attendance?.out_time && canCheckOut && (
               <AlertDialog onOpenChange={handleOpenDialog}>
                 <AlertDialogTrigger asChild>
-                  <Button>Check Out</Button>
+                  <Button disabled={isLoading}>
+                    {isLoading ? 'Checking Out...' : 'Check Out'}
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="max-w-[calc(100vw-24px)] sm:max-w-lg">
                   <AlertDialogHeader>
@@ -153,7 +186,7 @@ const MarkAttendanceCard = ({
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        onCheckOut();
+                        handleMarkAttendance(true);
                       }}
                     >
                       Confirm

@@ -22,10 +22,7 @@ import {
   getTotalPresentDays,
   getTotalWorkingDays,
 } from '@/services/api';
-import {
-  useMarkCheckInAndModeAttendance,
-  useMarkCheckOutAttendance,
-} from '@/services/mutations/attendance';
+import { useMarkAttendance } from '@/services/mutations/attendance';
 import { useAddDailyReport } from '@/services/mutations/reports';
 import {
   useDailyReport,
@@ -77,14 +74,7 @@ const StudentDashboardPage = () => {
     internshipId: currentInternship?.id || '',
   });
 
-  const { markCheckInAndModeAttendance } = useMarkCheckInAndModeAttendance({
-    attendanceId: attendanceData?.id || '',
-    studentId: user?.uid!,
-    internshipId: currentInternship?.id || '',
-    attendanceDate: currentISTDate.toISOString().split('T')[0],
-  });
-
-  const { markCheckOutAttendance } = useMarkCheckOutAttendance({
+  const { markAttendance } = useMarkAttendance({
     attendanceId: attendanceData?.id || '',
     studentId: user?.uid!,
     internshipId: currentInternship?.id || '',
@@ -189,8 +179,7 @@ const StudentDashboardPage = () => {
                 attendance={attendanceData}
                 internshipMode={currentInternship.mode}
                 isHolidayToday={isHoliday}
-                onCheckIn={markCheckInAndModeAttendance}
-                onCheckOut={markCheckOutAttendance}
+                onMarkAttendance={markAttendance}
               />
             )}
             <div className="flex-grow min-[690px]:flex-grow-0">

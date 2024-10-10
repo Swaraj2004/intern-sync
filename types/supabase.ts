@@ -836,6 +836,20 @@ export type Database = {
         }
         Returns: number
       }
+      mark_attendance: {
+        Args: {
+          attendance_id: string
+          student_id: string
+          internship_id: string
+          attendance_date: string
+          check_time: string
+          work_from_home: boolean
+          latitude: number
+          longitude: number
+          is_check_out: boolean
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

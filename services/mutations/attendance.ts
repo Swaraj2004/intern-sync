@@ -71,8 +71,8 @@ export const useUpsertAttendance = ({
           }
 
           toast.success('Attendance added successfully.');
-        } catch (error) {
-          if (typeof error === 'string') toast.error(error);
+        } catch (error: any) {
+          if (typeof error.message === 'string') toast.error(error.message);
           else toast.error('Failed to add attendance.');
         } finally {
           mutate();
@@ -107,8 +107,8 @@ export const useUpsertAttendance = ({
           }
 
           toast.success('Attendance updated successfully.');
-        } catch (error) {
-          if (typeof error === 'string') toast.error(error);
+        } catch (error: any) {
+          if (typeof error.message === 'string') toast.error(error.message);
           else toast.error('Failed to update attendance.');
         } finally {
           mutate();
@@ -125,7 +125,7 @@ export const useUpsertAttendance = ({
   };
 };
 
-export const useMarkCheckInAndModeAttendance = ({
+export const useMarkAttendance = ({
   attendanceId,
   studentId,
   internshipId,
@@ -143,8 +143,13 @@ export const useMarkCheckInAndModeAttendance = ({
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const markCheckInAndModeAttendance = useCallback(
-    async (workFromHome?: boolean) => {
+  const markAttendance = useCallback(
+    async (
+      workFromHome: boolean,
+      latitude: number,
+      longitude: number,
+      isCheckOut: boolean = false
+    ) => {
       setIsLoading(true);
 
       const utcDate = new Date();
@@ -152,59 +157,33 @@ export const useMarkCheckInAndModeAttendance = ({
       const utcMinutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
       const utcTime = `${utcHours}:${utcMinutes}:00`;
 
-      const uid = uuid4();
-
-      mutate((currentData) => {
-        if (!currentData?.data)
-          return {
-            data: {
-              id: uid,
-              date: attendanceDate,
-              in_time: utcTime,
-              out_time: null,
-              work_from_home: workFromHome || false,
-              status: null,
-              student_id: studentId,
-              internship_id: internshipId,
-            },
-            error: null,
-            count: null,
-            status: 200,
-            statusText: 'OK',
-          };
-
-        return {
-          ...currentData,
-          data: {
-            ...currentData.data,
-            in_time: utcTime,
-            work_from_home: workFromHome || false,
-          },
-        };
-      }, false);
+      const uid = attendanceId || uuid4();
 
       try {
-        const attId = attendanceId || uid;
-        const { error } = await supabase.from('attendance').upsert([
-          {
-            id: attId,
-            student_id: studentId,
-            internship_id: internshipId,
-            date: attendanceDate,
-            in_time: utcTime,
-            work_from_home: workFromHome,
-            status: 'pending',
-          },
-        ]);
+        const { error } = await supabase.rpc('mark_attendance', {
+          attendance_id: uid,
+          student_id: studentId,
+          internship_id: internshipId,
+          attendance_date: attendanceDate,
+          check_time: utcTime,
+          work_from_home: workFromHome,
+          latitude,
+          longitude,
+          is_check_out: isCheckOut,
+        });
 
         if (error) {
           throw new Error(error.message);
         }
 
-        toast.success('Check-in marked successfully.');
-      } catch (error) {
-        if (typeof error === 'string') toast.error(error);
-        else toast.error('Failed to mark check-in.');
+        toast.success(
+          isCheckOut
+            ? 'Check-out marked successfully.'
+            : 'Check-in marked successfully.'
+        );
+      } catch (error: any) {
+        if (typeof error.message === 'string') toast.error(error.message);
+        else toast.error('Failed to mark attendance.');
       } finally {
         mutate();
         setIsLoading(false);
@@ -214,78 +193,7 @@ export const useMarkCheckInAndModeAttendance = ({
   );
 
   return {
-    markCheckInAndModeAttendance,
-    isLoading,
-  };
-};
-
-export const useMarkCheckOutAttendance = ({
-  attendanceId,
-  studentId,
-  internshipId,
-  attendanceDate,
-}: {
-  attendanceId?: string;
-  studentId: string;
-  internshipId: string;
-  attendanceDate: string;
-}) => {
-  const { mutate } = useInternshipAttendance({
-    internshipId,
-    attendanceDate,
-  });
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const markCheckOutAttendance = useCallback(async () => {
-    setIsLoading(true);
-
-    const utcDate = new Date();
-    const utcHours = utcDate.getUTCHours().toString().padStart(2, '0');
-    const utcMinutes = utcDate.getUTCMinutes().toString().padStart(2, '0');
-    const utcTime = `${utcHours}:${utcMinutes}:00`;
-
-    mutate((currentData) => {
-      if (!currentData?.data) return undefined;
-
-      return {
-        ...currentData,
-        data: {
-          ...currentData.data,
-          out_time: utcTime,
-        },
-      };
-    }, false);
-
-    try {
-      const attId = attendanceId || uuid4();
-      const { error } = await supabase.from('attendance').upsert([
-        {
-          id: attId,
-          student_id: studentId,
-          internship_id: internshipId,
-          date: attendanceDate,
-          out_time: utcTime,
-          status: 'pending',
-        },
-      ]);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      toast.success('Check-out marked successfully.');
-    } catch (error) {
-      if (typeof error === 'string') toast.error(error);
-      else toast.error('Failed to mark check-out.');
-    } finally {
-      mutate();
-      setIsLoading(false);
-    }
-  }, [attendanceDate, mutate, studentId, internshipId, attendanceId]);
-
-  return {
-    markCheckOutAttendance,
+    markAttendance,
     isLoading,
   };
 };
