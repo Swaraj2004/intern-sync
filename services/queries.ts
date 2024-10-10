@@ -461,3 +461,27 @@ export const useInternships = ({
     ...rest,
   };
 };
+
+export const useStudentsOfCompanyMentor = ({
+  companyMentorId,
+}: {
+  companyMentorId: string | null;
+}) => {
+  const shouldFetch = Boolean(companyMentorId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('internships')
+          .select(
+            'students (uid, users (name, email, contact), departments (name), college_mentors (users (name)), institutes (name))'
+          )
+          .eq('company_mentor_id', companyMentorId!)
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
