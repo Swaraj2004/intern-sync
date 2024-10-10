@@ -56,7 +56,7 @@ export const useUpdateInstituteProfile = ({ userId }: { userId: string }) => {
             institute_email_domain: instituteEmailDomain,
             student_email_domain: studentEmailDomain,
           })
-          .eq('id', userId);
+          .eq('uid', userId);
 
         if (error) {
           throw error;
@@ -178,7 +178,7 @@ export const useUpdateCollegeMentorProfile = ({
       }, false);
 
       try {
-        const { data: updatedUser, error: userError } = await supabase
+        const { error: userError } = await supabase
           .from('users')
           .update({
             name: fullName,
@@ -254,7 +254,7 @@ export const useUpdateCompanyMentorProfile = ({
             company_name,
             company_address,
           })
-          .eq('id', userId);
+          .eq('uid', userId);
 
         if (error) {
           throw error;
@@ -339,7 +339,7 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
             roll_no: rollNumber,
             admission_id: admissionId,
           })
-          .eq('id', userId);
+          .eq('uid', userId);
 
         if (studentError) {
           throw studentError;
