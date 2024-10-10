@@ -31,4 +31,14 @@ export const companyMentorProfileFormSchema = z.object({
       required_error: 'Company address is required.',
     })
     .min(2, { message: 'Company address is required.' }),
+  companyCoordinates: z
+    .string({
+      required_error: 'Company coordinates are required.',
+    })
+    .min(2, 'Please enter valid coordinates.'),
+  companyRadius: z
+    .string({
+      required_error: 'Company radius is required.',
+    })
+    .min(2, 'Company radius is required.'),
 });

@@ -296,7 +296,7 @@ export const useCompanyMentorProfile = ({
       ? supabase
           .from('company_mentors')
           .select(
-            'uid, designation, company_name, company_address, users (name, email, contact)'
+            'uid, designation, company_name, company_address, company_latitude, company_longitude, company_radius, users (name, email, contact)'
           )
           .eq('uid', userId!)
           .single()

@@ -13,6 +13,13 @@ const ProfileCard = ({
     { label: 'Designation', value: profileData.designation || '-' },
     { label: 'Company Name', value: profileData.company_name || '-' },
     { label: 'Company Address', value: profileData.company_address || '-' },
+    {
+      label: 'Company Coordinates',
+      value: profileData.company_latitude
+        ? `${profileData.company_latitude}, ${profileData.company_longitude}`
+        : '-',
+    },
+    { label: 'Company Radius', value: profileData.company_radius || '-' },
   ];
 
   return (

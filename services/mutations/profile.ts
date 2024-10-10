@@ -224,7 +224,10 @@ export const useUpdateCompanyMentorProfile = ({
       contact: number,
       designation: string,
       company_name: string,
-      company_address: string
+      company_address: string,
+      company_latitude: number,
+      company_longitude: number,
+      company_radius: number
     ) => {
       setIsLoading(true);
 
@@ -237,6 +240,9 @@ export const useUpdateCompanyMentorProfile = ({
             designation,
             company_name,
             company_address,
+            company_latitude,
+            company_longitude,
+            company_radius,
             users: {
               name: fullName,
               email: currentData?.data?.users?.email ?? '',
@@ -253,6 +259,9 @@ export const useUpdateCompanyMentorProfile = ({
             designation,
             company_name,
             company_address,
+            company_latitude,
+            company_longitude,
+            company_radius,
           })
           .eq('uid', userId);
 
