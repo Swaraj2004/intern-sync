@@ -4,81 +4,77 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/context/UserContext';
 import { supabaseClient } from '@/utils/supabase/client';
+import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
 import { Building2, GraduationCap, Users } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import CountUp from 'react-countup';
 
 const supabase = supabaseClient();
 
-interface UserCounts {
-  departments: number | null;
-  collegeMentors: number | null;
-  students: number | null;
-}
-
 const InstituteCoordinatorDashboardPage = () => {
   const { user } = useUser();
-  const [counts, setCounts] = useState<UserCounts>({
-    departments: null,
-    collegeMentors: null,
-    students: null,
-  });
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-      const { count: departmentCount, error: departmentError } = await supabase
-        .from('departments')
-        .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.uid!);
-      if (departmentError) console.error(departmentError);
-
-      const { count: mentorCount, error: mentorError } = await supabase
-        .from('college_mentors')
-        .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.uid!);
-      if (mentorError) console.error(mentorError);
-
-      const { count: studentCount, error: studentError } = await supabase
-        .from('students')
-        .select('uid', { count: 'exact' })
-        .eq('institute_id', user?.uid!);
-      if (studentError) console.error(studentError);
-
-      setCounts({
-        departments: departmentCount || 0,
-        collegeMentors: mentorCount || 0,
-        students: studentCount || 0,
-      });
-    };
-
-    user && fetchCounts();
-  }, [user]);
+  const { count: departmentCount } = useQuery(
+    user
+      ? supabase
+          .from('departments')
+          .select('uid', { count: 'exact' })
+          .eq('institute_id', user?.uid!)
+      : null,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+    }
+  );
+  const { count: mentorCount } = useQuery(
+    user
+      ? supabase
+          .from('college_mentors')
+          .select('uid', { count: 'exact' })
+          .eq('institute_id', user?.uid!)
+      : null,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+    }
+  );
+  const { count: studentCount } = useQuery(
+    user
+      ? supabase
+          .from('students')
+          .select('uid', { count: 'exact' })
+          .eq('institute_id', user?.uid!)
+      : null,
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: false,
+    }
+  );
 
   const data = [
     {
       name: 'Active Departments',
-      total: counts.departments,
+      total: departmentCount,
       icon: Building2,
     },
     {
       name: 'Registered College Mentors',
-      total: counts.collegeMentors,
+      total: mentorCount,
       icon: GraduationCap,
     },
     {
       name: 'Total Students',
-      total: counts.students,
+      total: studentCount,
       icon: Users,
     },
   ];
 
   return (
-    <div className="@container">
+    <>
       <div className="pb-5">
-        <h1 className="text-2xl font-semibold flex">
-          <span>Hello,&nbsp;</span>
-          <span>{user ? user.name : <Skeleton className="h-8 w-40" />}</span>
-          <span>&nbsp;👋</span>
+        <h1 className="text-2xl font-semibold flex items-center">
+          Hello,&nbsp;
+          {user ? user.name : <Skeleton className="h-8 w-40 inline-block" />}
+          &nbsp;👋
         </h1>
         <p className="text-gray-700 dark:text-gray-300 py-2">
           Welcome to your institute dashboard.
@@ -86,10 +82,7 @@ const InstituteCoordinatorDashboardPage = () => {
       </div>
       <div className="grid gap-8 min-[700px]:grid-cols-3">
         {data.map((item, index) => (
-          <Card
-            key={index}
-            className="text-center grid min-[700px]::grid-rows-[70%_30%]"
-          >
+          <Card key={index} className="text-center grid">
             <CardHeader className="flex flex-col items-center space-y-3">
               <item.icon className="h-8 w-8 text-primary" />
               <CardTitle className="text-lg font-medium">{item.name}</CardTitle>
@@ -106,7 +99,7 @@ const InstituteCoordinatorDashboardPage = () => {
           </Card>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
