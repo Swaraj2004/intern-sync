@@ -1,6 +1,7 @@
 'use client';
 
 import getStudentAttendanceColumns from '@/app/dashboard/(roles)/college-mentor/attendance/studentAttendanceColumns';
+import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
@@ -98,7 +99,7 @@ const AttendanceTable = () => {
   }
 
   return (
-    <>
+    <Card className="p-5">
       {isLoading ? (
         <Skeleton className="h-10 max-w-xs rounded-md" />
       ) : (
@@ -120,7 +121,7 @@ const AttendanceTable = () => {
         />
       )}
       {studentsAttendance && <TablePagination table={table} />}
-    </>
+    </Card>
   );
 };
 

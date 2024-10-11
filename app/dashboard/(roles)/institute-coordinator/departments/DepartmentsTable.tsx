@@ -1,6 +1,7 @@
 'use client';
 
 import getDepartmentColumns from '@/app/dashboard/(roles)/institute-coordinator/departments/departmentColumns';
+import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
@@ -91,7 +92,7 @@ const DepartmentsTable = () => {
   }
 
   return (
-    <div className="p-4 bg-card rounded-lg">
+    <Card className="p-5">
       {isLoading ? (
         <Skeleton className="h-10 max-w-xs rounded-md" />
       ) : (
@@ -113,7 +114,7 @@ const DepartmentsTable = () => {
         />
       )}
       {departments && <TablePagination table={table} />}
-    </div>
+    </Card>
   );
 };
 

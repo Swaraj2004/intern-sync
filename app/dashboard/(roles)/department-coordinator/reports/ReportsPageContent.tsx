@@ -1,7 +1,6 @@
 'use client';
 
 import ReportsTable from '@/app/dashboard/(roles)/department-coordinator/reports/ReportsTable';
-import { Card } from '@/components/ui/card';
 import DatePicker from '@/components/ui/DatePicker';
 import { useReportsDate } from '@/context/ReportsDateContext';
 
@@ -16,9 +15,7 @@ const ReportsPageContent = () => {
           <DatePicker date={reportsDate} setDate={setReportsDate} />
         </span>
       </div>
-      <Card className="p-5">
-        <ReportsTable />
-      </Card>
+      <ReportsTable />
     </>
   );
 };

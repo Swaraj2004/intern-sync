@@ -1,6 +1,7 @@
 'use client';
 
 import getStudentReportsColumns from '@/app/dashboard/(roles)/department-coordinator/reports/studentReportsColumns';
+import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
@@ -97,7 +98,7 @@ const ReportsTable = () => {
   }
 
   return (
-    <>
+    <Card className="p-5">
       {isLoading ? (
         <Skeleton className="h-10 max-w-xs rounded-md" />
       ) : (
@@ -119,7 +120,7 @@ const ReportsTable = () => {
         />
       )}
       {studentsReports && <TablePagination table={table} />}
-    </>
+    </Card>
   );
 };
 

@@ -1,6 +1,7 @@
 'use client';
 
 import getCollegeMentorColumns from '@/app/dashboard/(roles)/department-coordinator/college-mentors/collegeMentorColumns';
+import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
@@ -98,7 +99,7 @@ const CollegeMentorsTable = () => {
   }
 
   return (
-    <div className="p-4 bg-card rounded-lg">
+    <Card className="p-5">
       {isLoading ? (
         <Skeleton className="h-10 max-w-xs rounded-md" />
       ) : (
@@ -120,7 +121,7 @@ const CollegeMentorsTable = () => {
         />
       )}
       {collegeMentors && <TablePagination table={table} />}
-    </div>
+    </Card>
   );
 };
 

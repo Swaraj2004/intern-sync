@@ -1,7 +1,6 @@
 'use client';
 
 import AttendanceTable from '@/app/dashboard/(roles)/department-coordinator/attendance/AttendanceTable';
-import { Card } from '@/components/ui/card';
 import DatePicker from '@/components/ui/DatePicker';
 import { useAttendanceDate } from '@/context/AttendanceDateContext';
 
@@ -16,9 +15,7 @@ const AttendancePageContent = () => {
           <DatePicker date={attendanceDate} setDate={setAttendanceDate} />
         </span>
       </div>
-      <Card className="p-4 bg-card rounded-lg w-full h-fit">
-        <AttendanceTable />
-      </Card>
+      <AttendanceTable />
     </>
   );
 };
