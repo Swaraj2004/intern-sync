@@ -18,7 +18,13 @@ const getStudentAttendanceColumns = ({
   {
     accessorKey: 'report_date',
     header: () => <span className="text-nowrap">Report Date</span>,
-    cell: ({ row }) => <div>{row.original.report_date || '-'}</div>,
+    cell: ({ row }) => (
+      <div>
+        {Intl.DateTimeFormat('en-IN').format(
+          new Date(row.original.report_date) || '-'
+        )}
+      </div>
+    ),
   },
   {
     id: 'in_time',
