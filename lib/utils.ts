@@ -44,14 +44,14 @@ export function formatDateForDisplay(inputDate: string): string {
   return `${month} ${day}, ${year}`;
 }
 
-export function convertUTCtoIST(utcDate: string): string {
-  const date = new Date(utcDate);
+export function getISTDate() {
+  const date = new Date();
 
   // IST is UTC+5:30
   const offsetIST = 5 * 60 + 30;
   const istDate = new Date(date.getTime() + offsetIST * 60 * 1000);
 
-  return istDate.toISOString();
+  return istDate;
 }
 
 export function convertUTCToISTWithAMPM(utcTimeString: string) {
@@ -83,4 +83,10 @@ export function convertUTCToISTWithAMPM(utcTimeString: string) {
   const formattedISTTime = `${istHours}:${formattedMinutes} ${ampm}`;
 
   return formattedISTTime; // Returns time in HH:mm AM/PM format
+}
+
+export function isSameOrBefore(date1: Date, date2: Date) {
+  const d1 = new Date(date1.setHours(0, 0, 0, 0)); // Reset time to 00:00:00
+  const d2 = new Date(date2.setHours(0, 0, 0, 0)); // Reset time to 00:00:00
+  return d1 <= d2;
 }

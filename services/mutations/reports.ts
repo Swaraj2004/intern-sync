@@ -1,4 +1,4 @@
-import { convertUTCtoIST } from '@/lib/utils';
+import { getISTDate } from '@/lib/utils';
 import {
   useDailyReport,
   useReportsWithStudents,
@@ -19,8 +19,7 @@ export const useAddDailyReport = ({
   studentId: string;
   internshipId: string;
 }) => {
-  const currentUTCDate = new Date().toISOString();
-  const currentISTDate = new Date(convertUTCtoIST(currentUTCDate));
+  const currentISTDate = getISTDate();
   const { mutate } = useDailyReport({
     attendanceId,
     reportDate: currentISTDate.toISOString().split('T')[0],

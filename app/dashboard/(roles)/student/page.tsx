@@ -16,7 +16,7 @@ import CurrentAttendanceChart from '@/components/ui/CurrentAttendanceChart';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/context/UserContext';
-import { convertUTCtoIST } from '@/lib/utils';
+import { getISTDate, isSameOrBefore } from '@/lib/utils';
 import {
   checkHolidayForStudent,
   getTotalPresentDays,
@@ -30,7 +30,7 @@ import {
   useStudentInternships,
   useStudentProfile,
 } from '@/services/queries';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const StudentDashboardPage = () => {
   const { user } = useUser();
@@ -38,10 +38,7 @@ const StudentDashboardPage = () => {
   const [totalPresentDays, setTotalPresentDays] = useState<number | null>(null);
   const [isHoliday, setIsHoliday] = useState<boolean | null>(null);
 
-  const currentUTCDate = new Date().toISOString();
-  const currentISTDate = useMemo(() => {
-    return new Date(convertUTCtoIST(currentUTCDate));
-  }, [currentUTCDate]);
+  const currentISTDate = getISTDate();
 
   const { data: studentData } = useStudentProfile({
     userId: user?.uid!,
@@ -53,8 +50,8 @@ const StudentDashboardPage = () => {
 
   const currentInternship = studentInternships?.find(
     (internship) =>
-      new Date(internship.start_date) <= new Date() &&
-      new Date(internship.end_date) >= new Date()
+      isSameOrBefore(new Date(internship.start_date), new Date()) &&
+      isSameOrBefore(new Date(), new Date(internship.end_date))
   );
 
   const { data: attendanceData, isLoading: isLoadingAttendance } =
@@ -85,6 +82,7 @@ const StudentDashboardPage = () => {
     if (currentInternship && studentData) {
       const fetchAttendanceData = async () => {
         const internshipEndDate = new Date(currentInternship.end_date);
+        internshipEndDate.setDate(internshipEndDate.getDate() + 1);
 
         const effectiveEndDate =
           currentISTDate < internshipEndDate
