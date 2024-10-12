@@ -17,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Textarea } from '@/components/ui/textarea';
 import StudentReport from '@/types/student-report';
 import StudentsReport from '@/types/students-report';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -24,7 +25,6 @@ import { ScrollTextIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Textarea } from '../ui/textarea';
 
 const formSchema = z.object({
   feedback: z.string().min(1, 'Feedback is required'),
@@ -133,13 +133,13 @@ const StudentReportApprovalAction = ({
                 {studentReportData.report_main_points}
               </dd>
               <dt className="text-sm font-medium mb-2">Feedback</dt>
-              <dd className="h-20 w-full rounded-md border-2 border-input bg-transparent px-3 py-2 mb-4 text-sm overflow-y-auto">
+              <dd className="h-20 w-full rounded-md border-2 border-input bg-transparent px-3 py-2 text-sm overflow-y-auto">
                 {studentReportData.report_feedback}
               </dd>
             </dl>
           )}
           {studentReportData.report_status === 'pending' && (
-            <div>
+            <div className="pt-2">
               <div className="text-sm font-medium mb-2">
                 Department / Division
               </div>

@@ -77,7 +77,12 @@ const NavItems = ({
     {
       path: `/dashboard/${role}/reports`,
       title: 'Reports',
-      access: ['college-mentor', 'company-mentor', 'department-coordinator'],
+      access: [
+        'college-mentor',
+        'company-mentor',
+        'department-coordinator',
+        'student',
+      ],
     },
   ];
 

@@ -311,3 +311,80 @@ export const useApproveStudentReport = ({
 
   return { approveReport, isLoading };
 };
+
+export const useUpdateStudentReport = ({
+  studentId,
+  fromDate,
+  toDate,
+}: {
+  studentId: string;
+  fromDate: string;
+  toDate: string;
+}) => {
+  const { mutate } = useStudentReports({
+    studentId,
+    fromDate,
+    toDate,
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateReport = useCallback(
+    async (
+      attendanceId: string,
+      division: string,
+      details: string,
+      main_points: string
+    ) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return undefined;
+
+        return {
+          ...currentData,
+          data: currentData.data.map((studentReport) => {
+            if (studentReport.attendance_id === attendanceId) {
+              return {
+                ...studentReport,
+                division,
+                details,
+                main_points,
+                status: 'pending',
+              };
+            }
+
+            return studentReport;
+          }),
+        };
+      }, false);
+
+      try {
+        const { error } = await supabase
+          .from('internship_reports')
+          .update({
+            division,
+            details,
+            main_points,
+            status: 'pending',
+          })
+          .eq('id', attendanceId);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        toast.success('Report updated successfully.');
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        else toast.error('Failed to update report.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate]
+  );
+
+  return { updateReport, isLoading };
+};

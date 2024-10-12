@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -8,13 +9,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { cn } from '@/lib/utils';
 import {
   flexRender,
-  Row,
   HeaderGroup,
   Table as ReactTable,
+  Row,
 } from '@tanstack/react-table';
-import { Skeleton } from '@/components/ui/skeleton';
 
 type TableContentProps<TData> = {
   table: ReactTable<TData>;
@@ -22,6 +23,7 @@ type TableContentProps<TData> = {
   mounted: boolean;
   tableData: TData[] | null | undefined;
   tableColumns: any[];
+  className?: string;
 };
 
 const TableContent = <TData,>({
@@ -30,9 +32,10 @@ const TableContent = <TData,>({
   mounted,
   tableData,
   tableColumns,
+  className,
 }: TableContentProps<TData>) => {
   return (
-    <div className="rounded-md border-2 overflow-auto my-4">
+    <div className={cn('rounded-md border-2 overflow-auto my-4', className)}>
       <Table className="text-sm">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup: HeaderGroup<TData>) => (

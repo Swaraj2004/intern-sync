@@ -1,14 +1,15 @@
 'use client';
 
-import getStudentReportsColumns from '@/components/studentReports/studentReportsColumns';
+import getStudentReportsColumns from '@/app/dashboard/(roles)/student/reports/studentReportsColumns';
 import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import { useReportsDateRange } from '@/context/ReportsDateRangeContext';
+import { useUser } from '@/context/UserContext';
 import { formatDateForInput } from '@/lib/utils';
-import { useApproveStudentReport } from '@/services/mutations/reports';
+import { useUpdateStudentReport } from '@/services/mutations/reports';
 import { useStudentReports } from '@/services/queries';
 import StudentReport from '@/types/student-report';
 import {
@@ -18,11 +19,10 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
-import { useParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 const ReportsTable = () => {
-  const params = useParams<{ uid: string }>();
+  const { user } = useUser();
   const { reportsDateRange } = useReportsDateRange();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -36,13 +36,13 @@ const ReportsTable = () => {
   const toDateString: string = formatDateForInput(reportsDateRange.to);
 
   const { data: studentReports, isLoading } = useStudentReports({
-    studentId: params.uid,
+    studentId: user?.uid!,
     fromDate: fromDateString,
     toDate: toDateString,
   });
 
-  const { approveReport } = useApproveStudentReport({
-    studentId: params.uid,
+  const { updateReport } = useUpdateStudentReport({
+    studentId: user?.uid!,
     fromDate: fromDateString,
     toDate: toDateString,
   });
@@ -50,9 +50,9 @@ const ReportsTable = () => {
   const studentReportsColumns = useMemo(
     () =>
       getStudentReportsColumns({
-        approveReport: approveReport,
+        updateReport: updateReport,
       }),
-    [approveReport]
+    [updateReport]
   );
 
   const tableData = useMemo(
@@ -97,15 +97,6 @@ const ReportsTable = () => {
 
   return (
     <Card className="p-5">
-      {!studentReports ? (
-        <Skeleton className="h-10 max-w-xs rounded-md" />
-      ) : (
-        mounted && (
-          <div className="font-medium text-xl">
-            {studentReports[0].user_name}
-          </div>
-        )
-      )}
       {mounted && (
         <TableContent<StudentReport>
           table={table}
@@ -113,6 +104,7 @@ const ReportsTable = () => {
           mounted={mounted}
           tableData={studentReports}
           tableColumns={tableColumns}
+          className="mt-0"
         />
       )}
       {studentReports && <TablePagination table={table} />}

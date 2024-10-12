@@ -3,7 +3,6 @@
 import StudentReportsTable from '@/components/studentReports/StudentReportsTable';
 import { Button } from '@/components/ui/button';
 import { CalendarDatePicker } from '@/components/ui/calendar-date-picker';
-import { Card } from '@/components/ui/card';
 import { useReportsDateRange } from '@/context/ReportsDateRangeContext';
 import useMediaQuery from '@/hooks/useMediaQuery';
 import { ArrowLeftIcon } from 'lucide-react';
@@ -30,9 +29,7 @@ const ReportsPageContent = () => {
           </Button>
         </span>
       </div>
-      <Card className="p-5">
-        <StudentReportsTable />
-      </Card>
+      <StudentReportsTable />
     </>
   );
 };
