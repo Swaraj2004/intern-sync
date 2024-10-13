@@ -1,5 +1,6 @@
 import {
   useAttendanceWithStudents,
+  useAttendanceWithStudentsForCompanyMentor,
   useInternshipAttendance,
 } from '@/services/queries';
 import { supabaseClient } from '@/utils/supabase/client';
@@ -121,6 +122,69 @@ export const useUpsertAttendance = ({
 
   return {
     upsertAttendance,
+    isLoading,
+  };
+};
+
+export const useApproveAttendance = ({
+  companyMentorId,
+  attendanceDate,
+}: {
+  companyMentorId: string;
+  attendanceDate: string;
+}) => {
+  const { mutate } = useAttendanceWithStudentsForCompanyMentor({
+    companyMentorId,
+    attendanceDate,
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const approveAttendance = useCallback(
+    async (attendanceId: string, attendanceStatus: string) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return undefined;
+
+        return {
+          ...currentData,
+          data: currentData.data.map((student) =>
+            student.attendance_id === attendanceId
+              ? {
+                  ...student,
+                  attendance_status: attendanceStatus,
+                }
+              : student
+          ),
+        };
+      }, false);
+
+      try {
+        const { error } = await supabase
+          .from('attendance')
+          .update({ status: attendanceStatus })
+          .eq('id', attendanceId)
+          .single();
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        toast.success('Attendance approved successfully.');
+      } catch (error: any) {
+        if (typeof error.message === 'string') toast.error(error.message);
+        else toast.error('Failed to approve attendance.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate]
+  );
+
+  return {
+    approveAttendance,
     isLoading,
   };
 };

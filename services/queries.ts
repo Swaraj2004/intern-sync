@@ -131,6 +131,27 @@ export const useAttendanceWithStudents = ({
   return { data, ...rest };
 };
 
+export const useAttendanceWithStudentsForCompanyMentor = ({
+  companyMentorId,
+  attendanceDate,
+}: {
+  companyMentorId: string | null;
+  attendanceDate?: string;
+}) => {
+  const shouldFetch = Boolean(companyMentorId && attendanceDate);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_students_attendance_for_company_mentor', {
+          company_mentor_id: companyMentorId!,
+          attendance_date: attendanceDate!,
+        })
+      : null
+  );
+
+  return { data, ...rest };
+};
+
 export const useReportsWithStudents = ({
   instituteId,
   reportDate,

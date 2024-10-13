@@ -244,6 +244,7 @@ export type Database = {
       }
       internship_reports: {
         Row: {
+          created_at: string
           details: string
           division: string
           feedback: string | null
@@ -254,6 +255,7 @@ export type Database = {
           student_id: string
         }
         Insert: {
+          created_at?: string
           details: string
           division: string
           feedback?: string | null
@@ -264,6 +266,7 @@ export type Database = {
           student_id: string
         }
         Update: {
+          created_at?: string
           details?: string
           division?: string
           feedback?: string | null
@@ -778,6 +781,29 @@ export type Database = {
           user_name: string
           college_mentor_uid: string
           college_mentor_name: string
+          department_uid: string
+          department_name: string
+          current_internship_id: string
+          internship_start_date: string
+          internship_end_date: string
+          attendance_id: string
+          attendance_status: string
+          in_time: string
+          out_time: string
+          work_from_home: boolean
+          is_holiday: boolean
+        }[]
+      }
+      get_students_attendance_for_company_mentor: {
+        Args: {
+          company_mentor_id: string
+          attendance_date: string
+        }
+        Returns: {
+          student_uid: string
+          user_name: string
+          company_mentor_uid: string
+          company_mentor_name: string
           department_uid: string
           department_name: string
           current_internship_id: string
