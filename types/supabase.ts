@@ -846,6 +846,33 @@ export type Database = {
           is_holiday: boolean
         }[]
       }
+      get_students_reports_for_company_mentor: {
+        Args: {
+          company_mentor_id: string
+          report_date: string
+        }
+        Returns: {
+          student_uid: string
+          user_name: string
+          company_mentor_uid: string
+          company_mentor_name: string
+          current_internship_id: string
+          internship_start_date: string
+          internship_end_date: string
+          attendance_id: string
+          attendance_status: string
+          attendance_date: string
+          in_time: string
+          out_time: string
+          work_from_home: boolean
+          report_division: string
+          report_details: string
+          report_main_points: string
+          report_feedback: string
+          report_status: string
+          is_holiday: boolean
+        }[]
+      }
       get_total_present_days: {
         Args: {
           student_id: string
@@ -966,4 +993,19 @@ export type Enums<
   ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
     ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof PublicSchema["CompositeTypes"]
+    | { schema: keyof Database },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof Database
+  }
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

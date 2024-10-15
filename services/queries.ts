@@ -179,6 +179,27 @@ export const useReportsWithStudents = ({
   return { data, ...rest };
 };
 
+export const useReportsWithStudentsForCompanyMentor = ({
+  companyMentorId,
+  reportDate,
+}: {
+  companyMentorId: string | null;
+  reportDate?: string;
+}) => {
+  const shouldFetch = Boolean(companyMentorId && reportDate);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_students_reports_for_company_mentor', {
+          company_mentor_id: companyMentorId!,
+          report_date: reportDate!,
+        })
+      : null
+  );
+
+  return { data, ...rest };
+};
+
 export const useStudentReports = ({
   studentId,
   fromDate,

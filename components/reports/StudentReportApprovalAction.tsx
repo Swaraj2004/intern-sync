@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import StudentReport from '@/types/student-report';
+import StudentReportForCompanyMentor from '@/types/student-report-company-mentor';
 import StudentsReport from '@/types/students-report';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ScrollTextIcon } from 'lucide-react';
@@ -42,7 +43,10 @@ type StudentReportApprovalActionProps = {
     attendanceId: string,
     feedback: string
   ) => void;
-  studentReportData: StudentsReport | StudentReport;
+  studentReportData:
+    | StudentsReport
+    | StudentReport
+    | StudentReportForCompanyMentor;
   studentId?: string;
   attendanceId: string;
 };

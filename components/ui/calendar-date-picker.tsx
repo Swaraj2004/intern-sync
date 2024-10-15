@@ -104,7 +104,7 @@ export const CalendarDatePicker = React.forwardRef<
   ) => {
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [selectedRange, setSelectedRange] = React.useState<string | null>(
-      'This Week'
+      'Last 7 Days'
     );
     const [monthFrom, setMonthFrom] = React.useState<Date | undefined>(
       date?.from
