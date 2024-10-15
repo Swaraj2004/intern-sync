@@ -1,6 +1,8 @@
 'use client';
 
+import generateReportsExcel from '@/app/dashboard/(roles)/student/reports/generateReportsExcel';
 import getStudentReportsColumns from '@/app/dashboard/(roles)/student/reports/studentReportsColumns';
+import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -19,6 +21,7 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table';
+import { DownloadIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 const ReportsTable = () => {
@@ -97,6 +100,12 @@ const ReportsTable = () => {
 
   return (
     <Card className="p-5">
+      {studentReports && (
+        <Button size="sm" onClick={() => generateReportsExcel(studentReports)}>
+          <DownloadIcon className="w-4 h-4 mr-2" />
+          <span className="text-sm">Download XLSX</span>
+        </Button>
+      )}
       {mounted && (
         <TableContent<StudentReport>
           table={table}
@@ -104,7 +113,6 @@ const ReportsTable = () => {
           mounted={mounted}
           tableData={studentReports}
           tableColumns={tableColumns}
-          className="mt-0"
         />
       )}
       {studentReports && <TablePagination table={table} />}
