@@ -16,9 +16,10 @@ const ProfilePage = () => {
   const [showProfileCard, setShowProfileCard] = useState(true);
   const [showUpdateProfile, setShowUpdateProfile] = useState(false);
 
-  const { data: profileData } = useCompanyMentorProfile({
-    userId: user?.uid!,
-  });
+  const { data: profileData, isLoading: isLoadingProfile } =
+    useCompanyMentorProfile({
+      userId: user?.uid!,
+    });
 
   const { updateCompanyMentorProfile } = useUpdateCompanyMentorProfile({
     userId: user?.uid!,
@@ -40,7 +41,7 @@ const ProfilePage = () => {
           </Button>
         )}
       </div>
-      {!profileData && (
+      {isLoadingProfile && (
         <Card className="flex justify-center align items-center h-80">
           <Loader />
         </Card>
