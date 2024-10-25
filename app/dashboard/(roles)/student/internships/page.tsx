@@ -1,6 +1,7 @@
 'use client';
 
 import AddInternshipDialog from '@/app/dashboard/(roles)/student/internships/AddInternshipDialog';
+import GenerateInternshipApprovalLetter from '@/components/internships/GenerateInternshipApprovalLetter';
 import InternshipCard from '@/app/dashboard/(roles)/student/internships/InternshipCard';
 import { Loader } from '@/components/ui/Loader';
 import { useUser } from '@/context/UserContext';
@@ -26,7 +27,9 @@ const InternshipsPage = () => {
     user?.uid
       ? supabase
           .from('students')
-          .select('college_mentor_id, department_id')
+          .select(
+            'college_mentor_id, department_id, institutes (internship_approval_format_url)'
+          )
           .eq('uid', user.uid)
           .single()
       : null
@@ -59,18 +62,30 @@ const InternshipsPage = () => {
     <>
       <div className="flex justify-between items-center pb-5 h-14">
         <h1 className="font-semibold text-2xl">Internships</h1>
-        {showAddButton &&
-          profileData?.college_mentor_id &&
-          instituteId &&
-          internships && (
-            <AddInternshipDialog
-              studentId={user?.uid!}
-              collegeMentorId={profileData.college_mentor_id}
-              departmentId={profileData.department_id}
-              instituteId={instituteId}
-              internships={internships}
-            />
-          )}
+        <div className="flex flex-wrap gap-2">
+          {showAddButton &&
+            profileData?.college_mentor_id &&
+            instituteId &&
+            internships && (
+              <AddInternshipDialog
+                studentId={user?.uid!}
+                collegeMentorId={profileData.college_mentor_id}
+                departmentId={profileData.department_id}
+                instituteId={instituteId}
+                internships={internships}
+              />
+            )}
+          {internships &&
+            internships.length > 0 &&
+            profileData?.institutes &&
+            profileData.institutes.internship_approval_format_url && (
+              <GenerateInternshipApprovalLetter
+                approvalFormatUrl={
+                  profileData.institutes.internship_approval_format_url
+                }
+              />
+            )}
+        </div>
       </div>
       {(!mounted || isLoadingInternships) && (
         <div className="h-60 flex justify-center items-center">
