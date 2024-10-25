@@ -5,7 +5,7 @@ import Logo from '@/components/ui/Logo';
 import NavItems from '@/components/ui/NavItems';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/context/UserContext';
-import { convertToTitleCase } from '@/lib/utils';
+import { convertDashCaseToTitleCase } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -44,7 +44,7 @@ const DesktopNav = () => {
             <>
               <div className="text-lg font-bold truncate">{user?.name}</div>
               <div className="text-sm text-muted-foreground">
-                {user && convertToTitleCase(role)}
+                {user && convertDashCaseToTitleCase(role)}
               </div>
             </>
           )}

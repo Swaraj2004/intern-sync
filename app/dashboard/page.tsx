@@ -2,7 +2,7 @@ import { getRoles } from '@/app/helpers';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import MainNav from '@/components/ui/MainNav';
-import { convertToTitleCase } from '@/lib/utils';
+import { convertDashCaseToTitleCase } from '@/lib/utils';
 import { supabaseServer } from '@/utils/supabase/server';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -48,7 +48,7 @@ const DashboardRolesPage = async () => {
     return {
       id: role_id,
       path: `/dashboard/${roleMap[role_id]}`,
-      title: convertToTitleCase(roleMap[role_id]),
+      title: convertDashCaseToTitleCase(roleMap[role_id]),
     };
   });
 

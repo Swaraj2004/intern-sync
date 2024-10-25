@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useUser } from '@/context/UserContext';
-import { convertToTitleCase } from '@/lib/utils';
+import { convertDashCaseToTitleCase } from '@/lib/utils';
 import { MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -69,7 +69,7 @@ const MobileNav = () => {
           <div className="text-right">
             <div className="truncate font-medium">{user?.name}</div>
             <div className="text-sm text-muted-foreground">
-              {user && convertToTitleCase(role)}
+              {user && convertDashCaseToTitleCase(role)}
             </div>
           </div>
         )}
