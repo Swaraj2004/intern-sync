@@ -10,6 +10,7 @@ import { useUser } from '@/context/UserContext';
 import { useUpdateInstituteProfile } from '@/services/mutations/profile';
 import { useInstituteProfile } from '@/services/queries';
 import { useState } from 'react';
+import UploadInternshipApprovalFormat from '@/app/dashboard/(roles)/institute-coordinator/profile/UploadInternshipApprovalFormat';
 
 const ProfilePage = () => {
   const { user } = useUser();
@@ -55,6 +56,13 @@ const ProfilePage = () => {
           setShowUpdateProfile={setShowUpdateProfile}
           updateInstituteProfile={updateInstituteProfile}
           profileData={profileData}
+        />
+      )}
+      {profileData && (
+        <UploadInternshipApprovalFormat
+          internshipApprovalFormatUrl={
+            profileData.internship_approval_format_url
+          }
         />
       )}
       <ChangePassword />

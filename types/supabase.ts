@@ -210,6 +210,7 @@ export type Database = {
           aicte_id: string
           created_at: string
           institute_email_domain: string | null
+          internship_approval_format_url: string | null
           name: string
           student_email_domain: string | null
           uid: string
@@ -219,6 +220,7 @@ export type Database = {
           aicte_id: string
           created_at?: string
           institute_email_domain?: string | null
+          internship_approval_format_url?: string | null
           name: string
           student_email_domain?: string | null
           uid: string
@@ -228,6 +230,7 @@ export type Database = {
           aicte_id?: string
           created_at?: string
           institute_email_domain?: string | null
+          internship_approval_format_url?: string | null
           name?: string
           student_email_domain?: string | null
           uid?: string

@@ -232,7 +232,7 @@ export const useInstituteProfile = ({ userId }: { userId: string | null }) => {
       ? supabase
           .from('institutes')
           .select(
-            'uid, name, address, institute_email_domain, student_email_domain, users (name, email, contact)'
+            'uid, name, address, institute_email_domain, student_email_domain, internship_approval_format_url, users (name, email, contact)'
           )
           .eq('uid', userId!)
           .single()

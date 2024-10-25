@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { PasswordInput } from './password-input';
+import { PasswordInput } from '@/components/ui/password-input';
 
 const supabase = supabaseClient();
 

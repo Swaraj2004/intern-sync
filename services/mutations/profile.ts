@@ -86,8 +86,48 @@ export const useUpdateInstituteProfile = ({ userId }: { userId: string }) => {
     [mutate, userId]
   );
 
+  const updateInternshipLetterFormatUrl = useCallback(
+    async (letter_url: string) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return currentData;
+        return {
+          ...currentData,
+          data: {
+            ...currentData.data,
+            internship_approval_format_url: letter_url,
+          },
+        };
+      }, false);
+
+      try {
+        const { error } = await supabase
+          .from('institutes')
+          .update({
+            internship_approval_format_url: letter_url,
+          })
+          .eq('uid', userId);
+
+        if (error) {
+          throw error;
+        }
+
+        toast.success('Internship letter format uploaded successfully.');
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        toast.error('Failed to upload format.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, userId]
+  );
+
   return {
     updateInstituteProfile,
+    updateInternshipLetterFormatUrl,
     isLoading,
   };
 };
