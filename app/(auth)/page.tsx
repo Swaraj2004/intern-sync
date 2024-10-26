@@ -25,9 +25,9 @@ const features = [
     description: 'Administrators can assign college mentors to students.',
   },
   {
-    title: 'Efficient Management',
+    title: 'Attendance Tracking',
     description:
-      'Our platform simplifies the management of students in internships.',
+      'Interns can quickly mark attendance, and mentors can easily approve it.',
   },
 ];
 
@@ -37,9 +37,14 @@ const HomePage = () => {
       <div className="py-14 lg:py-0 snap-y snap-mandatory overflow-y-scroll lg:h-screen">
         <div className="px-4 lg:container py-14 md:py-20 lg:py-28 grid md:grid-cols-2 gap-8 snap-start lg:h-screen">
           <div className="flex flex-col justify-center text-center md:text-left">
-            <h1 className="text-4xl lg:text-6xl xl:text-7xl leading-snug text-primary font-semibold pb-6">
-              InternSync: Internship Activity Monitoring Portal
-            </h1>
+            <div>
+              <h1 className="text-4xl lg:text-6xl xl:text-7xl leading-snug text-primary font-semibold pb-5">
+                InternSync
+              </h1>
+              <h1 className="text-3xl lg:text-3xl xl:text-4xl leading-snug text-gray-700 dark:text-slate-100 font-semibold pb-6">
+                Internship Activity Monitoring Portal
+              </h1>
+            </div>
             <p className="text-lg lg:text-2xl text-slate-800 dark:text-slate-300">
               Your One-Stop Solution for Seamless Communication and Progress
               Tracking of Students in Internships.
@@ -71,14 +76,16 @@ const HomePage = () => {
               About Our Platform
             </h1>
             <p className="text-lg lg:text-xl text-slate-800 dark:text-slate-300">
-              Our mission is to revolutionize the way internships are managed
-              during the eighth semester. By providing a streamlined process for
-              submitting and reviewing daily reports, our platform keeps
-              everyone informed and aligned. We simplify the management of
-              students by allowing administrators to efficiently register
-              students, assign college mentors, and track intern progress. We
-              ensure accuracy and completeness in weekly report analysis,
-              reducing manual effort and enhancing productivity.
+              Internsync transforms internship management in the eighth semester
+              with an intuitive platform tailored for institutions, mentors, and
+              interns. Eliminating spreadsheets and scattered workflows, it
+              centralizes daily attendance and reports, performance tracking,
+              and feedback. Internsync empowers interns to monitor their
+              progress while enabling mentors to guide effectively through
+              dynamic dashboards and tables. With mobile access and key modules
+              like Attendance, Report Management, and Mentor Assignments,
+              Internsync creates an organized, efficient, and impactful
+              internship experience for all.
             </p>
           </div>
         </div>
@@ -110,36 +117,38 @@ const HomePage = () => {
             <div className="flex flex-col gap-4">
               <div>
                 <h2 className="text-xl text-primary/90 font-medium pb-1">
-                  Intern Submission
+                  Submission by Interns
                 </h2>
                 <p className="sm:text-lg">
-                  Interns submit daily reports detailing their work.
+                  Interns mark attendance and submit daily reports detailing
+                  their work.
                 </p>
               </div>
               <div>
                 <h2 className="text-xl text-primary/90 font-medium pb-1">
-                  Company Mentor Review
+                  Mentor Approval
                 </h2>
                 <p className="sm:text-lg">
-                  Company mentors review and approve these reports.
+                  Either a college mentor or a company mentor can approve
+                  attendance and reports.
                 </p>
               </div>
               <div>
                 <h2 className="text-xl text-primary/90 font-medium pb-1">
-                  College Mentor Feedback
+                  Mentor Feedback
                 </h2>
                 <p className="sm:text-lg">
-                  College mentors provide weekly feedback based on the approved
-                  reports.
+                  Feedback is provided for each report, with an option for
+                  revisions if necessary.
                 </p>
               </div>
               <div>
                 <h2 className="text-xl text-primary/90 font-medium pb-1">
-                  Analytics Dashboard
+                  Performance Overview
                 </h2>
                 <p className="sm:text-lg">
-                  College mentors get a comprehensive overview of intern
-                  performance through analytics dashboards.
+                  Mentors can view a detailed overview of intern performance
+                  presented in organized tables.
                 </p>
               </div>
             </div>
