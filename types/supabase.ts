@@ -683,6 +683,13 @@ export type Database = {
         }
         Returns: undefined
       }
+      change_college_mentor: {
+        Args: {
+          student_id: string
+          new_college_mentor_id: string
+        }
+        Returns: undefined
+      }
       check_holiday_for_student: {
         Args: {
           student_id: string

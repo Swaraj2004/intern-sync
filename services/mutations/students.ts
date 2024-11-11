@@ -214,10 +214,10 @@ export const useChangeCollegeMentor = ({
       }, false);
 
       try {
-        const { error } = await supabase
-          .from('students')
-          .update({ college_mentor_id: newMentorId })
-          .eq('uid', studentId);
+        const { error } = await supabase.rpc('change_college_mentor', {
+          student_id: studentId,
+          new_college_mentor_id: newMentorId,
+        });
 
         if (error) {
           throw new Error(error.details);
