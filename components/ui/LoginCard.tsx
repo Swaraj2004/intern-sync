@@ -5,9 +5,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import GuestLogin from '@/components/ui/GuestLogin';
 import Logo from '@/components/ui/Logo';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 interface LoginCardProps {
   loginType: string;
@@ -37,7 +39,14 @@ const LoginCard = ({ loginType, children }: LoginCardProps) => {
           </CardHeader>
           <CardContent className="p-0">
             {children}
-            <div className="flex justify-center pt-4">
+            <div className="flex justify-between pt-4">
+              <Suspense
+                fallback={
+                  <div className="text-primary text-sm">Login as Guest</div>
+                }
+              >
+                <GuestLogin />
+              </Suspense>
               <Link href="/forgot-password" className="text-primary text-sm">
                 Forgot Password?
               </Link>

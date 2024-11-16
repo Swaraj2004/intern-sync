@@ -177,6 +177,24 @@ export type Database = {
           },
         ]
       }
+      guest_creds: {
+        Row: {
+          email: string
+          password: string
+          role: string
+        }
+        Insert: {
+          email: string
+          password: string
+          role: string
+        }
+        Update: {
+          email?: string
+          password?: string
+          role?: string
+        }
+        Relationships: []
+      }
       holidays: {
         Row: {
           description: string | null
