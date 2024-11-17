@@ -11,7 +11,7 @@
 
 ## Introduction
 
-Internsync is a web platform designed to streamline the management and tracking of internship activities for interns, college mentors, and company mentors during the eighth semester. It replaces traditional Excel-based systems by centralizing the submission and review of daily reports, tracking attendance and allowing interns to submit their internship details, daily reports and mark attendance directly through the platform.
+Internsync is a web platform designed to streamline the management and tracking of internship activities of interns by college mentors and company mentors during the eighth semester. It replaces traditional Excel-based systems by centralizing the submission and review of daily reports, tracking attendance and allowing interns to submit their internship details, daily reports and mark attendance directly through the platform.
 
 ## Key Features
 
