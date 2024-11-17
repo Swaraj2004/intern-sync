@@ -49,13 +49,14 @@ const CollegeMentorDashboardPage = () => {
       ? supabase
           .from('internships')
           .select('id')
-          .eq('college_mentor_id', user.uid)
+          .eq('college_mentor_id', user?.uid!)
       : null,
     {
       revalidateIfStale: false,
       revalidateOnFocus: false,
     }
   );
+  console.log(internshipIds);
 
   const { count: reportsReviewCount } = useQuery(
     internshipIds && internshipIds?.length > 0
@@ -73,6 +74,7 @@ const CollegeMentorDashboardPage = () => {
       revalidateOnFocus: false,
     }
   );
+  console.log(reportsReviewCount);
 
   const { count: pendingAttendanceCount } = useQuery(
     internshipIds && internshipIds?.length > 0
@@ -90,6 +92,7 @@ const CollegeMentorDashboardPage = () => {
       revalidateOnFocus: false,
     }
   );
+  console.log(pendingAttendanceCount);
 
   const data = [
     {
@@ -106,13 +109,21 @@ const CollegeMentorDashboardPage = () => {
     },
     {
       name: 'Reports to Review',
-      total: reportsReviewCount,
+      total: internshipIds
+        ? internshipIds?.length > 0
+          ? reportsReviewCount
+          : 0
+        : null,
       icon: FileCheckIcon,
       denominator: '-',
     },
     {
       name: 'Pending Attendance Approval',
-      total: pendingAttendanceCount,
+      total: internshipIds
+        ? internshipIds?.length > 0
+          ? pendingAttendanceCount
+          : 0
+        : null,
       icon: CalendarCheckIcon,
       denominator: '-',
     },
@@ -127,7 +138,7 @@ const CollegeMentorDashboardPage = () => {
           <span>&nbsp;👋</span>
         </h1>
         <p className="text-gray-700 dark:text-gray-300 py-2">
-          Welcome to your department dashboard.
+          Welcome to your college mentor dashboard.
         </p>
       </div>
       <div className="grid gap-8 min-[550px]:grid-cols-2 md:grid-cols-3">
