@@ -48,6 +48,20 @@ AND to_char(approved_requests.date, 'FMDay') IN ('Saturday', 'Sunday') THEN -- A
 total_working_days := total_working_days + 1;
 END IF;
 END LOOP;
+total_working_days := total_working_days - (
+    SELECT COUNT(*)
+    FROM attendance
+    WHERE attendance.internship_id = get_total_working_days.internship_id
+        AND date BETWEEN start_date AND end_date
+        AND status = 'holiday'
+        AND to_char(date, 'FMDay') IN (
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday'
+        )
+);
 RETURN total_working_days;
 END;
 $$ LANGUAGE plpgsql;
