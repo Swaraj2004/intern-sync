@@ -115,15 +115,17 @@ const AddInternshipDialog = ({
 
     await addInternship({
       id: internshipId,
-      role: values.role,
-      field: values.field,
+      role: values.role.trim(),
+      field: values.field.trim(),
       mode: values.mode,
       region: values.region,
       startDate: formatDateForInput(values.startDate),
       endDate: formatDateForInput(values.endDate),
-      companyMentorEmail: values?.companyMentorEmail || null,
-      companyName: values.companyName,
-      companyAddress: values.companyAddress,
+      companyMentorEmail: values.companyMentorEmail
+        ? values?.companyMentorEmail.trim()
+        : null,
+      companyName: values.companyName.trim(),
+      companyAddress: values.companyAddress.trim(),
       internshipLetterUrl: fileData.path,
     });
   };

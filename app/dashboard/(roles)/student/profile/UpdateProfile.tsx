@@ -79,11 +79,11 @@ const UpdateStudentProfile = ({
     updateStudentProfile(
       dateOfBirth,
       parseInt(contact),
-      address,
+      address.trim(),
       parseInt(admissionYear),
-      division.toLocaleUpperCase(),
-      rollNumber,
-      admissionId
+      division.trim().toLocaleUpperCase(),
+      rollNumber.trim(),
+      admissionId.trim()
     );
   };
 

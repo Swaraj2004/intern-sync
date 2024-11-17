@@ -78,7 +78,11 @@ const SubmitReportCard = ({
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    onSubmitReport(values.division, values.details, values.mainPoints);
+    onSubmitReport(
+      values.division.trim(),
+      values.details.trim(),
+      values.mainPoints.trim()
+    );
   };
 
   return (
