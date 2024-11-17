@@ -55,8 +55,8 @@ const RegistrationForm = () => {
       .from('users')
       .insert([
         {
-          name: fullName,
-          email,
+          name: fullName.trim(),
+          email: email.trim(),
         },
       ])
       .select('id');
@@ -68,7 +68,7 @@ const RegistrationForm = () => {
     }
 
     const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
+      email: email.trim(),
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/verify-email`,
