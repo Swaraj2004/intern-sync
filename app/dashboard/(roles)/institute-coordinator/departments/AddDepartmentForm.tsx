@@ -55,9 +55,9 @@ const AddDepartmentForm = () => {
     setOpenAddDialog(false);
 
     await addDepartment(
-      departmentName,
-      departmentCoordinatorName,
-      email,
+      departmentName.trim(),
+      departmentCoordinatorName.trim(),
+      email.trim(),
       sendInvite
     );
   };

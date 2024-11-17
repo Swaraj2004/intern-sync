@@ -109,8 +109,8 @@ const AddStudentForm = () => {
     setOpenAddDialog(false);
 
     await addStudent(
-      studentName,
-      email,
+      studentName.trim(),
+      email.trim(),
       departmentId,
       departmentName,
       sendInvite,

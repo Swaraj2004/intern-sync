@@ -80,8 +80,8 @@ const AddCollegeMentorForm = () => {
     setOpenAddDialog(false);
 
     await addCollegeMentor(
-      collegeMentorName,
-      email,
+      collegeMentorName.trim(),
+      email.trim(),
       sendInvite,
       departmentId,
       departmentName

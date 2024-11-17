@@ -72,12 +72,12 @@ const UpdateProfile = ({
     setShowUpdateProfile(false);
 
     updateInstituteProfile(
-      fullName,
+      fullName.trim(),
       contact,
-      instituteName,
-      instituteAddress,
-      instituteEmailDomain,
-      studentEmailDomain
+      instituteName.trim(),
+      instituteAddress.trim(),
+      instituteEmailDomain.trim(),
+      studentEmailDomain.trim()
     );
   };
 
