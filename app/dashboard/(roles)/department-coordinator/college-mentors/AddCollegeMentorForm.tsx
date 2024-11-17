@@ -53,7 +53,12 @@ const AddCollegeMentorForm = () => {
     const { collegeMentorName, email, sendInvite } = values;
     setOpenAddDialog(false);
 
-    await addCollegeMentor(collegeMentorName, email, sendInvite, user?.uid!);
+    await addCollegeMentor(
+      collegeMentorName.trim(),
+      email.trim(),
+      sendInvite,
+      user?.uid!
+    );
   };
 
   return (
