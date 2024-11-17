@@ -75,6 +75,7 @@ const UpdateProfile = ({
       companyRadius,
     } = values;
     const [companyLatitude, companyLongitude] = companyCoordinates
+      .trim()
       .split(', ')
       .map((c) => +c);
 
@@ -82,11 +83,11 @@ const UpdateProfile = ({
     setShowUpdateProfile(false);
 
     updateCompanyMentorProfile(
-      fullName,
+      fullName.trim(),
       parseInt(contact),
-      designation,
-      companyName,
-      companyAddress,
+      designation.trim(),
+      companyName.trim(),
+      companyAddress.trim(),
       companyLatitude,
       companyLongitude,
       parseInt(companyRadius)

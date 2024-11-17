@@ -50,7 +50,7 @@ const UpdateProfile = ({
     setShowProfileCard(true);
     setShowUpdateProfile(false);
 
-    updateCollegeMentorProfile(fullName, contact);
+    updateCollegeMentorProfile(fullName.trim(), contact);
   };
 
   return (
