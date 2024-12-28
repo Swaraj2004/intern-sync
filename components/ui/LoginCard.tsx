@@ -40,14 +40,22 @@ const LoginCard = ({ loginType, children }: LoginCardProps) => {
           <CardContent className="p-0">
             {children}
             <div className="flex justify-between pt-4">
-              <Suspense
-                fallback={
-                  <div className="text-primary text-sm">Login as Guest</div>
-                }
+              {process.env.PROJECT_USAGE === 'personal' && (
+                <Suspense
+                  fallback={
+                    <div className="text-primary text-sm">Login as Guest</div>
+                  }
+                >
+                  <GuestLogin />
+                </Suspense>
+              )}
+              <Link
+                href="/forgot-password"
+                className={`text-primary text-sm ${
+                  process.env.PROJECT_USAGE !== 'personal' &&
+                  'text-center w-full'
+                }`}
               >
-                <GuestLogin />
-              </Suspense>
-              <Link href="/forgot-password" className="text-primary text-sm">
                 Forgot Password?
               </Link>
             </div>
