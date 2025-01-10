@@ -6,7 +6,7 @@ CREATE OR REPLACE FUNCTION add_student(
         requesting_user_id uuid,
         academic_year smallint,
         college_mentor_id uuid DEFAULT NULL
-    ) RETURNS TABLE(
+    ) RETURNS TABLE (
         user_id uuid,
         auth_id uuid,
         is_new_user boolean,
@@ -21,6 +21,8 @@ is_verified boolean := false;
 student_role_id uuid;
 is_institute_coordinator boolean := false;
 is_department_coordinator boolean := false;
+institute_student_domain text;
+email_domain text;
 BEGIN -- Step 1: Fetch the student role ID from the roles table
 SELECT id INTO student_role_id
 FROM roles
@@ -66,11 +68,11 @@ END IF;
 -- Fetch the domain for the specified institute and compare with email domain
 SELECT student_email_domain INTO institute_student_domain
 FROM institutes
-WHERE id = add_student.institute_id;
+WHERE uid = add_student.institute_id;
 IF NOT FOUND THEN RAISE EXCEPTION 'Institute not found.';
 END IF;
 --check if the institute domain is null 
-IF institute_student_domain IS NULL THEN RAISE EXCEPTION 'Please complete profile before adding student'
+IF institute_student_domain IS NULL THEN RAISE EXCEPTION 'Please complete profile before adding student';
 END IF;
 -- Extract the domain from the email
 email_domain := split_part(email, '@', 2);

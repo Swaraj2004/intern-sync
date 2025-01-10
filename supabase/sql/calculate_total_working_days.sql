@@ -1,13 +1,13 @@
 CREATE OR REPLACE FUNCTION get_total_working_days(
-        start_date DATE,
-        end_date DATE,
-        internship_id UUID,
-        region TEXT
-    ) RETURNS INT AS $$
+        start_date date,
+        end_date date,
+        internship_id uuid,
+        region text
+    ) RETURNS integer LANGUAGE plpgsql AS $$
 DECLARE total_working_days INT;
 approved_requests RECORD;
 BEGIN -- Calculate working days from Monday to Friday, excluding national and regional holidays
-SELECT COUNT(*) INTO total_working_days
+SELECT COUNT (*) INTO total_working_days
 FROM generate_series(start_date, end_date, '1 day'::INTERVAL) AS date_series(date)
 WHERE to_char(date_series.date, 'FMDay') IN (
         'Monday',
@@ -49,7 +49,7 @@ total_working_days := total_working_days + 1;
 END IF;
 END LOOP;
 total_working_days := total_working_days - (
-    SELECT COUNT(*)
+    SELECT COUNT (*)
     FROM attendance
     WHERE attendance.internship_id = get_total_working_days.internship_id
         AND date BETWEEN start_date AND end_date
@@ -64,4 +64,4 @@ total_working_days := total_working_days - (
 );
 RETURN total_working_days;
 END;
-$$ LANGUAGE plpgsql;
+$$;

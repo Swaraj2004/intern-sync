@@ -2,9 +2,9 @@ CREATE OR REPLACE FUNCTION add_department_coordinator(
         department_coordinator_name text,
         email text,
         department_name text,
-        institute_id smallint,
+        institute_id uuid,
         requesting_user_id uuid
-    ) RETURNS TABLE(
+    ) RETURNS TABLE (
         user_id uuid,
         auth_id uuid,
         is_new_user boolean,
@@ -14,9 +14,9 @@ CREATE OR REPLACE FUNCTION add_department_coordinator(
 DECLARE existing_user RECORD;
 existing_role RECORD;
 institute_record RECORD;
-new_user boolean := FALSE;
-has_role boolean := FALSE;
-is_verified boolean := FALSE;
+new_user boolean := false;
+has_role boolean := false;
+is_verified boolean := false;
 department_coordinator_role_id uuid;
 institute_admin_domain text;
 email_domain text;
@@ -42,11 +42,11 @@ END IF;
 -- Fetch the domain for the specified institute and compare with email domain
 SELECT institute_email_domain INTO institute_admin_domain
 FROM institutes
-WHERE id = add_department_coordinator.institute_id;
+WHERE uid = add_department_coordinator.institute_id;
 IF NOT FOUND THEN RAISE EXCEPTION 'Institute not found.';
 END IF;
 --check if the institute domain is null
-IF institute_admin_domain IS NULL THEN RAISE EXCEPTION 'Please complete profile before adding department'
+IF institute_admin_domain IS NULL THEN RAISE EXCEPTION 'Please complete profile before adding department';
 END IF;
 -- Extract the domain from the email
 email_domain := split_part(email, '@', 2);
@@ -59,23 +59,23 @@ FROM users
 WHERE users.email = add_department_coordinator.email;
 -- Step 4: If user does not exist, insert the user
 IF NOT FOUND THEN
-INSERT INTO users(name, email)
+INSERT INTO users (name, email)
 VALUES (
         department_coordinator_name,
         add_department_coordinator.email
     )
 RETURNING * INTO existing_user;
 -- Set new_user flag to true as we inserted a new user
-new_user := TRUE;
+new_user := true;
 -- Insert into departments
-INSERT INTO departments(name, uid, institute_id)
+INSERT INTO departments (name, uid, institute_id)
 VALUES (
         department_name,
         existing_user.id,
         add_department_coordinator.institute_id
     );
 -- Assign the dynamically fetched department-coordinator role to the user
-INSERT INTO user_roles(uid, role_id)
+INSERT INTO user_roles (uid, role_id)
 VALUES (existing_user.id, department_coordinator_role_id);
 ELSE is_verified := existing_user.is_verified;
 -- Step 5: Check if the user already has the department-coordinator role
@@ -84,17 +84,17 @@ FROM user_roles
 WHERE uid = existing_user.id
     AND user_roles.role_id = department_coordinator_role_id;
 IF FOUND THEN -- User already has the department coordinator role
-has_role := TRUE;
+has_role := true;
 RAISE EXCEPTION 'User is already a department coordinator.';
 ELSE -- Step 6: Assign the role and insert into departments if the user exists but does not have the role
-INSERT INTO departments(name, uid, institute_id)
+INSERT INTO departments (name, uid, institute_id)
 VALUES (
         department_name,
         existing_user.id,
         add_department_coordinator.institute_id
     );
 -- Assign the dynamically fetched department-coordinator role to the user
-INSERT INTO user_roles(uid, role_id)
+INSERT INTO user_roles (uid, role_id)
 VALUES (existing_user.id, department_coordinator_role_id);
 END IF;
 END IF;
