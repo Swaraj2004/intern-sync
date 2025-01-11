@@ -60,7 +60,7 @@ export const useAddDepartment = ({
       });
 
       if (error) {
-        toast.error(error.details);
+        toast.error(error.message);
         return;
       }
 
