@@ -8,6 +8,7 @@ CREATE TABLE internships(
     region text NOT NULL,
     company_mentor_email text,
     company_name text NOT NULL,
+    company_address text NOT NULL,
     internship_letter_url text NOT NULL,
     approved boolean NOT NULL DEFAULT FALSE,
     student_id uuid NOT NULL,
