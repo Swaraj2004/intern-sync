@@ -62,7 +62,7 @@ const InstituteCoordinatorDashboardPage = () => {
     user
       ? supabase
           .from('students')
-          .select('uid, users(is_registered)', { count: 'exact' })
+          .select('uid, users!inner(is_registered)', { count: 'exact' })
           .eq('institute_id', user?.uid!)
           .eq('users.is_registered', true)
       : null,
