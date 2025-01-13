@@ -473,7 +473,7 @@ export const useInternships = ({
   departmentId?: string;
   collegeMentorId?: string;
 }) => {
-  const shouldFetch = Boolean(collegeMentorId);
+  const shouldFetch = Boolean(instituteId);
 
   const { data, ...rest } = useQuery(
     shouldFetch

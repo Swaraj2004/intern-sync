@@ -67,7 +67,7 @@ const NavItems = ({
     {
       path: `/dashboard/${role}/internships`,
       title: 'Internships',
-      access: ['college-mentor', 'student'],
+      access: ['department-coordinator', 'college-mentor', 'student'],
     },
     {
       path: `/dashboard/${role}/attendance`,
