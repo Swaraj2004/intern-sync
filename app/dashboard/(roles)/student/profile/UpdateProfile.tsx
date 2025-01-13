@@ -194,25 +194,6 @@ const UpdateStudentProfile = ({
           />
           <FormField
             control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem className="grid sm:grid-cols-5 sm:space-y-0">
-                <FormLabel className="sm:col-span-2 text-base my-auto">
-                  Address
-                </FormLabel>
-                <FormControl className="sm:col-span-3">
-                  <Input
-                    placeholder="Enter address"
-                    className="sm:max-w-96"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage className="sm:col-span-2" />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
             name="admissionYear"
             render={({ field }) => (
               <FormItem className="grid sm:grid-cols-5 sm:space-y-0">
