@@ -32,9 +32,11 @@ const MainNav = () => {
               </Button>
             ) : (
               <>
-                <Button variant="outline" asChild className="hidden md:block">
-                  <Link href="/register/institute">Register Institute</Link>
-                </Button>
+                {process.env.PROJECT_USAGE === 'personal' && (
+                  <Button variant="outline" asChild className="hidden md:block">
+                    <Link href="/register/institute">Register Institute</Link>
+                  </Button>
+                )}
                 <Button asChild>
                   <Link href="/login">Login</Link>
                 </Button>

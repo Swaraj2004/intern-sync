@@ -49,7 +49,7 @@ const HomePage = () => {
               Your One-Stop Solution for Seamless Communication and Progress
               Tracking of Students in Internships.
             </p>
-            <GetStartedButton />
+            {process.env.PROJECT_USAGE === 'personal' && <GetStartedButton />}
           </div>
           <div className="hidden md:grid">
             <Image
