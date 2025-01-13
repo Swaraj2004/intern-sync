@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         You have been invited to register as a company mentor on InternSync.
 
         Please click the link below to register:
-        ${process.env.NEXT_PUBLIC_URL}/register/company-mentor
+        ${process.env.NEXT_PUBLIC_URL}/register/company-mentor?email=${companyMentorEmail}
 
         Best regards,
         InternSync Team`,

@@ -15,6 +15,7 @@ type InputBoxProps = {
   label: string;
   noLabel?: boolean;
   placeholder?: string;
+  disabled?: boolean;
   description?: React.ReactNode;
   form: any;
   className?: string;
@@ -26,6 +27,7 @@ const InputBox = ({
   label,
   noLabel,
   placeholder,
+  disabled,
   description,
   form,
   className,
@@ -43,6 +45,7 @@ const InputBox = ({
             <Input
               type={type}
               placeholder={placeholder || label}
+              disabled={disabled || false}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();

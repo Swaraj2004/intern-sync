@@ -14,7 +14,7 @@ import { PasswordInput } from '@/components/ui/password-input';
 import registrationFormSchema from '@/formSchemas/registerCompanyMentor';
 import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -23,13 +23,15 @@ import * as z from 'zod';
 const RegistrationForm = () => {
   const supabase = supabaseClient();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [loading, setLoading] = useState(false);
+  const companyMentorEmail = searchParams.get('email');
 
   const registerForm = useForm<z.infer<typeof registrationFormSchema>>({
     resolver: zodResolver(registrationFormSchema),
     defaultValues: {
       fullName: '',
-      email: '',
+      email: companyMentorEmail || '',
       password: '',
       confirmPassword: '',
     },
@@ -145,6 +147,7 @@ const RegistrationForm = () => {
           placeholder="Enter Email"
           id="email"
           type="email"
+          disabled={!!companyMentorEmail}
           form={registerForm}
         />
         <FormField

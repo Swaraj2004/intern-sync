@@ -2,6 +2,7 @@ import RegistrationForm from '@/app/(auth)/register/company-mentor/RegistrationF
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Logo from '@/components/ui/Logo';
 import Link from 'next/link';
+import { Suspense } from 'react';
 
 const RegisterCompanyMentorPage = () => {
   return (
@@ -18,7 +19,9 @@ const RegisterCompanyMentorPage = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-0">
-          <RegistrationForm />
+          <Suspense fallback={<p>Loading...</p>}>
+            <RegistrationForm />
+          </Suspense>
           <div className="text-center pt-6">
             Already have an account?{' '}
             <Link
