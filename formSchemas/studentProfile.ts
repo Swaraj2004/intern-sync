@@ -19,11 +19,6 @@ export const studentProfileFormSchema = z.object({
     })
     .min(10, { message: 'Contact number should be 10 digits.' })
     .max(10, { message: 'Contact number should be 10 digits.' }),
-  address: z
-    .string({
-      required_error: 'Address is required.',
-    })
-    .min(2, { message: 'Address is required.' }),
   admissionYear: z
     .string({
       required_error: 'Admission year is required.',
@@ -46,6 +41,16 @@ export const studentProfileFormSchema = z.object({
       required_error: 'Admission ID is required.',
     })
     .min(1, { message: 'Admission ID is required.' }),
+  address: z
+    .string({
+      required_error: 'Address is required.',
+    })
+    .min(2, { message: 'Address is required.' }),
+  homeCoordinates: z
+    .string({
+      required_error: 'Home coordinates are required.',
+    })
+    .min(2, 'Please enter valid coordinates.'),
   departmentName: z
     .string({
       required_error: 'Department name is required.',

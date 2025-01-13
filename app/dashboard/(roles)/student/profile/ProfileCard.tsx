@@ -11,11 +11,18 @@ const ProfileCard = ({ profileData }: { profileData: StudentProfile }) => {
       value: profileData.dob ? formatDateForDisplay(profileData.dob) : '-',
     },
     { label: 'Contact', value: profileData.users?.contact || '-' },
-    { label: 'Address', value: profileData.address || '-' },
     { label: 'Admission Year', value: profileData.admission_year || '-' },
     { label: 'Division', value: profileData.division || '-' },
     { label: 'Roll No', value: profileData.roll_no || '-' },
     { label: 'Admission ID', value: profileData.admission_id || '-' },
+    { label: 'Address', value: profileData.address || '-' },
+    {
+      label: 'Home Coordinates',
+      value:
+        profileData.home_latitude && profileData.home_longitude
+          ? `${profileData.home_latitude}, ${profileData.home_longitude}`
+          : '-',
+    },
     {
       label: 'College Mentor',
       value: profileData.college_mentors?.users?.name || '-',

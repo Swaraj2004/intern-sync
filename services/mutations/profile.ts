@@ -5,6 +5,7 @@ import {
   useInstituteProfile,
   useStudentProfile,
 } from '@/services/queries';
+import { HOME_RADIUS } from '@/utils/constants';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -351,7 +352,9 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
       admissionYear: number,
       division: string,
       rollNumber: string,
-      admissionId: string
+      admissionId: string,
+      homeLatitude: number,
+      homeLongitude: number
     ) => {
       setIsLoading(true);
 
@@ -367,6 +370,8 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
             division,
             roll_no: rollNumber,
             admission_id: admissionId,
+            home_latitude: homeLatitude,
+            home_longitude: homeLongitude,
             users: {
               ...currentData.data.users,
               name: currentData.data.users?.name ?? '',
@@ -387,6 +392,9 @@ export const useUpdateStudentProfile = ({ userId }: { userId: string }) => {
             division,
             roll_no: rollNumber,
             admission_id: admissionId,
+            home_latitude: homeLatitude,
+            home_longitude: homeLongitude,
+            home_radius: HOME_RADIUS,
           })
           .eq('uid', userId);
 

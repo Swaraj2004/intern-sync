@@ -6,6 +6,8 @@ type StudentProfile = {
   division: string | null;
   roll_no: string | null;
   admission_id: string | null;
+  home_latitude: number | null;
+  home_longitude: number | null;
   users: {
     name: string;
     email: string;
