@@ -108,6 +108,7 @@ const InternshipDetailsCard = ({
         },
         body: JSON.stringify({
           companyMentorEmail: internshipDetails.company_mentor_email,
+          studentName: internshipDetails.student_name,
         }),
       });
 
