@@ -76,8 +76,8 @@ const UpdateProfile = ({
     } = values;
     const [companyLatitude, companyLongitude] = companyCoordinates
       .trim()
-      .split(', ')
-      .map((c) => +c);
+      .split(',')
+      .map((c) => +c.trim());
 
     setShowProfileCard(true);
     setShowUpdateProfile(false);

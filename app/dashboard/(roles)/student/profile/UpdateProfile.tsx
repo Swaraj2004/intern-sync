@@ -86,8 +86,8 @@ const UpdateStudentProfile = ({
     } = values;
     const [homeLatitude, homeLongitude] = homeCoordinates
       .trim()
-      .split(', ')
-      .map((c) => +c);
+      .split(',')
+      .map((c) => +c.trim());
 
     setShowProfileCard(true);
     setShowUpdateProfile(false);

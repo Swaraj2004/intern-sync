@@ -127,7 +127,7 @@ const InternshipDetailsCard = ({
 
   function handleSubmitHomeCoordinates(values: z.infer<typeof formSchema>) {
     const { coordinates, radius } = values;
-    const [latitude, longitude] = coordinates.split(', ').map((c) => +c);
+    const [latitude, longitude] = coordinates.split(',').map((c) => +c.trim());
     setOpenCoordinatesDialog(false);
     addHomeCoordinates(latitude, longitude, radius);
   }
