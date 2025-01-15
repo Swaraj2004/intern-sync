@@ -58,13 +58,26 @@ const MarkAttendanceCard = ({
     setCurrentTime(formattedIST);
   };
 
-  const handleMarkAttendance = (isCheckOut: boolean) => {
+  const handleMarkAttendance = async (isCheckOut: boolean) => {
+    setIsLoading(true);
+    if (navigator.permissions) {
+      const permission = await navigator.permissions.query({
+        name: 'geolocation',
+      });
+      if (permission.state !== 'granted') {
+        setIsLoading(false);
+        toast.error('Location permission is required for attendance.');
+        return;
+      }
+    }
+
     if (navigator.geolocation) {
-      setIsLoading(true);
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
+          const accuracy = position.coords.accuracy;
+          console.log(`Accuracy: ${accuracy} meters`);
 
           onMarkAttendance(workFromHome, latitude, longitude, isCheckOut);
           setIsLoading(false);
@@ -72,7 +85,8 @@ const MarkAttendanceCard = ({
         (error) => {
           setIsLoading(false);
           toast.error('Error getting location: ' + error.message);
-        }
+        },
+        { enableHighAccuracy: true }
       );
     } else {
       setIsLoading(false);
