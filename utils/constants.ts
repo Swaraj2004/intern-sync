@@ -1,1 +1,1 @@
-export const HOME_RADIUS = 500;
+export const HOME_RADIUS = 800;
