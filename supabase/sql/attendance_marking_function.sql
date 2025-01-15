@@ -19,6 +19,7 @@ distance_home FLOAT8;
 distance_company FLOAT8;
 existing_in_time TIME;
 existing_out_time TIME;
+earth_radius FLOAT8 := 6371000;
 BEGIN -- Fetch student's home location data
 SELECT home_latitude,
   home_longitude,
@@ -36,27 +37,25 @@ SELECT company_latitude,
 FROM company_mentors
   JOIN internships ON internships.company_mentor_id = company_mentors.uid
 WHERE internships.id = internship_id;
--- Calculate distance to student's home using Haversine formula
+-- Calculate distance to student's home
 distance_home := (
-  6371 * acos(
+  earth_radius * acos(
     cos(radians(student_home_lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(student_home_long)) + sin(radians(student_home_lat)) * sin(radians(latitude))
   )
-) * 1000;
--- Convert to meters
--- Calculate distance to company's office using Haversine formula
+);
+-- Calculate distance to company's office
 distance_company := (
-  6371 * acos(
+  earth_radius * acos(
     cos(radians(company_lat)) * cos(radians(latitude)) * cos(radians(longitude) - radians(company_long)) + sin(radians(company_lat)) * sin(radians(latitude))
   )
-) * 1000;
--- Convert to meters
+);
 -- Check if location is within home or company radius
 IF (
-  distance_home <= student_home_radius
+  distance_home <= (student_home_radius + 50)
   AND work_from_home
 )
 OR (
-  distance_company <= company_rad
+  distance_company <= (company_rad + 50)
   AND NOT work_from_home
 ) THEN -- Check if attendance already exists for the day
 SELECT in_time,
