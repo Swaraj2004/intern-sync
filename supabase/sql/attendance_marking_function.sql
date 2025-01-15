@@ -51,12 +51,12 @@ distance_company := (
 );
 -- Check if location is within home or company radius
 IF (
-  distance_home <= (student_home_radius + 50)
-  AND work_from_home
+  distance_home <= student_home_radius
+  AND mark_attendance.work_from_home
 )
 OR (
-  distance_company <= (company_rad + 50)
-  AND NOT work_from_home
+  distance_company <= company_rad
+  AND NOT mark_attendance.work_from_home
 ) THEN -- Check if attendance already exists for the day
 SELECT in_time,
   out_time INTO existing_in_time,
@@ -70,7 +70,7 @@ IF existing_in_time IS NOT NULL THEN RAISE EXCEPTION 'Check-in already marked.';
 END IF;
 UPDATE attendance
 SET in_time = check_time,
-  work_from_home = work_from_home,
+  work_from_home = mark_attendance.work_from_home,
   status = 'pending'
 WHERE id = attendance_id;
 ELSE -- Mark check-out
