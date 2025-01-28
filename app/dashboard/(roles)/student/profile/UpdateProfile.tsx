@@ -321,6 +321,7 @@ const UpdateStudentProfile = ({
                 </div>
                 <FormControl className="sm:col-span-3">
                   <Input
+                    disabled
                     placeholder="Enter home latitude, longitude"
                     className="sm:max-w-96"
                     {...field}
