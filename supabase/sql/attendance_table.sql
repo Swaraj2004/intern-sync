@@ -11,5 +11,6 @@ CREATE TABLE attendance (
     student_id UUID NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT (NOW() AT TIME ZONE 'UTC'::TEXT),
     FOREIGN KEY (internship_id) REFERENCES internships(id) ON DELETE CASCADE,
-    FOREIGN KEY (student_id) REFERENCES students(uid) ON DELETE CASCADE
+    FOREIGN KEY (student_id) REFERENCES students(uid) ON DELETE CASCADE,
+    CONSTRAINT daily_unique_attendance UNIQUE (student_id, date)
 );
