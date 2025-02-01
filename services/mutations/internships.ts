@@ -23,6 +23,18 @@ type AddInternshipParams = {
   internshipLetterUrl: string;
 };
 
+type UpdateInternshipParams = {
+  internshipId: string;
+  role: string;
+  field: string;
+  mode: string;
+  startDate: string;
+  endDate: string;
+  companyMentorEmail: string | null;
+  companyName: string;
+  companyAddress: string;
+};
+
 export const useAddInternship = ({
   studentId,
   collegeMentorId,
@@ -120,6 +132,82 @@ export const useAddInternship = ({
 
   return {
     addInternship,
+    isLoading,
+  };
+};
+
+export const useUpdateInternship = ({
+  internshipId,
+}: {
+  internshipId: string;
+}) => {
+  const { mutate } = useInternshipDetails({
+    internshipId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateInternship = async ({
+    internshipId,
+    role,
+    field,
+    mode,
+    startDate,
+    endDate,
+    companyMentorEmail,
+    companyName,
+    companyAddress,
+  }: UpdateInternshipParams) => {
+    setIsLoading(true);
+
+    mutate((currentData) => {
+      if (!currentData?.data) return undefined;
+
+      return {
+        ...currentData,
+        data: {
+          ...currentData.data,
+          role,
+          field,
+          mode,
+          start_date: startDate,
+          end_date: endDate,
+          company_mentor_email: companyMentorEmail,
+          company_name: companyName,
+          company_address: companyAddress,
+        },
+      };
+    }, false);
+
+    try {
+      const { error } = await supabase
+        .from('internships')
+        .update({
+          role,
+          field,
+          mode,
+          start_date: startDate,
+          end_date: endDate,
+          company_mentor_email: companyMentorEmail,
+          company_name: companyName,
+          company_address: companyAddress,
+        })
+        .eq('id', internshipId);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      toast.success('Internship updated successfully.');
+    } catch (error) {
+      toast.error('Failed to update internship.');
+    } finally {
+      mutate();
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    updateInternship,
     isLoading,
   };
 };

@@ -1,17 +1,15 @@
 'use client';
 
 import InternshipDetailsCard from '@/components/internships/InternshipDetailsCard';
+import UpdateInternshipDialog from '@/components/internships/UpdateInternshipDialog';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { useInternshipDetails } from '@/services/queries';
-import { ArrowLeftIcon } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 const InternshipDetailsPage = () => {
   const params = useParams<{ id: string }>();
-  const router = useRouter();
 
   const { data: internshipDetails, isLoading } = useInternshipDetails({
     internshipId: params.id,
@@ -33,9 +31,12 @@ const InternshipDetailsPage = () => {
               </Badge>
             ))}
         </span>
-        <Button size="icon-sm" onClick={() => router.back()}>
-          <ArrowLeftIcon className="h-5 w-5" />
-        </Button>
+        {internshipDetails && (
+          <UpdateInternshipDialog
+            internshipId={params.id}
+            internshipDetails={internshipDetails[0]}
+          />
+        )}
       </div>
       {isLoading ? (
         <Card className="flex justify-center align items-center h-80">
