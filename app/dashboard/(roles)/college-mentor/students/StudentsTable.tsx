@@ -45,6 +45,7 @@ const StudentsTable = () => {
     () =>
       getStudentColumns({
         onSendInvite: sendInvite,
+        dashboardRole: 'college-mentor',
       }),
     [sendInvite]
   );

@@ -54,6 +54,7 @@ const StudentsTable = () => {
         onDelete: deleteStudent,
         onSendInvite: sendInvite,
         onChangeCollegeMentor: changeCollegeMentor,
+        dashboardRole: 'institute-coordinator',
       }),
     [deleteStudent, sendInvite, changeCollegeMentor]
   );

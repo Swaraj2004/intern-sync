@@ -1,6 +1,6 @@
 'use client';
 
-import ProfileCard from '@/app/dashboard/(roles)/student/profile/ProfileCard';
+import ProfileCard from '@/components/studentProfile/ProfileCard';
 import UpdateStudentProfile from '@/app/dashboard/(roles)/student/profile/UpdateProfile';
 import ChangePassword from '@/components/ui/ChangePassword';
 import { Loader } from '@/components/ui/Loader';

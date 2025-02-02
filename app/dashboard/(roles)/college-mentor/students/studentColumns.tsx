@@ -7,10 +7,12 @@ import { ChevronsUpDownIcon } from 'lucide-react';
 
 type ColumnProps = {
   onSendInvite: (email: string, userId: string, name: string) => void;
+  dashboardRole: string;
 };
 
 const getStudentColumns = ({
   onSendInvite,
+  dashboardRole,
 }: ColumnProps): ColumnDef<Students>[] => [
   {
     id: 'users.name',
@@ -66,7 +68,9 @@ const getStudentColumns = ({
               row.original.users?.name || ''
             )
           }
+          studentId={row.original.uid}
           isVerified={row.original.users?.is_verified || false}
+          dashboardRole={dashboardRole}
         />
       );
     },

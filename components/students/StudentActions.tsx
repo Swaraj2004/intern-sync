@@ -27,7 +27,8 @@ import SelectInputSkeleton from '@/components/ui/SelectInputSkeleton';
 import { useUser } from '@/context/UserContext';
 import { useCollegeMentors } from '@/services/queries';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { MailPlusIcon, Trash2, UserRoundPenIcon } from 'lucide-react';
+import { ListIcon, MailPlusIcon, Trash2, UserRoundPenIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -44,6 +45,7 @@ type StudentActionsProps = {
   studentDepartmentId?: string;
   currentMentorId?: string;
   isVerified: boolean;
+  dashboardRole: string;
 };
 
 const FormSchema = z.object({
@@ -60,6 +62,7 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
   studentDepartmentId,
   currentMentorId,
   isVerified,
+  dashboardRole,
 }) => {
   const { instituteId } = useUser();
   const [openDialog, setOpenDialog] = useState(false);
@@ -92,30 +95,39 @@ export const StudentActions: React.FC<StudentActionsProps> = ({
   return (
     <div className="flex justify-end gap-3">
       {!isVerified && (
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              size="icon-sm"
-              className="bg-yellow-500 hover:bg-yellow-600"
-            >
-              <MailPlusIcon className="h-4 w-4" />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Send invite email?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will send an invite email to the student.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={sendInvite}>
-                Continue
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="icon-sm"
+                className="bg-yellow-500 hover:bg-yellow-600"
+              >
+                <MailPlusIcon className="h-4 w-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Send invite email?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will send an invite email to the student.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={sendInvite}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </>
+      )}
+      {isVerified && (
+        <Button size="icon-sm" asChild>
+          <Link href={`/dashboard/${dashboardRole}/students/${studentId}`}>
+            <ListIcon className="h-5 w-5" />
+          </Link>
+        </Button>
       )}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTrigger asChild>

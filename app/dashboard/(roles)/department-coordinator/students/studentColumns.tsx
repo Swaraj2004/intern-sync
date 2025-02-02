@@ -13,12 +13,14 @@ type ColumnProps = {
     mentorId: string,
     mentorName: string
   ) => void;
+  dashboardRole: string;
 };
 
 const getStudentColumns = ({
   onDelete,
   onSendInvite,
   onChangeCollegeMentor,
+  dashboardRole,
 }: ColumnProps): ColumnDef<Students>[] => [
   {
     id: 'users.name',
@@ -96,6 +98,7 @@ const getStudentColumns = ({
           studentDepartmentId={studentDepartmentId}
           currentMentorId={currentMentorId}
           isVerified={row.original.users?.is_verified || false}
+          dashboardRole={dashboardRole}
         />
       );
     },

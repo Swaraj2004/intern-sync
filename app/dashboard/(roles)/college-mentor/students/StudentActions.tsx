@@ -12,20 +12,31 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { MailPlusIcon } from 'lucide-react';
+import { ListIcon, MailPlusIcon } from 'lucide-react';
+import Link from 'next/link';
 
 type StudentActionsProps = {
   sendInvite: () => Promise<void>;
+  studentId: string;
   isVerified: boolean;
+  dashboardRole: string;
 };
 
 export const StudentActions: React.FC<StudentActionsProps> = ({
   sendInvite,
+  studentId,
   isVerified,
+  dashboardRole,
 }) => {
   return (
     <div className="flex justify-end gap-3">
-      {!isVerified && (
+      {isVerified ? (
+        <Button size="icon-sm" asChild>
+          <Link href={`/dashboard/${dashboardRole}/students/${studentId}`}>
+            <ListIcon className="h-5 w-5" />
+          </Link>
+        </Button>
+      ) : (
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
