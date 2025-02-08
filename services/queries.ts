@@ -74,13 +74,30 @@ export const useStudents = ({
 }) => {
   const shouldFetch = Boolean(instituteId);
 
-  const { data, ...rest } = useQuery(
+  const { data: students, ...rest } = useQuery(
     shouldFetch
       ? (() => {
           let query = supabase
             .from('students')
             .select(
-              'uid, college_mentors (uid, users (id, name)), departments (uid, name), users (id, auth_id, name, email, is_registered, is_verified)'
+              `
+                uid,
+                college_mentors (
+                  uid,
+                  users (id, name)
+                ),
+                departments (uid, name),
+                users (id, auth_id, name, email, is_registered, is_verified),
+                internships (
+                  start_date,
+                  end_date,
+                  company_mentor_id,
+                  company_mentors (
+                    uid,
+                    users (id, name)
+                  )
+                )
+              `
             )
             .eq('institute_id', instituteId!)
             .order('created_at', { ascending: false });
@@ -97,6 +114,18 @@ export const useStudents = ({
         })()
       : null
   );
+
+  // Format today's date as YYYY-MM-DD (assuming that matches your date columns)
+  const currentDate = new Date().toISOString().split('T')[0];
+
+  const data = students?.map((student) => {
+    const currentInternship = student.internships?.find(
+      (internship) =>
+        internship.start_date <= currentDate &&
+        internship.end_date >= currentDate
+    );
+    return { ...student, currentInternship };
+  });
 
   return {
     data,

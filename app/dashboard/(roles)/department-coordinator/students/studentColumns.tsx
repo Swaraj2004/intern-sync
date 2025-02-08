@@ -65,6 +65,18 @@ const getStudentColumns = ({
     ),
   },
   {
+    id: 'internships[0].company_mentors.users.name',
+    accessorFn: (row) => row.internships?.[0]?.company_mentors?.users?.name,
+    header: () => {
+      return <span className="text-nowrap">Company Mentor</span>;
+    },
+    cell: ({ row }) => (
+      <div>
+        {row.original.internships?.[0]?.company_mentors?.users?.name || '-'}
+      </div>
+    ),
+  },
+  {
     id: 'status',
     header: 'Status',
     cell: ({ row }) => (

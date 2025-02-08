@@ -19,6 +19,20 @@ type Students = {
     is_registered: boolean;
     is_verified: boolean;
   } | null;
+  internships:
+    | {
+        start_date: string;
+        end_date: string;
+        company_mentor_id: string | null;
+        company_mentors: {
+          uid: string;
+          users: {
+            id: string;
+            name: string;
+          } | null;
+        } | null;
+      }[]
+    | null;
 };
 
 export default Students;
