@@ -16,14 +16,22 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import InputBox from '@/components/ui/InputBox';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import SingleSelectInput from '@/components/ui/SelectInput';
 import updateInternshipFormSchema from '@/formSchemas/updateInternship';
 import { formatDateForInput } from '@/lib/utils';
-import { useUpdateInternship } from '@/services/mutations/internships';
 import { useStudentInternships } from '@/services/queries';
 import InternshipDetails from '@/types/internship-details';
+import { UpdateInternshipParams } from '@/types/internship-mutations';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { CircleHelpIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -37,19 +45,31 @@ const modeOptions = [
 const UpdateInternshipDialog = ({
   internshipDetails,
   internshipId,
+  updateInternship,
 }: {
   internshipDetails: InternshipDetails;
   internshipId: string;
+  updateInternship: ({
+    internshipId,
+    role,
+    field,
+    mode,
+    startDate,
+    endDate,
+    companyMentorEmail,
+    companyName,
+    companyAddress,
+    companyLatitude,
+    companyLongitude,
+    homeLatitude,
+    homeLongitude,
+  }: UpdateInternshipParams) => Promise<void>;
 }) => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const { data: internships } = useStudentInternships({
     studentId: internshipDetails.student_uid,
-  });
-
-  const { updateInternship } = useUpdateInternship({
-    internshipId,
   });
 
   const form = useForm<z.infer<typeof updateInternshipFormSchema>>({
@@ -63,6 +83,16 @@ const UpdateInternshipDialog = ({
       companyMentorEmail: internshipDetails.company_mentor_email,
       companyName: internshipDetails.company_name,
       companyAddress: internshipDetails.company_address,
+      companyCoordinates: internshipDetails.company_latitude
+        ? `${internshipDetails.company_latitude}, ${internshipDetails.company_longitude}`
+        : '',
+      companyRadius: `${internshipDetails.company_radius}`,
+      homeCoordinates:
+        internshipDetails.student_home_latitude &&
+        internshipDetails.student_home_longitude
+          ? `${internshipDetails.student_home_latitude}, ${internshipDetails.student_home_longitude}`
+          : '',
+      homeRadius: `${internshipDetails.student_home_radius}`,
     },
   });
 
@@ -85,6 +115,20 @@ const UpdateInternshipDialog = ({
       return;
     }
 
+    const [homeLatitude, homeLongitude] = values.homeCoordinates
+      ? values.homeCoordinates
+          .trim()
+          .split(',')
+          .map((c) => +c.trim())
+      : [undefined, undefined];
+
+    const [companyLatitude, companyLongitude] = values.companyCoordinates
+      ? values.companyCoordinates
+          .trim()
+          .split(',')
+          .map((c) => +c.trim())
+      : [undefined, undefined];
+
     setOpen(false);
     setLoading(false);
 
@@ -97,9 +141,15 @@ const UpdateInternshipDialog = ({
       endDate: formatDateForInput(values.endDate),
       companyMentorEmail: values.companyMentorEmail
         ? values?.companyMentorEmail.trim()
-        : null,
+        : undefined,
       companyName: values.companyName.trim(),
       companyAddress: values.companyAddress.trim(),
+      homeLatitude,
+      homeLongitude,
+      homeRadius: values.homeRadius ? +values.homeRadius : undefined,
+      companyLatitude,
+      companyLongitude,
+      companyRadius: values.companyRadius ? +values.companyRadius : undefined,
     });
   };
 
@@ -194,6 +244,116 @@ const UpdateInternshipDialog = ({
                 type="text"
                 form={form}
               />
+              {internshipDetails.mode === 'hybrid' && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="homeCoordinates"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <div className="inline-flex items-center gap-2">
+                          <FormLabel>Home Coordinates</FormLabel>
+                          <Popover>
+                            <PopoverTrigger type="button">
+                              <CircleHelpIcon className="h-4 w-4" />
+                            </PopoverTrigger>
+                            <PopoverContent side="top" className="max-w-80">
+                              <div className="text-sm text-muted-foreground">
+                                To find coordinates, open{' '}
+                                <Link
+                                  href="https://www.google.com/maps"
+                                  className="text-primary underline"
+                                  target="_blank"
+                                >
+                                  Google Maps
+                                </Link>
+                                , search for the location, right-click on the
+                                spot, and copy the latitude and longitude
+                                (Example: 18.92199, 72.83457).
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Enter home coordinates"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                              }
+                            }}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <InputBox
+                    label="Home Radius"
+                    placeholder="Enter home radius"
+                    id="homeRadius"
+                    type="number"
+                    form={form}
+                  />
+                </>
+              )}
+              {internshipDetails.company_mentor_uid && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="companyCoordinates"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <div className="inline-flex items-center gap-2">
+                          <FormLabel className="inline-flex items-center">
+                            Company Coordinates
+                          </FormLabel>
+                          <Popover>
+                            <PopoverTrigger type="button">
+                              <CircleHelpIcon className="h-4 w-4 ml-2" />
+                            </PopoverTrigger>
+                            <PopoverContent side="top" className="max-w-80">
+                              <div className="text-sm text-muted-foreground">
+                                To find coordinates, open{' '}
+                                <Link
+                                  href="https://www.google.com/maps"
+                                  className="text-primary underline"
+                                  target="_blank"
+                                >
+                                  Google Maps
+                                </Link>
+                                , search for the location, right-click on the
+                                spot, and copy the latitude and longitude
+                                (Example: 18.92199, 72.83457).
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Enter company coordinates"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                              }
+                            }}
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <InputBox
+                    label="Company Radius"
+                    placeholder="Enter company radius"
+                    id="companyRadius"
+                    type="number"
+                    form={form}
+                  />
+                </>
+              )}
             </div>
             <DialogFooter>
               <Button

@@ -3,37 +3,15 @@ import {
   useInternships,
   useStudentInternships,
 } from '@/services/queries';
+import {
+  AddInternshipParams,
+  UpdateInternshipParams,
+} from '@/types/internship-mutations';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
 const supabase = supabaseClient();
-
-type AddInternshipParams = {
-  id: string;
-  role: string;
-  field: string;
-  mode: string;
-  region: string;
-  startDate: string;
-  endDate: string;
-  companyMentorEmail: string | null;
-  companyName: string;
-  companyAddress: string;
-  internshipLetterUrl: string;
-};
-
-type UpdateInternshipParams = {
-  internshipId: string;
-  role: string;
-  field: string;
-  mode: string;
-  startDate: string;
-  endDate: string;
-  companyMentorEmail: string | null;
-  companyName: string;
-  companyAddress: string;
-};
 
 export const useAddInternship = ({
   studentId,
@@ -90,6 +68,14 @@ export const useAddInternship = ({
             college_mentor_id: collegeMentorId,
             department_id: departmentId,
             institute_id: instituteId,
+            students: {
+              home_latitude: null,
+              home_longitude: null,
+            },
+            company_mentors: {
+              company_latitude: null,
+              company_longitude: null,
+            },
           },
         ],
       };
@@ -138,8 +124,12 @@ export const useAddInternship = ({
 
 export const useUpdateInternship = ({
   internshipId,
+  collegeMentorId,
+  departmentId,
 }: {
   internshipId: string;
+  collegeMentorId?: string;
+  departmentId?: string;
 }) => {
   const { mutate } = useInternshipDetails({
     internshipId,
@@ -156,6 +146,12 @@ export const useUpdateInternship = ({
     companyMentorEmail,
     companyName,
     companyAddress,
+    homeLatitude,
+    homeLongitude,
+    homeRadius,
+    companyLatitude,
+    companyLongitude,
+    companyRadius,
   }: UpdateInternshipParams) => {
     setIsLoading(true);
 
@@ -179,19 +175,24 @@ export const useUpdateInternship = ({
     }, false);
 
     try {
-      const { error } = await supabase
-        .from('internships')
-        .update({
-          role,
-          field,
-          mode,
-          start_date: startDate,
-          end_date: endDate,
-          company_mentor_email: companyMentorEmail,
-          company_name: companyName,
-          company_address: companyAddress,
-        })
-        .eq('id', internshipId);
+      let { error } = await supabase.rpc('update_internship', {
+        requesting_user_id: collegeMentorId || departmentId!,
+        internship_id: internshipId,
+        role: role,
+        field: field,
+        mode: mode,
+        start_date: startDate,
+        end_date: endDate,
+        company_name: companyName,
+        company_address: companyAddress,
+        company_mentor_email: companyMentorEmail,
+        home_latitude: homeLatitude,
+        home_longitude: homeLongitude,
+        home_radius: homeRadius,
+        company_latitude: companyLatitude,
+        company_longitude: companyLongitude,
+        company_radius: companyRadius,
+      });
 
       if (error) {
         throw new Error(error.message);

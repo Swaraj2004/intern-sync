@@ -931,6 +931,31 @@ export type Database = {
         }
         Returns: undefined
       }
+      update_internship: {
+        Args: {
+          requesting_user_id: string
+          internship_id: string
+          role: string
+          field: string
+          mode: string
+          start_date: string
+          end_date: string
+          company_name: string
+          company_address: string
+          company_mentor_email?: string
+          home_latitude?: number
+          home_longitude?: number
+          home_radius?: number
+          company_latitude?: number
+          company_longitude?: number
+          company_radius?: number
+        }
+        Returns: {
+          student_id: string
+          company_mentor_id: string
+          updated: boolean
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -37,6 +37,10 @@ export const updateInternshipFormSchema = z
         required_error: 'Company address is required.',
       })
       .min(2, { message: 'Company address is required.' }),
+    homeCoordinates: z.string().optional(),
+    homeRadius: z.string().optional(),
+    companyCoordinates: z.string().optional(),
+    companyRadius: z.string().optional(),
   })
   .refine((data) => data.endDate > data.startDate, {
     message: 'End date must be greater than start date.',

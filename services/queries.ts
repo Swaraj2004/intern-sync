@@ -396,7 +396,7 @@ export const useStudentInternships = ({
       ? supabase
           .from('internships')
           .select(
-            'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved'
+            'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved, students (home_latitude, home_longitude), company_mentors (company_latitude, company_longitude)'
           )
           .eq('student_id', studentId!)
       : null

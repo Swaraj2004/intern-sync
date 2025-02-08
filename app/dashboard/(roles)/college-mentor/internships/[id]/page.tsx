@@ -5,14 +5,22 @@ import UpdateInternshipDialog from '@/components/internships/UpdateInternshipDia
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
+import { useUser } from '@/context/UserContext';
+import { useUpdateInternship } from '@/services/mutations/internships';
 import { useInternshipDetails } from '@/services/queries';
 import { useParams } from 'next/navigation';
 
 const InternshipDetailsPage = () => {
   const params = useParams<{ id: string }>();
+  const { user } = useUser();
 
   const { data: internshipDetails, isLoading } = useInternshipDetails({
     internshipId: params.id,
+  });
+
+  const { updateInternship } = useUpdateInternship({
+    internshipId: params.id,
+    collegeMentorId: user?.uid,
   });
 
   return (
@@ -35,6 +43,7 @@ const InternshipDetailsPage = () => {
           <UpdateInternshipDialog
             internshipId={params.id}
             internshipDetails={internshipDetails[0]}
+            updateInternship={updateInternship}
           />
         )}
       </div>
