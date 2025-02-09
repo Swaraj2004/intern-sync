@@ -31,8 +31,7 @@ type Students = {
             name: string;
           } | null;
         } | null;
-      }[]
-    | null;
+      }[];
 };
 
 export default Students;

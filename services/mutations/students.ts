@@ -53,6 +53,7 @@ export const useAddStudent = ({
             name: collegeMentorName || '',
           },
         },
+        internships: [],
       };
 
       mutate((currentData) => {
