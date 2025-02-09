@@ -11,8 +11,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Form } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import InputBox from '@/components/ui/InputBox';
+import { Textarea } from '@/components/ui/textarea';
 import { formatDateForDisplay } from '@/lib/utils';
 import {
   useAddHomeCoordinates,
@@ -27,7 +35,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
-const formSchema = z.object({
+const setCoordinatesFormSchema = z.object({
   coordinates: z.string().min(2, 'Please enter valid coordinates.'),
   radius: z.coerce
     .number({
@@ -37,6 +45,15 @@ const formSchema = z.object({
     .gte(10, 'Please enter a valid radius.'),
 });
 
+const sendEmailFormSchema = z.object({
+  subject: z.string({
+    required_error: 'Subject is required.',
+  }),
+  body: z.string({
+    required_error: 'Body is required.',
+  }),
+});
+
 const InternshipDetailsCard = ({
   internshipDetails,
   internshipId,
@@ -44,8 +61,9 @@ const InternshipDetailsCard = ({
   internshipDetails: InternshipDetails;
   internshipId: string;
 }) => {
-  const [isSendingInvite, setIsSendingInvite] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [openCoordinatesDialog, setOpenCoordinatesDialog] = useState(false);
+  const [openEmailDialog, setOpenEmailDialog] = useState(false);
   const [companyMentorStatus, setCompanyMentorStatus] = useState<
     'loading' | 'not-found' | 'company-mentor' | 'error' | 'no-email'
   >('loading');
@@ -61,11 +79,19 @@ const InternshipDetailsCard = ({
     studentId: internshipDetails.student_uid,
   });
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const coordinatesForm = useForm<z.infer<typeof setCoordinatesFormSchema>>({
+    resolver: zodResolver(setCoordinatesFormSchema),
     defaultValues: {
       coordinates: '',
       radius: 0,
+    },
+  });
+
+  const emailForm = useForm<z.infer<typeof sendEmailFormSchema>>({
+    resolver: zodResolver(sendEmailFormSchema),
+    defaultValues: {
+      subject: '',
+      body: '',
     },
   });
 
@@ -98,34 +124,39 @@ const InternshipDetailsCard = ({
     checkCompanyMentor();
   }, [internshipDetails]);
 
-  const handleSendInvite = async () => {
-    setIsSendingInvite(true);
+  const handleSendEmail = async (
+    values: z.infer<typeof sendEmailFormSchema>
+  ) => {
+    setIsSendingEmail(true);
     try {
-      const response = await fetch('/api/invite-company-mentor', {
+      const response = await fetch('/api/send-email', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           companyMentorEmail: internshipDetails.company_mentor_email,
-          studentName: internshipDetails.student_name,
+          emailSubject: values.subject,
+          emailBody: values.body,
         }),
       });
 
       const result = await response.json();
       if (response.ok) {
-        toast.success('Invite sent successfully.');
+        toast.success(result.message);
       } else {
-        toast.error(result.message || 'Failed to send invite.');
+        toast.error(result.message);
       }
     } catch (error) {
       toast.error('An error occurred while sending the invite.');
     } finally {
-      setIsSendingInvite(false);
+      setIsSendingEmail(false);
     }
   };
 
-  function handleSubmitHomeCoordinates(values: z.infer<typeof formSchema>) {
+  function handleSubmitHomeCoordinates(
+    values: z.infer<typeof setCoordinatesFormSchema>
+  ) {
     const { coordinates, radius } = values;
     const [latitude, longitude] = coordinates.split(',').map((c) => +c.trim());
     setOpenCoordinatesDialog(false);
@@ -214,21 +245,151 @@ const InternshipDetailsCard = ({
                     </span>
                   </span>
                   {internshipDetails.approved && (
-                    <Button
-                      size="sm"
-                      onClick={handleSendInvite}
-                      disabled={isSendingInvite}
+                    <Dialog
+                      open={openEmailDialog}
+                      onOpenChange={setOpenEmailDialog}
                     >
-                      {isSendingInvite ? 'Sending...' : 'Send Invite'}
-                    </Button>
+                      <DialogTrigger asChild>
+                        <Button size="sm" disabled={isSendingEmail}>
+                          {isSendingEmail ? 'Sending...' : 'Send Invite'}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[600px]">
+                        <DialogHeader>
+                          <DialogTitle>Send Invite</DialogTitle>
+                          <div className="flex gap-2 pt-2 text-muted-foreground">
+                            Include this link in the email to invite the company
+                            mentor to register on the platform.
+                            <br />
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                navigator.clipboard.writeText(
+                                  `${process.env.NEXT_PUBLIC_URL}/register/company-mentor?email=${internshipDetails.company_mentor_email}`
+                                );
+                                toast.success('Link copied to clipboard');
+                              }}
+                            >
+                              Copy Link
+                            </Button>
+                          </div>
+                        </DialogHeader>
+                        <Form {...emailForm}>
+                          <form
+                            onSubmit={emailForm.handleSubmit(handleSendEmail)}
+                          >
+                            <div className="pb-5 space-y-3">
+                              <InputBox
+                                id="subject"
+                                type="text"
+                                label="Subject"
+                                placeholder="Enter email subject"
+                                form={emailForm}
+                              />
+                              <FormField
+                                control={emailForm.control}
+                                name="body"
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <div className="flex gap-2 items-center h-5">
+                                      <FormLabel>Body</FormLabel>
+                                      <FormMessage />
+                                    </div>
+                                    <FormControl>
+                                      <Textarea
+                                        placeholder="Enter email body"
+                                        rows={15}
+                                        className="resize-none"
+                                        {...field}
+                                      />
+                                    </FormControl>
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <DialogFooter>
+                              <Button
+                                type="submit"
+                                onClick={() => {
+                                  setOpenEmailDialog(false);
+                                }}
+                              >
+                                Submit
+                              </Button>
+                            </DialogFooter>
+                          </form>
+                        </Form>
+                      </DialogContent>
+                    </Dialog>
                   )}
                 </>
               )}
               {companyMentorStatus === 'company-mentor' && (
                 <>
                   <span>{internshipDetails.company_mentor_email}</span>
-                  {!internshipDetails.company_mentor_uid &&
-                    internshipDetails.approved && (
+                  {internshipDetails.approved &&
+                    (internshipDetails.company_mentor_uid ? (
+                      <Dialog
+                        open={openEmailDialog}
+                        onOpenChange={setOpenEmailDialog}
+                      >
+                        <DialogTrigger asChild>
+                          <Button size="sm" disabled={isSendingEmail}>
+                            {isSendingEmail ? 'Sending...' : 'Send Email'}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[600px]">
+                          <DialogHeader>
+                            <DialogTitle>Send Email</DialogTitle>
+                          </DialogHeader>
+                          <Form {...emailForm}>
+                            <form
+                              onSubmit={emailForm.handleSubmit(handleSendEmail)}
+                            >
+                              <div className="pb-5 space-y-3">
+                                <InputBox
+                                  id="subject"
+                                  type="text"
+                                  label="Subject"
+                                  placeholder="Enter email subject"
+                                  form={emailForm}
+                                />
+                                <FormField
+                                  control={emailForm.control}
+                                  name="body"
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <div className="flex gap-2 items-center h-5">
+                                        <FormLabel>Body</FormLabel>
+                                        <FormMessage />
+                                      </div>
+                                      <FormControl>
+                                        <Textarea
+                                          placeholder="Enter email body"
+                                          rows={15}
+                                          className="resize-none"
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                              <DialogFooter>
+                                <Button
+                                  type="submit"
+                                  onClick={() => {
+                                    setOpenEmailDialog(false);
+                                  }}
+                                >
+                                  Submit
+                                </Button>
+                              </DialogFooter>
+                            </form>
+                          </Form>
+                        </DialogContent>
+                      </Dialog>
+                    ) : (
                       <Button
                         size="sm"
                         onClick={assignCompanyMentor}
@@ -236,7 +397,7 @@ const InternshipDetailsCard = ({
                       >
                         {isAssigningMentor ? 'Assigning...' : 'Assign Mentor'}
                       </Button>
-                    )}
+                    ))}
                 </>
               )}
             </div>
@@ -303,9 +464,9 @@ const InternshipDetailsCard = ({
                         <DialogHeader>
                           <DialogTitle>Set Home Coordinates</DialogTitle>
                         </DialogHeader>
-                        <Form {...form}>
+                        <Form {...coordinatesForm}>
                           <form
-                            onSubmit={form.handleSubmit(
+                            onSubmit={coordinatesForm.handleSubmit(
                               handleSubmitHomeCoordinates
                             )}
                           >
@@ -330,7 +491,7 @@ const InternshipDetailsCard = ({
                                     longitude (Example: 18.92199, 72.83457).
                                   </>
                                 }
-                                form={form}
+                                form={coordinatesForm}
                               />
                               <InputBox
                                 id="radius"
@@ -338,7 +499,7 @@ const InternshipDetailsCard = ({
                                 label="Home Radius"
                                 placeholder="Enter home radius in meters"
                                 description="Enter the radius (in meters) around the selected location to define the area for attendance."
-                                form={form}
+                                form={coordinatesForm}
                               />
                             </div>
                             <DialogFooter>
