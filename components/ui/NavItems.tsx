@@ -84,6 +84,11 @@ const NavItems = ({
         'student',
       ],
     },
+    {
+      path: `/dashboard/${role}/evaluations`,
+      title: 'Evaluations',
+      access: ['department-coordinator', 'college-mentor', 'student'],
+    },
   ];
 
   return (

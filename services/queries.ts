@@ -556,3 +556,35 @@ export const useStudentsOfCompanyMentor = ({
     ...rest,
   };
 };
+
+export const useEvaluations = ({
+  instituteId,
+  departmentId,
+}: {
+  instituteId: string | null;
+  departmentId?: string;
+}) => {
+  const shouldFetch = Boolean(instituteId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? (() => {
+          let query = supabase
+            .from('evaluations')
+            .select('id, name, date, department_id, institute_id')
+            .eq('institute_id', instituteId!);
+
+          if (departmentId) {
+            query = query.eq('department_id', departmentId);
+          }
+
+          return query;
+        })()
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
