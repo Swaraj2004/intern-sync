@@ -177,6 +177,101 @@ export type Database = {
           },
         ]
       }
+      evaluation_responses: {
+        Row: {
+          eval_id: string | null
+          id: string
+          mentor_eval_id: string | null
+          parameter_id: string | null
+          student_id: string | null
+          value: string
+        }
+        Insert: {
+          eval_id?: string | null
+          id?: string
+          mentor_eval_id?: string | null
+          parameter_id?: string | null
+          student_id?: string | null
+          value: string
+        }
+        Update: {
+          eval_id?: string | null
+          id?: string
+          mentor_eval_id?: string | null
+          parameter_id?: string | null
+          student_id?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluation_responses_eval_id_fkey"
+            columns: ["eval_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_responses_mentor_eval_id_fkey"
+            columns: ["mentor_eval_id"]
+            isOneToOne: false
+            referencedRelation: "mentor_evaluations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_responses_parameter_id_fkey"
+            columns: ["parameter_id"]
+            isOneToOne: false
+            referencedRelation: "parameters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evaluation_responses_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evaluations: {
+        Row: {
+          date: string
+          department_id: string | null
+          id: string
+          institute_id: string | null
+          name: string
+        }
+        Insert: {
+          date: string
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          name: string
+        }
+        Update: {
+          date?: string
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evaluations_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["uid"]
+          },
+          {
+            foreignKeyName: "evaluations_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
+            referencedColumns: ["uid"]
+          },
+        ]
+      }
       guest_creds: {
         Row: {
           email: string
@@ -417,6 +512,84 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "students"
             referencedColumns: ["uid"]
+          },
+        ]
+      }
+      mentor_evaluations: {
+        Row: {
+          college_mentor_id: string | null
+          eval_id: string | null
+          eval_toggle: boolean
+          evaluator_id: string | null
+          id: string
+        }
+        Insert: {
+          college_mentor_id?: string | null
+          eval_id?: string | null
+          eval_toggle: boolean
+          evaluator_id?: string | null
+          id?: string
+        }
+        Update: {
+          college_mentor_id?: string | null
+          eval_id?: string | null
+          eval_toggle?: boolean
+          evaluator_id?: string | null
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mentor_evaluations_college_mentor_id_fkey"
+            columns: ["college_mentor_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mentor_evaluations_eval_id_fkey"
+            columns: ["eval_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mentor_evaluations_evaluator_id_fkey"
+            columns: ["evaluator_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parameters: {
+        Row: {
+          eval_id: string | null
+          id: string
+          role: string
+          score: number
+          text: string
+        }
+        Insert: {
+          eval_id?: string | null
+          id?: string
+          role: string
+          score: number
+          text: string
+        }
+        Update: {
+          eval_id?: string | null
+          id?: string
+          role?: string
+          score?: number
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parameters_eval_id_fkey"
+            columns: ["eval_id"]
+            isOneToOne: false
+            referencedRelation: "evaluations"
+            referencedColumns: ["id"]
           },
         ]
       }
