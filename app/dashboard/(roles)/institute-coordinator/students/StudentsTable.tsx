@@ -14,7 +14,7 @@ import {
   useSendStudentInvite,
 } from '@/services/mutations/students';
 import { useStudents } from '@/services/queries';
-import Students from '@/types/students';
+import Student from '@/types/students';
 import {
   SortingState,
   getCoreRowModel,
@@ -78,7 +78,7 @@ const StudentsTable = () => {
   );
 
   const table = useReactTable({
-    data: tableData as Students[],
+    data: tableData as Student[],
     columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -114,7 +114,7 @@ const StudentsTable = () => {
         )
       )}
       {mounted && (
-        <TableContent<Students>
+        <TableContent<Student>
           table={table}
           isLoading={isLoading}
           mounted={mounted}

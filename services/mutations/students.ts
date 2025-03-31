@@ -1,7 +1,7 @@
 import deleteUserById from '@/server/delete-user';
 import sendInviteEmail from '@/server/send-invite';
 import { useStudents } from '@/services/queries';
-import Students from '@/types/students';
+import Student from '@/types/students';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
@@ -32,7 +32,7 @@ export const useAddStudent = ({
     ) => {
       setIsLoading(true);
 
-      const optimisticUpdate: Students = {
+      const optimisticUpdate: Student = {
         uid: crypto.randomUUID(),
         departments: {
           uid: departmentId,

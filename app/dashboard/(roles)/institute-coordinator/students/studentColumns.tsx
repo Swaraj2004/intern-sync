@@ -1,7 +1,7 @@
 import { StudentActions } from '@/components/students/StudentActions';
 import { Button } from '@/components/ui/button';
 import UserStatus from '@/components/ui/UserStatus';
-import Students from '@/types/students';
+import Student from '@/types/students';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
@@ -21,7 +21,7 @@ const getStudentColumns = ({
   onSendInvite,
   onChangeCollegeMentor,
   dashboardRole,
-}: ColumnProps): ColumnDef<Students>[] => [
+}: ColumnProps): ColumnDef<Student>[] => [
   {
     id: 'users.name',
     accessorFn: (row) => row.users?.name,

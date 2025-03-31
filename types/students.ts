@@ -1,4 +1,4 @@
-type Students = {
+type Student = {
   uid: string;
   college_mentors: {
     uid: string;
@@ -34,4 +34,4 @@ type Students = {
       }[];
 };
 
-export default Students;
+export default Student;
