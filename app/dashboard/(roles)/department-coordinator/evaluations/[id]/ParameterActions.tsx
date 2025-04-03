@@ -12,7 +12,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { DateTimePicker } from '@/components/ui/datetime-picker';
 import {
   Dialog,
   DialogContent,
@@ -21,70 +20,71 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Form } from '@/components/ui/form';
 import InputBox from '@/components/ui/InputBox';
-import { formatDateForInput } from '@/lib/utils';
-import Evaluation from '@/types/evaluations';
+import SingleSelectInput from '@/components/ui/SelectInput';
+import Parameter from '@/types/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FilePenIcon, ListIcon, Trash2Icon } from 'lucide-react';
-import Link from 'next/link';
+import { Trash2Icon, UserRoundPenIcon, FilePenIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type EvaluationActionsProps = {
-  deleteEvaluation: () => Promise<void>;
-  updateEvaluation: (evaluationId: string, name: string, date: string) => void;
-  evaluation: Evaluation;
-  dashboardRole: string;
+const roleOptions = [
+  { value: 'student', label: 'Student' },
+  { value: 'college-mentor', label: 'Evaluator' },
+];
+
+type ParameterActionsProps = {
+  deleteParameter: () => Promise<void>;
+  updateParameter: (
+    parameterId: string,
+    text: string,
+    role: string,
+    score: number
+  ) => void;
+  parameter: Parameter;
 };
 
 const FormSchema = z.object({
   name: z
     .string({
-      required_error: 'Name is required.',
+      required_error: 'Text is required.',
     })
-    .min(2, { message: 'Name is required.' }),
-  date: z.date({
-    required_error: 'Date is required.',
+    .min(2, { message: 'Text must be at least 2 characters.' }),
+  role: z.string({
+    required_error: 'Role is required.',
   }),
+  score: z
+    .string({
+      required_error: 'Score is required.',
+    })
+    .min(1, { message: 'Score must be at least 1.' }),
 });
 
-export const EvaluationActions: React.FC<EvaluationActionsProps> = ({
-  deleteEvaluation,
-  updateEvaluation,
-  evaluation,
-  dashboardRole,
+export const ParameterActions: React.FC<ParameterActionsProps> = ({
+  deleteParameter,
+  updateParameter,
+  parameter,
 }) => {
   const [openDialog, setOpenDialog] = useState(false);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: evaluation.name,
-      date: new Date(evaluation.date),
+      name: parameter.text,
+      role: parameter.role,
+      score: `${parameter.score}`,
     },
   });
 
-  const handleUpdateEvaluation = async (data: z.infer<typeof FormSchema>) => {
+  const handleUpdateParameter = async (data: z.infer<typeof FormSchema>) => {
     setOpenDialog(false);
-    updateEvaluation(evaluation.id, data.name, formatDateForInput(data.date));
+    updateParameter(parameter.id, data.name, data.role, parseInt(data.score));
   };
 
   return (
     <div className="flex justify-end gap-3">
-      <Button size="icon-sm" asChild>
-        <Link href={`/dashboard/${dashboardRole}/evaluations/${evaluation.id}`}>
-          <ListIcon className="h-5 w-5" />
-        </Link>
-      </Button>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTrigger asChild>
           <Button size="icon-sm" className="bg-green-500 hover:bg-green-600">
@@ -96,42 +96,37 @@ export const EvaluationActions: React.FC<EvaluationActionsProps> = ({
           className="w-[calc(100vw-24px)] min-[450px]:max-w-[425px]"
         >
           <DialogHeader>
-            <DialogTitle>Update Evaluation</DialogTitle>
+            <DialogTitle>Update Parameter</DialogTitle>
           </DialogHeader>
           <div>
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(handleUpdateEvaluation)}
+                onSubmit={form.handleSubmit(handleUpdateParameter)}
                 className="space-y-6 pt-3"
               >
                 <InputBox
                   label="Name"
-                  placeholder="Enter evaluation name"
+                  placeholder="Enter parameter name"
                   id="name"
                   type="text"
                   form={form}
                 />
-                <FormField
-                  control={form.control}
-                  name="date"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel htmlFor="date">Date</FormLabel>
-                      <FormControl>
-                        <DateTimePicker
-                          jsDate={field.value}
-                          onJsDateChange={field.onChange}
-                          aria-label="Date"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                <SingleSelectInput
+                  label="Role"
+                  placeholder="Enter parameter role"
+                  id="role"
+                  options={roleOptions}
+                  form={form}
+                />
+                <InputBox
+                  label="Score"
+                  placeholder="Enter parameter score"
+                  id="score"
+                  type="number"
+                  form={form}
                 />
                 <DialogFooter>
-                  <Button className="disabled:pointer-events-auto disabled:cursor-not-allowed">
-                    Save
-                  </Button>
+                  <Button type="submit">Save</Button>
                 </DialogFooter>
               </form>
             </Form>
@@ -149,12 +144,12 @@ export const EvaluationActions: React.FC<EvaluationActionsProps> = ({
             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete this
-              evaluation and all related data.
+              parameter.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteEvaluation}>
+            <AlertDialogAction onClick={deleteParameter}>
               Continue
             </AlertDialogAction>
           </AlertDialogFooter>

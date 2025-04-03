@@ -588,3 +588,23 @@ export const useEvaluations = ({
     ...rest,
   };
 };
+
+export const useParametersForEvaluation = (evalId: string | null) => {
+  const shouldFetch = Boolean(evalId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? (() => {
+          return supabase
+            .from('parameters')
+            .select('id, text, role, score, eval_id')
+            .eq('eval_id', evalId!);
+        })()
+      : null
+  );
+
+  return {
+    data,
+    ...rest,
+  };
+};
