@@ -25,7 +25,7 @@ import InputBox from '@/components/ui/InputBox';
 import SingleSelectInput from '@/components/ui/SelectInput';
 import Parameter from '@/types/parameters';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Trash2Icon, UserRoundPenIcon, FilePenIcon } from 'lucide-react';
+import { FilePenIcon, Trash2Icon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';

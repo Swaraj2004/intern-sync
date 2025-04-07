@@ -1,8 +1,9 @@
-import { useEvaluations } from '@/services/queries';
+import { useEvaluations, useMentorEvaluations } from '@/services/queries';
 import Evaluation from '@/types/evaluations';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import uuid4 from 'uuid4';
 
 const supabase = supabaseClient();
 
@@ -180,4 +181,87 @@ export const useDeleteEvaluation = ({
   );
 
   return { deleteEvaluation, isLoading };
+};
+
+export const useUpdateMentorEvaluation = ({
+  mentorId,
+}: {
+  mentorId: string;
+}) => {
+  const { mutate } = useMentorEvaluations({
+    mentorId: mentorId,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const updateMentorEvaluation = useCallback(
+    async (
+      evaluationId: string,
+      mentorEvaluationId: string,
+      evalToggle: boolean,
+      evaluatorId: string
+    ) => {
+      setIsLoading(true);
+
+      mutate((currentData) => {
+        if (!currentData?.data) return undefined;
+        return {
+          ...currentData,
+          data: currentData.data.map((evaluation) =>
+            evaluation.evaluation_id === mentorEvaluationId
+              ? {
+                  ...evaluation,
+                  eval_toggle: evalToggle ?? evaluation.eval_toggle,
+                  evaluator_id: evaluatorId ?? evaluation.evaluator_id,
+                }
+              : evaluation
+          ),
+        };
+      }, false);
+
+      try {
+        if (mentorEvaluationId !== null) {
+          const { error } = await supabase
+            .from('mentor_evaluations')
+            .update({
+              eval_toggle: evalToggle,
+              college_mentor_id: mentorId,
+              evaluator_id: evaluatorId,
+              eval_id: evaluationId,
+            })
+            .eq('id', mentorEvaluationId);
+
+          if (error) {
+            toast.error(error.message);
+            return;
+          }
+        } else {
+          const { error } = await supabase.from('mentor_evaluations').insert([
+            {
+              id: uuid4(),
+              eval_toggle: evalToggle,
+              college_mentor_id: mentorId,
+              evaluator_id: evaluatorId,
+              eval_id: evaluationId,
+            },
+          ]);
+
+          if (error) {
+            toast.error(error.message);
+            return;
+          }
+        }
+
+        toast.success('Mentor evaluation updated successfully.');
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        else toast.error('Failed to update mentor evaluation.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, mentorId]
+  );
+
+  return { updateMentorEvaluation, isLoading };
 };

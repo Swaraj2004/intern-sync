@@ -608,3 +608,15 @@ export const useParametersForEvaluation = (evalId: string | null) => {
     ...rest,
   };
 };
+
+export const useMentorEvaluations = ({ mentorId }: { mentorId: string }) => {
+  const { data, ...rest } = useQuery(
+    mentorId
+      ? supabase.rpc('get_mentor_evaluations', {
+          mentor_id: mentorId,
+        })
+      : null
+  );
+
+  return { data, ...rest };
+};

@@ -10,7 +10,7 @@ type ColumnProps = {
   dashboardRole: string;
 };
 
-const getStudentColumns = ({
+const getEvaluationColumns = ({
   onDelete,
   onUpdate,
   dashboardRole,
@@ -64,4 +64,4 @@ const getStudentColumns = ({
   },
 ];
 
-export default getStudentColumns;
+export default getEvaluationColumns;
