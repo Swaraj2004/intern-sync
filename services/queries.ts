@@ -19,7 +19,11 @@ export const useDepartments = ({
           )
           .eq('institute_id', instituteId!)
           .order('created_at', { ascending: false })
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -54,7 +58,11 @@ export const useCollegeMentors = ({
 
           return query;
         })()
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -112,7 +120,11 @@ export const useStudents = ({
 
           return query;
         })()
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   // Format today's date as YYYY-MM-DD (assuming that matches your date columns)
@@ -399,7 +411,11 @@ export const useStudentInternships = ({
             'id, role, field, mode, region, start_date, end_date, company_mentor_email, company_name, company_address, internship_letter_url, approved, students (home_latitude, home_longitude), company_mentors (company_latitude, company_longitude)'
           )
           .eq('student_id', studentId!)
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -420,7 +436,11 @@ export const useInternshipDetails = ({
       ? supabase.rpc('get_internship_details', {
           internship_id: internshipId!,
         })
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -524,7 +544,11 @@ export const useInternships = ({
 
           return query;
         })()
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -548,7 +572,11 @@ export const useStudentsOfCompanyMentor = ({
             'students (uid, users (name, email, contact), departments (name), college_mentors (users (name)), institutes (name))'
           )
           .eq('company_mentor_id', companyMentorId!)
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -580,7 +608,11 @@ export const useEvaluations = ({
 
           return query;
         })()
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -600,7 +632,11 @@ export const useParametersForEvaluation = (evalId: string | null) => {
             .select('id, text, role, score, eval_id')
             .eq('eval_id', evalId!);
         })()
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return {
@@ -615,8 +651,61 @@ export const useMentorEvaluations = ({ mentorId }: { mentorId: string }) => {
       ? supabase.rpc('get_mentor_evaluations', {
           mentor_id: mentorId,
         })
-      : null
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   return { data, ...rest };
+};
+
+export const useStudentsForMentorEvaluation = ({
+  mentorEvaluationId,
+}: {
+  mentorEvaluationId: string;
+}) => {
+  const shouldFetch = Boolean(mentorEvaluationId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_students_for_mentor_evaluation', {
+          mentor_eval_id: mentorEvaluationId,
+        })
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return { data, ...rest };
+};
+
+export const useEvaluationName = ({
+  mentorEvaluationId,
+}: {
+  mentorEvaluationId: string | null;
+}) => {
+  const shouldFetch = Boolean(mentorEvaluationId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase
+          .from('mentor_evaluations')
+          .select('evaluations (id, name)')
+          .eq('id', mentorEvaluationId!)
+          .single()
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return {
+    data,
+    ...rest,
+  };
 };

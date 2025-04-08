@@ -1011,6 +1011,15 @@ export type Database = {
           is_holiday: boolean
         }[]
       }
+      get_students_for_mentor_evaluation: {
+        Args: { mentor_eval_id: string }
+        Returns: {
+          uid: string
+          name: string
+          email: string
+          roll_no: string
+        }[]
+      }
       get_students_reports: {
         Args: {
           institute_id: string
