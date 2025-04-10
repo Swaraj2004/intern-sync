@@ -661,28 +661,6 @@ export const useMentorEvaluations = ({ mentorId }: { mentorId: string }) => {
   return { data, ...rest };
 };
 
-export const useStudentsForMentorEvaluation = ({
-  mentorEvaluationId,
-}: {
-  mentorEvaluationId: string;
-}) => {
-  const shouldFetch = Boolean(mentorEvaluationId);
-
-  const { data, ...rest } = useQuery(
-    shouldFetch
-      ? supabase.rpc('get_students_for_mentor_evaluation', {
-          mentor_eval_id: mentorEvaluationId,
-        })
-      : null,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
-
-  return { data, ...rest };
-};
-
 export const useEvaluationName = ({
   mentorEvaluationId,
 }: {
@@ -708,4 +686,48 @@ export const useEvaluationName = ({
     data,
     ...rest,
   };
+};
+
+export const useStudentsForMentorEvaluation = ({
+  mentorEvaluationId,
+}: {
+  mentorEvaluationId: string;
+}) => {
+  const shouldFetch = Boolean(mentorEvaluationId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_students_for_mentor_evaluation', {
+          mentor_eval_id: mentorEvaluationId,
+        })
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return { data, ...rest };
+};
+
+export const useStudentsForEvaluator = ({
+  evaluatorId,
+}: {
+  evaluatorId: string;
+}) => {
+  const shouldFetch = Boolean(evaluatorId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_students_for_evaluator', {
+          evaluator_id: evaluatorId,
+        })
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return { data, ...rest };
 };

@@ -3,7 +3,11 @@ import MentorEvaluationStudent from '@/types/mentor-evaluation-students';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
 
-const getStudentColumns = (): ColumnDef<MentorEvaluationStudent>[] => [
+const getStudentColumns = ({
+  asEvaluator,
+}: {
+  asEvaluator: boolean;
+}): ColumnDef<MentorEvaluationStudent>[] => [
   {
     id: 'name',
     accessorFn: (row) => row.name,

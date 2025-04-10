@@ -7,7 +7,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
-import { useStudentsForMentorEvaluation } from '@/services/queries';
+import { useUser } from '@/context/UserContext';
+import {
+  useStudentsForEvaluator,
+  useStudentsForMentorEvaluation,
+} from '@/services/queries';
 import MentorEvaluationStudent from '@/types/mentor-evaluation-students';
 import {
   SortingState,
@@ -21,9 +25,12 @@ import { useEffect, useMemo, useState } from 'react';
 
 const EvaluationStudentsTable = ({
   mentorEvalId,
+  asEvaluator,
 }: {
   mentorEvalId: string;
+  asEvaluator: boolean;
 }) => {
+  const { user } = useUser();
   const [mounted, setMounted] = useState(false);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
@@ -32,20 +39,42 @@ const EvaluationStudentsTable = ({
     setMounted(true);
   }, []);
 
-  const { data: students, isLoading } = useStudentsForMentorEvaluation({
-    mentorEvaluationId: mentorEvalId,
-  });
+  const { data: students, isLoading: isLoadingStudents } =
+    useStudentsForMentorEvaluation({
+      mentorEvaluationId: mentorEvalId,
+    });
+  const { data: evaluatorStudents, isLoading: isLoadingEvaluatorStudents } =
+    useStudentsForEvaluator({
+      evaluatorId: user?.uid!,
+    });
 
-  const parameterColumns = useMemo(() => getEvaluationStudentsColumns(), []);
+  const parameterColumns = useMemo(
+    () =>
+      getEvaluationStudentsColumns({
+        asEvaluator: asEvaluator,
+      }),
+    [asEvaluator]
+  );
 
   const tableData = useMemo(
-    () => (isLoading ? Array(10).fill({}) : students),
-    [isLoading, students]
+    () =>
+      isLoadingStudents && isLoadingEvaluatorStudents
+        ? Array(10).fill({})
+        : asEvaluator
+        ? evaluatorStudents
+        : students,
+    [
+      isLoadingStudents,
+      isLoadingEvaluatorStudents,
+      students,
+      evaluatorStudents,
+      asEvaluator,
+    ]
   );
 
   const tableColumns = useMemo(
     () =>
-      isLoading
+      isLoadingStudents && isLoadingEvaluatorStudents
         ? parameterColumns.map((column, index) => ({
             ...column,
             cell: () => (
@@ -53,7 +82,7 @@ const EvaluationStudentsTable = ({
             ),
           }))
         : parameterColumns,
-    [isLoading, parameterColumns]
+    [isLoadingStudents, isLoadingEvaluatorStudents, parameterColumns]
   );
 
   const table = useReactTable({
@@ -81,7 +110,7 @@ const EvaluationStudentsTable = ({
 
   return (
     <Card className="p-5">
-      {isLoading ? (
+      {isLoadingStudents && isLoadingEvaluatorStudents ? (
         <Skeleton className="h-10 max-w-xs rounded-md" />
       ) : (
         mounted && (
@@ -91,13 +120,15 @@ const EvaluationStudentsTable = ({
       {mounted && (
         <TableContent<MentorEvaluationStudent>
           table={table}
-          isLoading={isLoading}
+          isLoading={isLoadingStudents && isLoadingEvaluatorStudents}
           mounted={mounted}
-          tableData={students}
+          tableData={asEvaluator ? evaluatorStudents : students}
           tableColumns={tableColumns}
         />
       )}
-      {students && <TablePagination table={table} />}
+      {(asEvaluator ? evaluatorStudents : students) && (
+        <TablePagination table={table} />
+      )}
     </Card>
   );
 };
