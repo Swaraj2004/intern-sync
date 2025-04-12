@@ -12,20 +12,11 @@ import {
 import { Form } from '@/components/ui/form';
 import { useUser } from '@/context/UserContext';
 import MentorEvaluation from '@/types/mentor-evaluations';
-import { supabaseClient } from '@/utils/supabase/client';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@supabase-cache-helpers/postgrest-swr';
-import { ListIcon } from 'lucide-react';
+import { ClipboardPenIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-const supabase = supabaseClient();
-
-const stausOptions = [
-  { value: 'open', label: 'Open' },
-  { value: 'closed', label: 'Closed' },
-];
 
 type MentorEvaluationActionsProps = {
   updateEvaluation: (
@@ -53,37 +44,6 @@ export const MentorEvaluationActions: React.FC<
   const { user } = useUser();
   const [openDialog, setOpenDialog] = useState(false);
 
-  const { data: departmentData } = useQuery(
-    supabase
-      .from('students')
-      .select('department_id')
-      .eq('uid', user?.uid!),
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
-
-  const { data: mentorsData } = useQuery(
-    departmentData && departmentData[0].department_id
-      ? supabase
-          .from('college_mentors')
-          .select('uid, users(id, name)')
-          .eq('department_id', departmentData[0].department_id!)
-      : null,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
-  );
-
-  const collegeMentors = mentorsData
-    ? mentorsData.map(({ uid, users }) => ({
-        value: uid,
-        label: (users as { id: string; name: string }).name,
-      }))
-    : [];
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -108,7 +68,7 @@ export const MentorEvaluationActions: React.FC<
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogTrigger asChild>
           <Button size="icon-sm" className="bg-blue-500 hover:bg-blue-600">
-            <ListIcon className="h-4 w-4" />
+            <ClipboardPenIcon className="h-4 w-4" />
           </Button>
         </DialogTrigger>
         <DialogContent
@@ -134,7 +94,6 @@ export const MentorEvaluationActions: React.FC<
           </div>
         </DialogContent>
       </Dialog>
-      
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import MentorEvaluationStudent from '@/types/mentor-evaluation-students';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
+import { EvaluationStudentsActions } from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/EvaluationStudentsActions';
 
 const getStudentColumns = ({
   asEvaluator,
@@ -60,7 +61,12 @@ const getStudentColumns = ({
   {
     id: 'actions',
     cell: ({ row }) => {
-      return <></>;
+      return (
+        <EvaluationStudentsActions
+          asEvaluator={asEvaluator}
+          mentorEvaluationStudent={row.original}
+        />
+      );
     },
   },
 ];

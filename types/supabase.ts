@@ -949,14 +949,6 @@ export type Database = {
           evaluator_name: string
         }[]
       }
-      get_parameters_for_evaluation: {
-        Args: { mentor_eval_id: string; role_filter?: string }
-        Returns: {
-          parameter_id: string
-          parameter_text: string
-          role: string
-        }[]
-      }
       get_student_reports: {
         Args: { student_id: string; from_date: string; to_date: string }
         Returns: {
