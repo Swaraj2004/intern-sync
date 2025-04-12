@@ -6,12 +6,7 @@ import { ChevronsUpDownIcon } from 'lucide-react';
 
 type ColumnProps = {
   onDelete: (parameterId: string) => void;
-  onUpdate: (
-    parameterId: string,
-    text: string,
-    role: string,
-    score: number
-  ) => void;
+  onUpdate: (parameterId: string, text: string, role: string) => void;
 };
 
 const getParameterColumns = ({
@@ -51,24 +46,6 @@ const getParameterColumns = ({
       </Button>
     ),
     cell: ({ row }) => <div>{row.original?.role || '-'}</div>,
-  },
-  {
-    id: 'score',
-    accessorFn: (row) => row?.score,
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        className="px-0 hover:bg-transparent"
-      >
-        Score
-        <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => {
-      const score = row.original?.score;
-      return <div>{typeof score === 'number' ? score : '-'}</div>;
-    },
   },
   {
     id: 'actions',

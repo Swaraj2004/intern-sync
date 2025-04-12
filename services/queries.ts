@@ -629,7 +629,7 @@ export const useParametersForEvaluation = (evalId: string | null) => {
       ? (() => {
           return supabase
             .from('parameters')
-            .select('id, text, role, score, eval_id')
+            .select('id, text, role, eval_id')
             .eq('eval_id', evalId!);
         })()
       : null,

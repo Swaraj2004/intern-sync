@@ -33,11 +33,6 @@ const FormSchema = z.object({
   role: z.string({
     required_error: 'Role is required.',
   }),
-  score: z
-    .string({
-      required_error: 'Score is required.',
-    })
-    .min(1, { message: 'Score must be at least 1.' }),
 });
 
 interface AddParameterFormProps {
@@ -55,15 +50,14 @@ const AddParameterForm: React.FC<AddParameterFormProps> = ({
     defaultValues: {
       name: '',
       role: '',
-      score: '',
     },
   });
 
   const { addParameter } = useAddParameter(evalId);
 
   const handleAddParameter = async (values: z.infer<typeof FormSchema>) => {
-    const { name, role, score } = values;
-    await addParameter(name, role, parseInt(score));
+    const { name, role } = values;
+    await addParameter(name, role);
     setOpenAddDialog(false);
     if (onParameterAdded) {
       onParameterAdded();
@@ -100,13 +94,6 @@ const AddParameterForm: React.FC<AddParameterFormProps> = ({
                 placeholder="Enter parameter role"
                 id="role"
                 options={roleOptions}
-                form={form}
-              />
-              <InputBox
-                label="Score"
-                placeholder="Enter parameter score"
-                id="score"
-                type="number"
                 form={form}
               />
             </div>

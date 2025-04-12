@@ -218,13 +218,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "evaluation_responses_parameter_id_fkey"
-            columns: ["parameter_id"]
-            isOneToOne: false
-            referencedRelation: "parameters"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "evaluation_responses_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
@@ -566,21 +559,18 @@ export type Database = {
           eval_id: string | null
           id: string
           role: string
-          score: number
           text: string
         }
         Insert: {
           eval_id?: string | null
           id?: string
           role: string
-          score: number
           text: string
         }
         Update: {
           eval_id?: string | null
           id?: string
           role?: string
-          score?: number
           text?: string
         }
         Relationships: [
@@ -905,6 +895,20 @@ export type Database = {
         }
         Returns: Json
       }
+      get_evaluation_responses: {
+        Args: {
+          mentor_eval_id: string
+          student_id: string
+          role_filter?: string
+        }
+        Returns: {
+          response_id: string
+          value: string
+          parameter_id: string
+          parameter_text: string
+          role: string
+        }[]
+      }
       get_internship_details: {
         Args: { internship_id: string }
         Returns: {
@@ -943,6 +947,14 @@ export type Database = {
           eval_toggle: boolean
           evaluator_id: string
           evaluator_name: string
+        }[]
+      }
+      get_parameters_for_evaluation: {
+        Args: { mentor_eval_id: string; role_filter?: string }
+        Returns: {
+          parameter_id: string
+          parameter_text: string
+          role: string
         }[]
       }
       get_student_reports: {
@@ -1094,6 +1106,14 @@ export type Database = {
           region: string
         }
         Returns: number
+      }
+      insert_evaluation_responses: {
+        Args: {
+          mentor_eval_id: string
+          student_id: string
+          response_data: Json
+        }
+        Returns: string
       }
       mark_attendance: {
         Args: {

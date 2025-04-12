@@ -37,12 +37,7 @@ const roleOptions = [
 
 type ParameterActionsProps = {
   deleteParameter: () => Promise<void>;
-  updateParameter: (
-    parameterId: string,
-    text: string,
-    role: string,
-    score: number
-  ) => void;
+  updateParameter: (parameterId: string, text: string, role: string) => void;
   parameter: Parameter;
 };
 
@@ -55,11 +50,6 @@ const FormSchema = z.object({
   role: z.string({
     required_error: 'Role is required.',
   }),
-  score: z
-    .string({
-      required_error: 'Score is required.',
-    })
-    .min(1, { message: 'Score must be at least 1.' }),
 });
 
 export const ParameterActions: React.FC<ParameterActionsProps> = ({
@@ -74,13 +64,12 @@ export const ParameterActions: React.FC<ParameterActionsProps> = ({
     defaultValues: {
       name: parameter.text,
       role: parameter.role,
-      score: `${parameter.score}`,
     },
   });
 
   const handleUpdateParameter = async (data: z.infer<typeof FormSchema>) => {
     setOpenDialog(false);
-    updateParameter(parameter.id, data.name, data.role, parseInt(data.score));
+    updateParameter(parameter.id, data.name, data.role);
   };
 
   return (
@@ -116,13 +105,6 @@ export const ParameterActions: React.FC<ParameterActionsProps> = ({
                   placeholder="Enter parameter role"
                   id="role"
                   options={roleOptions}
-                  form={form}
-                />
-                <InputBox
-                  label="Score"
-                  placeholder="Enter parameter score"
-                  id="score"
-                  type="number"
                   form={form}
                 />
                 <DialogFooter>

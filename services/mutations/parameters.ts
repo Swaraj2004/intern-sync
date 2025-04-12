@@ -11,14 +11,13 @@ export const useAddParameter = (evalId: string) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const addParameter = useCallback(
-    async (text: string, role: string, score: number) => {
+    async (text: string, role: string) => {
       setIsLoading(true);
 
       const optimisticUpdate: Parameter = {
         id: crypto.randomUUID(),
         text,
         role,
-        score,
         eval_id: evalId,
       };
 
@@ -36,7 +35,6 @@ export const useAddParameter = (evalId: string) => {
             id: optimisticUpdate.id,
             text,
             role,
-            score,
             eval_id: evalId,
           },
         ]);
@@ -66,7 +64,7 @@ export const useUpdateParameter = (evalId: string) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const updateParameter = useCallback(
-    async (parameterId: string, text: string, role: string, score: number) => {
+    async (parameterId: string, text: string, role: string) => {
       setIsLoading(true);
 
       mutate((currentData) => {
@@ -79,7 +77,6 @@ export const useUpdateParameter = (evalId: string) => {
                   ...parameter,
                   text,
                   role,
-                  score,
                 }
               : parameter
           ),
@@ -89,7 +86,7 @@ export const useUpdateParameter = (evalId: string) => {
       try {
         const { error } = await supabase
           .from('parameters')
-          .update({ text, role, score })
+          .update({ text, role })
           .eq('id', parameterId);
 
         if (error) {
