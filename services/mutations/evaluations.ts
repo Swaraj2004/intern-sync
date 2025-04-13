@@ -1,4 +1,8 @@
-import { useEvaluations, useMentorEvaluations } from '@/services/queries';
+import {
+  useEvaluationResponses,
+  useEvaluations,
+  useMentorEvaluations,
+} from '@/services/queries';
 import Evaluation from '@/types/evaluations';
 import { supabaseClient } from '@/utils/supabase/client';
 import { useCallback, useState } from 'react';
@@ -264,4 +268,94 @@ export const useUpdateMentorEvaluation = ({
   );
 
   return { updateMentorEvaluation, isLoading };
+};
+
+export const useAddEvaluationMentorResponses = ({
+  mentorEvaluationId,
+  studentId,
+}: {
+  mentorEvaluationId: string;
+  studentId: string;
+}) => {
+  const { mutate } = useEvaluationResponses({
+    mentorEvaluationId: mentorEvaluationId,
+    studentId: studentId,
+    roleFilter: 'college-mentor',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const addEvaluationResponses = useCallback(
+    async (responses: { [key: string]: string }) => {
+      setIsLoading(true);
+
+      try {
+        const { error } = await supabase.rpc('insert_evaluation_responses', {
+          mentor_eval_id: mentorEvaluationId,
+          student_id: studentId,
+          response_data: responses,
+        });
+
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+
+        toast.success('Responses added successfully.');
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        else toast.error('Failed to add responses.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, mentorEvaluationId, studentId]
+  );
+
+  return { addEvaluationResponses, isLoading };
+};
+
+export const useAddEvaluationStudentResponses = ({
+  mentorEvaluationId,
+  studentId,
+}: {
+  mentorEvaluationId: string;
+  studentId: string;
+}) => {
+  const { mutate } = useEvaluationResponses({
+    mentorEvaluationId: mentorEvaluationId,
+    studentId: studentId,
+    roleFilter: 'student',
+  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const addEvaluationResponses = useCallback(
+    async (responses: { [key: string]: string }) => {
+      setIsLoading(true);
+
+      try {
+        const { error } = await supabase.rpc('insert_evaluation_responses', {
+          mentor_eval_id: mentorEvaluationId,
+          student_id: studentId,
+          response_data: responses,
+        });
+
+        if (error) {
+          toast.error(error.message);
+          return;
+        }
+
+        toast.success('Responses added successfully.');
+      } catch (error) {
+        if (typeof error === 'string') toast.error(error);
+        else toast.error('Failed to add responses.');
+      } finally {
+        mutate();
+        setIsLoading(false);
+      }
+    },
+    [mutate, mentorEvaluationId, studentId]
+  );
+
+  return { addEvaluationResponses, isLoading };
 };

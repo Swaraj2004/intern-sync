@@ -10,7 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader } from '@/components/ui/Loader';
-import { useAddEvaluationMentorResponses } from '@/services/mutations/evaluations';
+import { useAddEvaluationStudentResponses } from '@/services/mutations/evaluations';
 import { useEvaluationResponses } from '@/services/queries';
 import { ClipboardPenIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -28,10 +28,10 @@ const AddResponsesForm = ({
   const { data: evaluationResponses } = useEvaluationResponses({
     mentorEvaluationId: mentorEvalId,
     studentId: studentId,
-    roleFilter: 'college-mentor',
+    roleFilter: 'student',
   });
 
-  const { addEvaluationResponses } = useAddEvaluationMentorResponses({
+  const { addEvaluationResponses } = useAddEvaluationStudentResponses({
     mentorEvaluationId: mentorEvalId,
     studentId: studentId,
   });

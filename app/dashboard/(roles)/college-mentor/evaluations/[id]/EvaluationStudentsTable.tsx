@@ -1,6 +1,6 @@
 'use client';
 
-import getEvaluationStudentsColumns from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/EvaluationStudentsColumns';
+import getEvaluationStudentsColumns from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/evaluationStudentsColumns';
 import { Card } from '@/components/ui/card';
 import { Loader } from '@/components/ui/Loader';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -24,9 +24,11 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 const EvaluationStudentsTable = ({
+  evalToggle,
   mentorEvalId,
   asEvaluator,
 }: {
+  evalToggle: boolean;
   mentorEvalId: string;
   asEvaluator: boolean;
 }) => {
@@ -51,9 +53,11 @@ const EvaluationStudentsTable = ({
   const parameterColumns = useMemo(
     () =>
       getEvaluationStudentsColumns({
+        evalToggle: evalToggle,
         asEvaluator: asEvaluator,
+        mentorEvalId: mentorEvalId,
       }),
-    [asEvaluator]
+    [evalToggle, asEvaluator, mentorEvalId]
   );
 
   const tableData = useMemo(

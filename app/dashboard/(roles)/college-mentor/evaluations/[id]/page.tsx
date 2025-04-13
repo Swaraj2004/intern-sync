@@ -2,7 +2,7 @@
 
 import EvaluationStudentsTable from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/EvaluationStudentsTable';
 import { Switch } from '@/components/ui/switch';
-import { useEvaluationName } from '@/services/queries';
+import { useMentorEvaluation } from '@/services/queries';
 import { useParams } from 'next/navigation';
 import { useState } from 'react';
 
@@ -11,7 +11,7 @@ const EvaluationStudentsPage = () => {
   const mentorEvalId = params.id as string;
   const [asEvaluator, setAsEvaluator] = useState(false);
 
-  const { data } = useEvaluationName({
+  const { data } = useMentorEvaluation({
     mentorEvaluationId: mentorEvalId,
   });
 
@@ -33,6 +33,7 @@ const EvaluationStudentsPage = () => {
         </div>
       </div>
       <EvaluationStudentsTable
+        evalToggle={data?.eval_toggle!}
         mentorEvalId={mentorEvalId}
         asEvaluator={asEvaluator}
       />

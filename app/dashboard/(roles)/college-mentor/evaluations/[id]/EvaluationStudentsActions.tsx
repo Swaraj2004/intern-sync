@@ -1,20 +1,28 @@
 import AddResponsesForm from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/AddResponsesForm';
 import StudentEvaluationResponses from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/StudentEvaluationResponses';
-import MentorEvaluationStudent from '@/types/mentor-evaluation-students';
 
 export const EvaluationStudentsActions = ({
+  evalToggle,
   asEvaluator,
-  mentorEvaluationStudent,
+  mentorEvalId,
+  studentId,
 }: {
+  evalToggle: boolean;
   asEvaluator: boolean;
-  mentorEvaluationStudent: MentorEvaluationStudent;
+  mentorEvalId: string;
+  studentId: string;
 }) => {
   return (
     <div className="flex justify-end gap-3">
       {asEvaluator ? (
-        <AddResponsesForm mentorEvaluationStudent={mentorEvaluationStudent} />
+        evalToggle && (
+          <AddResponsesForm mentorEvalId={mentorEvalId} studentId={studentId} />
+        )
       ) : (
-        <StudentEvaluationResponses />
+        <StudentEvaluationResponses
+          mentorEvalId={mentorEvalId}
+          studentId={studentId}
+        />
       )}
     </div>
   );

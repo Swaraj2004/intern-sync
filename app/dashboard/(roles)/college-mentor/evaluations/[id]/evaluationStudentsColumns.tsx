@@ -1,13 +1,17 @@
+import { EvaluationStudentsActions } from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/EvaluationStudentsActions';
 import { Button } from '@/components/ui/button';
 import MentorEvaluationStudent from '@/types/mentor-evaluation-students';
 import { ColumnDef } from '@tanstack/react-table';
 import { ChevronsUpDownIcon } from 'lucide-react';
-import { EvaluationStudentsActions } from '@/app/dashboard/(roles)/college-mentor/evaluations/[id]/EvaluationStudentsActions';
 
 const getStudentColumns = ({
+  evalToggle,
   asEvaluator,
+  mentorEvalId,
 }: {
+  evalToggle: boolean;
   asEvaluator: boolean;
+  mentorEvalId: string;
 }): ColumnDef<MentorEvaluationStudent>[] => [
   {
     id: 'name',
@@ -63,8 +67,10 @@ const getStudentColumns = ({
     cell: ({ row }) => {
       return (
         <EvaluationStudentsActions
+          evalToggle={evalToggle}
           asEvaluator={asEvaluator}
-          mentorEvaluationStudent={row.original}
+          mentorEvalId={mentorEvalId}
+          studentId={row.original.uid}
         />
       );
     },

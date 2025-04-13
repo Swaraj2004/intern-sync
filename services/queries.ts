@@ -661,7 +661,7 @@ export const useMentorEvaluations = ({ mentorId }: { mentorId: string }) => {
   return { data, ...rest };
 };
 
-export const useEvaluationName = ({
+export const useMentorEvaluation = ({
   mentorEvaluationId,
 }: {
   mentorEvaluationId: string | null;
@@ -672,7 +672,7 @@ export const useEvaluationName = ({
     shouldFetch
       ? supabase
           .from('mentor_evaluations')
-          .select('evaluations (id, name)')
+          .select('id, eval_toggle, evaluations (id, name)')
           .eq('id', mentorEvaluationId!)
           .single()
       : null,
@@ -721,6 +721,34 @@ export const useStudentsForEvaluator = ({
     shouldFetch
       ? supabase.rpc('get_students_for_evaluator', {
           evaluator_id: evaluatorId,
+        })
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return { data, ...rest };
+};
+
+export const useEvaluationResponses = ({
+  mentorEvaluationId,
+  studentId,
+  roleFilter,
+}: {
+  mentorEvaluationId: string;
+  studentId: string;
+  roleFilter?: string;
+}) => {
+  const shouldFetch = Boolean(mentorEvaluationId && studentId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_evaluation_responses', {
+          mentor_eval_id: mentorEvaluationId,
+          student_id: studentId,
+          role_filter: roleFilter,
         })
       : null,
     {

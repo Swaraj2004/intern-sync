@@ -8,7 +8,6 @@ import TableContent from '@/components/ui/TableContent';
 import TablePagination from '@/components/ui/TablePagination';
 import TableSearch from '@/components/ui/TableSearch';
 import { useUser } from '@/context/UserContext';
-import { useUpdateMentorEvaluation } from '@/services/mutations/evaluations';
 import { useMentorEvaluations } from '@/services/queries';
 import MentorEvaluation from '@/types/mentor-evaluations';
 import { supabaseClient } from '@/utils/supabase/client';
@@ -39,9 +38,7 @@ const EvaluationsTable = () => {
     user?.uid
       ? supabase
           .from('students')
-          .select(
-            'college_mentor_id'
-          )
+          .select('college_mentor_id')
           .eq('uid', user.uid)
           .single()
       : null
@@ -51,17 +48,12 @@ const EvaluationsTable = () => {
     mentorId: collegeMentorData?.college_mentor_id!,
   });
 
-  const { updateMentorEvaluation } = useUpdateMentorEvaluation({
-    mentorId: collegeMentorData?.college_mentor_id!,
-  });
-
   const evaluationColumns = useMemo(
     () =>
       getMentorEvaluationColumns({
-        onUpdate: updateMentorEvaluation,
-        dashboardRole: 'student',
+        studentId: user?.uid!,
       }),
-    [updateMentorEvaluation]
+    [user]
   );
 
   const tableData = useMemo(

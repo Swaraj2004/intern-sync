@@ -27,7 +27,7 @@ const getParameterColumns = ({
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="md:w-40 lg:w-60 xl:w-96 truncate">
+      <div className="md:w-40 lg:w-60 xl:w-96 2xl:w-[600px] truncate">
         {row.original?.text || '-'}
       </div>
     ),
@@ -45,7 +45,15 @@ const getParameterColumns = ({
         <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.original?.role || '-'}</div>,
+    cell: ({ row }) => (
+      <div className="max-w-40">
+        {row.original?.role
+          ? row.original.role === 'student'
+            ? 'Student'
+            : 'Evaluator'
+          : '-'}
+      </div>
+    ),
   },
   {
     id: 'actions',
