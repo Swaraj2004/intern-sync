@@ -759,3 +759,25 @@ export const useEvaluationResponses = ({
 
   return { data, ...rest };
 };
+
+export const useStudentsEvaluations = ({
+  mentorEvaluationId,
+}: {
+  mentorEvaluationId: string;
+}) => {
+  const shouldFetch = Boolean(mentorEvaluationId);
+
+  const { data, ...rest } = useQuery(
+    shouldFetch
+      ? supabase.rpc('get_students_evaluations', {
+          mentor_eval_id: mentorEvaluationId,
+        })
+      : null,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  return { data, ...rest };
+};

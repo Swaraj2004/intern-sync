@@ -1015,6 +1015,10 @@ export type Database = {
           is_holiday: boolean
         }[]
       }
+      get_students_evaluations: {
+        Args: { mentor_eval_id: string }
+        Returns: Json
+      }
       get_students_for_evaluator: {
         Args: { evaluator_id: string }
         Returns: {
