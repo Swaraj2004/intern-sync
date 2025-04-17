@@ -109,7 +109,7 @@ const StudentsTable = () => {
           <TableSearch
             table={table}
             placeholder="Search Student"
-            column="users.name"
+            column="name"
           />
         )
       )}
