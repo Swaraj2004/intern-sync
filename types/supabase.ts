@@ -970,6 +970,27 @@ export type Database = {
           is_holiday: boolean
         }[]
       }
+      get_students: {
+        Args: {
+          institute_id: string
+          department_id?: string
+          college_mentor_id?: string
+        }
+        Returns: {
+          uid: string
+          name: string
+          email: string
+          auth_id: string
+          is_registered: boolean
+          is_verified: boolean
+          college_mentor_uid: string
+          college_mentor_name: string
+          company_mentor_uid: string
+          company_mentor_name: string
+          department_uid: string
+          department_name: string
+        }[]
+      }
       get_students_attendance: {
         Args: {
           institute_id: string

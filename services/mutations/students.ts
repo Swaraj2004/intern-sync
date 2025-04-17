@@ -34,26 +34,17 @@ export const useAddStudent = ({
 
       const optimisticUpdate: Student = {
         uid: crypto.randomUUID(),
-        departments: {
-          uid: departmentId,
-          name: departmentName,
-        },
-        users: {
-          id: crypto.randomUUID(),
-          auth_id: null,
-          name: studentName,
-          email,
-          is_registered: sendInvite,
-          is_verified: false,
-        },
-        college_mentors: {
-          uid: collegeMentorId || crypto.randomUUID(),
-          users: {
-            id: collegeMentorId || crypto.randomUUID(),
-            name: collegeMentorName || '',
-          },
-        },
-        internships: [],
+        name: studentName,
+        email,
+        auth_id: crypto.randomUUID(),
+        is_registered: false,
+        is_verified: false,
+        college_mentor_uid: collegeMentorId || '',
+        college_mentor_name: collegeMentorName || '',
+        company_mentor_uid: '',
+        company_mentor_name: '',
+        department_uid: departmentId,
+        department_name: departmentName,
       };
 
       mutate((currentData) => {
@@ -204,10 +195,8 @@ export const useChangeCollegeMentor = ({
             student.uid === studentId
               ? {
                   ...student,
-                  college_mentors: {
-                    uid: newMentorId,
-                    users: { id: newMentorId, name: newMentorName },
-                  },
+                  college_mentor_uid: newMentorId,
+                  college_mentor_name: newMentorName,
                 }
               : student
           ),
@@ -270,9 +259,7 @@ export const useSendStudentInvite = ({
             student.uid === userId
               ? {
                   ...student,
-                  users: student.users
-                    ? { ...student.users, is_registered: true }
-                    : student.users,
+                  is_registered: true,
                 }
               : student
           ),

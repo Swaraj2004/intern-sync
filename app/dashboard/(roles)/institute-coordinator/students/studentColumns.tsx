@@ -23,8 +23,8 @@ const getStudentColumns = ({
   dashboardRole,
 }: ColumnProps): ColumnDef<Student>[] => [
   {
-    id: 'users.name',
-    accessorFn: (row) => row.users?.name,
+    id: 'name',
+    accessorFn: (row) => row.name,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -35,11 +35,11 @@ const getStudentColumns = ({
         <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.original.users?.name || '-'}</div>,
+    cell: ({ row }) => <div>{row.original.name || '-'}</div>,
   },
   {
-    id: 'departments.name',
-    accessorFn: (row) => row.departments?.name,
+    id: 'department_name',
+    accessorFn: (row) => row.department_name,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -50,11 +50,11 @@ const getStudentColumns = ({
         <ChevronsUpDownIcon className="ml-2 h-4 w-4" />
       </Button>
     ),
-    cell: ({ row }) => <div>{row.original.departments?.name || '-'}</div>,
+    cell: ({ row }) => <div>{row.original.department_name || '-'}</div>,
   },
   {
-    id: 'users.email',
-    accessorFn: (row) => row.users?.email,
+    id: 'email',
+    accessorFn: (row) => row.email,
     header: ({ column }) => (
       <Button
         variant="ghost"
@@ -66,38 +66,32 @@ const getStudentColumns = ({
       </Button>
     ),
     cell: ({ row }) => (
-      <div className="lowercase">{row.original.users?.email || '-'}</div>
+      <div className="lowercase">{row.original.email || '-'}</div>
     ),
   },
   {
-    id: 'college_mentors.users.name',
-    accessorFn: (row) => row.college_mentors?.users?.name,
+    id: 'college_mentor_name',
+    accessorFn: (row) => row.college_mentor_name,
     header: () => {
       return <span className="text-nowrap">College Mentor</span>;
     },
-    cell: ({ row }) => (
-      <div>{row.original.college_mentors?.users?.name || '-'}</div>
-    ),
+    cell: ({ row }) => <div>{row.original.college_mentor_name || '-'}</div>,
   },
   {
-    id: 'internships[0].company_mentors.users.name',
-    accessorFn: (row) => row.internships?.[0]?.company_mentors?.users?.name,
+    id: 'company_mentor_name',
+    accessorFn: (row) => row.company_mentor_name,
     header: () => {
       return <span className="text-nowrap">Company Mentor</span>;
     },
-    cell: ({ row }) => (
-      <div>
-        {row.original.internships?.[0]?.company_mentors?.users?.name || '-'}
-      </div>
-    ),
+    cell: ({ row }) => <div>{row.original.company_mentor_name || '-'}</div>,
   },
   {
     id: 'status',
     header: 'Status',
     cell: ({ row }) => (
       <UserStatus
-        isRegistered={row.original.users?.is_registered || false}
-        isVerified={row.original.users?.is_verified || false}
+        isRegistered={row.original.is_registered || false}
+        isVerified={row.original.is_verified || false}
       />
     ),
   },
@@ -105,26 +99,26 @@ const getStudentColumns = ({
     id: 'actions',
     cell: ({ row }) => {
       const studentId = row.original.uid;
-      const currentMentorId = row.original.college_mentors?.users?.id;
-      const studentDepartmentId = row.original.departments?.uid;
+      const currentMentorId = row.original.college_mentor_uid;
+      const studentDepartmentId = row.original.department_uid;
 
       return (
         <StudentActions
           deleteStudent={async () =>
-            onDelete(row.original.uid, row.original.users?.auth_id || '')
+            onDelete(row.original.uid, row.original.auth_id || '')
           }
           sendInvite={async () =>
             onSendInvite(
-              row.original.users?.email || '',
+              row.original.email || '',
               row.original.uid,
-              row.original.users?.name || ''
+              row.original.name || ''
             )
           }
           changeCollegeMentor={onChangeCollegeMentor}
           studentId={studentId}
           studentDepartmentId={studentDepartmentId}
           currentMentorId={currentMentorId}
-          isVerified={row.original.users?.is_verified || false}
+          isVerified={row.original.is_verified || false}
           dashboardRole={dashboardRole}
         />
       );

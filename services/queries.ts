@@ -71,6 +71,80 @@ export const useCollegeMentors = ({
   };
 };
 
+// export const useStudents = ({
+//   instituteId,
+//   departmentId,
+//   collegeMentorId,
+// }: {
+//   instituteId: string | null;
+//   departmentId?: string;
+//   collegeMentorId?: string;
+// }) => {
+//   const shouldFetch = Boolean(instituteId);
+
+//   const { data: students, ...rest } = useQuery(
+//     shouldFetch
+//       ? (() => {
+//           let query = supabase
+//             .from('students')
+//             .select(
+//               `
+//                 uid,
+//                 college_mentors (
+//                   uid,
+//                   users (id, name)
+//                 ),
+//                 departments (uid, name),
+//                 users (id, auth_id, name, email, is_registered, is_verified),
+//                 internships (
+//                   start_date,
+//                   end_date,
+//                   company_mentor_id,
+//                   company_mentors (
+//                     uid,
+//                     users (id, name)
+//                   )
+//                 )
+//               `
+//             )
+//             .eq('institute_id', instituteId!)
+//             .order('created_at', { ascending: false });
+
+//           if (departmentId) {
+//             query = query.eq('department_id', departmentId);
+//           }
+
+//           if (collegeMentorId) {
+//             query = query.eq('college_mentor_id', collegeMentorId);
+//           }
+
+//           return query;
+//         })()
+//       : null,
+//     {
+//       revalidateOnFocus: false,
+//       revalidateOnReconnect: false,
+//     }
+//   );
+
+//   // Format today's date as YYYY-MM-DD (assuming that matches your date columns)
+//   const currentDate = new Date().toISOString().split('T')[0];
+
+//   const data = students?.map((student) => {
+//     const currentInternship = student.internships?.find(
+//       (internship) =>
+//         internship.start_date <= currentDate &&
+//         internship.end_date >= currentDate
+//     );
+//     return { ...student, currentInternship };
+//   });
+
+//   return {
+//     data,
+//     ...rest,
+//   };
+// };
+
 export const useStudents = ({
   instituteId,
   departmentId,
@@ -82,62 +156,15 @@ export const useStudents = ({
 }) => {
   const shouldFetch = Boolean(instituteId);
 
-  const { data: students, ...rest } = useQuery(
+  const { data, ...rest } = useQuery(
     shouldFetch
-      ? (() => {
-          let query = supabase
-            .from('students')
-            .select(
-              `
-                uid,
-                college_mentors (
-                  uid,
-                  users (id, name)
-                ),
-                departments (uid, name),
-                users (id, auth_id, name, email, is_registered, is_verified),
-                internships (
-                  start_date,
-                  end_date,
-                  company_mentor_id,
-                  company_mentors (
-                    uid,
-                    users (id, name)
-                  )
-                )
-              `
-            )
-            .eq('institute_id', instituteId!)
-            .order('created_at', { ascending: false });
-
-          if (departmentId) {
-            query = query.eq('department_id', departmentId);
-          }
-
-          if (collegeMentorId) {
-            query = query.eq('college_mentor_id', collegeMentorId);
-          }
-
-          return query;
-        })()
-      : null,
-    {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false,
-    }
+      ? supabase.rpc('get_students', {
+          institute_id: instituteId!,
+          department_id: departmentId,
+          college_mentor_id: collegeMentorId,
+        })
+      : null
   );
-
-  // Format today's date as YYYY-MM-DD (assuming that matches your date columns)
-  const currentDate = new Date().toISOString().split('T')[0];
-
-  const data = students?.map((student) => {
-    const currentInternship = student.internships?.find(
-      (internship) =>
-        internship.start_date <= currentDate &&
-        internship.end_date >= currentDate
-    );
-    return { ...student, currentInternship };
-  });
 
   return {
     data,
