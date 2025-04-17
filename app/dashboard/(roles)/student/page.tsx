@@ -151,9 +151,11 @@ const StudentDashboardPage = () => {
         </p>
       </div>
       {isProfileIncomplete && <CompleteProfileCard />}
-      {studentInternships && studentInternships.length === 0 && (
-        <AddInternshipCard />
-      )}
+      {(!studentInternships ||
+        studentInternships.length === 0 ||
+        studentInternships.every(
+          (internship) => new Date(internship.end_date) < new Date()
+        )) && <AddInternshipCard />}
       {upcomingInternship && studentInternships?.length === 1 && (
         <UpcomingInternshipCard internship={upcomingInternship} />
       )}
